@@ -29,10 +29,10 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "release": "release-it --only-version",
-    "web": "yarn example web",
-    "build:web": "yarn example build:web",
+    "web": "yarn workspace @unif/react-native-chat-website start",
     "lint": "eslint \"**/*.{js,jsx,mjs,ts,tsx}\"",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "website": "yarn workspace @unif/react-native-chat-website"
   },
   "keywords": [
     "react-native",
@@ -48,7 +48,7 @@
   "bugs": {
     "url": "https://github.com/unif-design/react-native-chat/issues"
   },
-  "homepage": "https://github.com/unif-design/react-native-chat#readme",
+  "homepage": "https://unif-design.github.io/react-native-chat/",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
@@ -102,7 +102,8 @@
     "react-native-svg": ">=15"
   },
   "workspaces": [
-    "example"
+    "example",
+    "website"
   ],
   "packageManager": "yarn@4.11.0",
   "react-native-builder-bob": {
@@ -164,7 +165,6 @@
       "jest",
       "lefthook",
       "release-it",
-      "vite",
       "eslint"
     ],
     "version": "0.63.1"

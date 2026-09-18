@@ -1,0 +1,40 @@
+---
+title: Attachments 附件
+description: 统一呈现图片、文件、进度和处理状态。
+api: Attachments
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { ApiReference } from '@site/src/components/ApiReference';
+import { AttachmentsDemo } from '@site/src/demos/AttachmentsDemo';
+
+统一呈现图片、文件、进度和处理状态。
+
+## 交互示例
+
+<LiveDemo title="附件">
+  <AttachmentsDemo />
+</LiveDemo>
+
+## 用法
+
+```tsx
+<Attachments
+  items={attachments}
+  layout="grid"
+  onPreview={(item) => openPreview(item)}
+  onRemove={(item) => removeAttachment(item.id)}
+/>
+```
+
+## 行为与接入
+
+`items` 使用稳定的 `id`，预览和移除事件返回原项。没有条目时不占位；未提供名称显示“未命名附件”。
+
+`layout` 默认 `grid`，也支持 `mixed`、`carousel` 与 `list`。图片与进度复用 Design。`status` 默认 `idle`，`loadingVisual` 默认 `center`；`showProgressLabel` 默认关闭。
+
+进度、可移除状态与附件集合由应用提供。组件不读取本地文件、不上传、不保存文件，也不在点击移除后自行删项。
+
+## API
+
+<ApiReference name="Attachments" />

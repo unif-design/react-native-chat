@@ -1,0 +1,23 @@
+---
+title: 主聊天
+description: 组合消息、输入草稿和附件操作，由页面维护本地状态。
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { MainChatExample } from '../../../example/src/examples/MainChatExample/MainChatExample';
+
+主聊天将 Chat、MessageList、Message、Composer 和 Attachments 组合在同一页面。试着发送文字、移除附件，观察消息与输入状态的交接。
+
+<LiveDemo title="主聊天" height={640}>
+  <MainChatExample />
+</LiveDemo>
+
+## 状态与事件
+
+消息集合、草稿和附件由页面持有。发送事件将原始文字交给页面，再由页面决定追加消息与清空草稿。示例只更新本地状态，不连接 Agent 或业务接口。
+
+## 宿主责任
+
+页面提供有界高度、键盘避让和安全区。MessageList 管理列表位置，Composer 管理输入区展示；Chat 负责组合布局。
+
+[查看完整示例源码](https://github.com/unif-design/react-native-chat/tree/main/example/src/examples/MainChatExample)

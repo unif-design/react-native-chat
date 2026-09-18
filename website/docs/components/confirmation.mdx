@@ -1,0 +1,40 @@
+---
+title: Confirmation 会话确认
+description: 呈现确认内容、操作入口与外部处理状态。
+api: Confirmation
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { ApiReference } from '@site/src/components/ApiReference';
+import { ConfirmationDemo } from '@site/src/demos/ConfirmationDemo';
+
+呈现确认内容、操作入口与外部处理状态。
+
+## 交互示例
+
+<LiveDemo title="会话确认">
+  <ConfirmationDemo />
+</LiveDemo>
+
+## 用法
+
+```tsx
+<Confirmation
+  title="确认采用这份提纲？"
+  status={status}
+  onConfirm={handleConfirm}
+  onCancel={handleCancel}
+>
+  <Text>提纲包含背景、方案和下一步三部分。</Text>
+</Confirmation>
+```
+
+## 行为与接入
+
+`status` 必须由调用方提供，可为 `pending`、`processing`、`confirmed` 或 `cancelled`。待确认时提供相应回调才显示操作入口，按钮默认文案为“确认”和“取消”。
+
+点击只交付事件，不将状态自动改成已确认。确认对象是否仍有效、是否允许提交、请求结果与最终状态由业务场景维护；列表行卸载不应丢失这些状态。
+
+## API
+
+<ApiReference name="Confirmation" />

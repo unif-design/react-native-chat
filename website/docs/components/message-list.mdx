@@ -1,0 +1,43 @@
+---
+title: MessageList 消息列表
+description: 有界虚拟列表，支持历史前插与末尾跟随。
+api: MessageList
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { ApiReference } from '@site/src/components/ApiReference';
+import { MessageListDemo } from '@site/src/demos/MessageListDemo';
+
+有界虚拟列表，支持历史前插与末尾跟随。
+
+## 交互示例
+
+<LiveDemo title="消息列表">
+  <MessageListDemo />
+</LiveDemo>
+
+## 用法
+
+```tsx
+<View style={{ height: 480 }}>
+  <MessageList
+    items={messages}
+    keyExtractor={(item) => item.id}
+    renderItem={(item) => <Message text={item.text} />}
+    hasEarlier={hasEarlier}
+    onRequestEarlier={loadEarlier}
+  />
+</View>
+```
+
+## 行为与接入
+
+父容器必须提供有界高度，避免嵌套在同方向的无界 ScrollView 中。数据类型由调用方决定，`renderItem` 可以返回 Message 或任意自定义行。
+
+默认从 `initialPosition="end"` 开始，`followOutput="whenAtEnd"` 仅在用户位于末尾时跟随新增内容；阅读历史时不会强行跳到最新。纯前插保持当前可见内容的位置。
+
+历史入口需要同时提供 `hasEarlier` 与 `onRequestEarlier`；加载状态由 `loadingEarlier` 控制。滚动不会自动发起历史请求。ref 的 `scrollToEnd()` 可显式回到末尾。切换会话时用 React `key` 重建实例。
+
+## API
+
+<ApiReference name="MessageList" />

@@ -1,0 +1,23 @@
+---
+title: 抽屉输入
+description: 在独立抽屉中组合 Composer 与 Attachments。
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { DrawerInputExample } from '../../../example/src/examples/DrawerInputExample/DrawerInputExample';
+
+独立输入区可以直接组合 Composer 与 Attachments。打开抽屉，输入文字、移除样例附件或发送本地事件。
+
+<LiveDemo title="抽屉输入">
+  <DrawerInputExample />
+</LiveDemo>
+
+## 独立草稿
+
+抽屉由所属场景持有草稿、附件与处理状态。它不需要创建完整聊天历史；如果多个入口共享业务草稿，由应用明确交接。
+
+## 键盘与手势
+
+示例的 Modal 内提供手势根，键盘和安全区由抽屉宿主统一处理。浏览器可以验证展开、关闭和事件交接；软键盘与原生手势需在 iOS、Android 设备上验收。
+
+[查看完整示例源码](https://github.com/unif-design/react-native-chat/tree/main/example/src/examples/DrawerInputExample)

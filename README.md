@@ -2,7 +2,9 @@
 
 基于 `@unif/react-native-design` 的独立 TypeScript 聊天组件库。
 
-工程由 create-react-native-library 0.63.1 的 library/js 模板生成，源码为 TS/TSX。example 使用 Community CLI，原生 iOS/Android 工程用于示例验证，Vite 提供 Web 入口。公开组件包括 Chat、Message、MessageList、Composer、Attachments、Suggestions、Confirmation、Process、Sources、Citation、Feedback。各组件可以独立使用，具体行为依据见[开发交接](docs/DEVELOPMENT.md)。
+工程由 create-react-native-library 0.63.1 的 library/js 模板生成，源码为 TS/TSX。example 使用 Community CLI，原生 iOS/Android 工程用于示例验证，Docusaurus 文档站提供 Web 交互预览。公开组件包括 Chat、Message、MessageList、Composer、Attachments、Suggestions、Confirmation、Process、Sources、Citation、Feedback。各组件可以独立使用，具体行为依据见[开发交接](docs/DEVELOPMENT.md)。
+
+[组件文档与交互示例](https://unif-design.github.io/react-native-chat/)
 
 ## 本地开始
 
@@ -17,11 +19,11 @@ yarn format:check
 yarn test --runInBand --runTestsByPath example/src/__tests__/App.test.tsx
 ```
 
-没有全局 Yarn 时，使用 `node .yarn/releases/yarn-4.11.0.cjs` 代替 yarn。示例服务使用 `yarn example start` 或 `yarn example web`。构建和全量测试遵循 AGENTS.md 的执行边界。
+没有全局 Yarn 时，使用 `node .yarn/releases/yarn-4.11.0.cjs` 代替 yarn。示例服务使用 `yarn example start` 或 `yarn web`。构建和全量测试遵循 AGENTS.md 的执行边界。
 
 Design 开发和示例使用 npm 0.32.0，React 19.2.3、RN 0.86.3；公开依赖范围以 package.json 为准。已知上游 peer 声明差异见开发交接。
 
-ESLint、Jest、Lefthook、Release It、Vite 已配置。跳过安装脚本时，使用 `yarn exec lefthook install` 安装 Git hooks；发布按明确授权执行。
+ESLint、Jest、Lefthook、Release It 已配置。跳过安装脚本时，使用 `yarn exec lefthook install` 安装 Git hooks；发布按明确授权执行。
 
 ## 使用与示例
 
