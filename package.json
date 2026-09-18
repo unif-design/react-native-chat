@@ -1,6 +1,6 @@
 {
   "name": "@unif/react-native-chat",
-  "version": "0.1.0",
+  "version": "1.8.3",
   "description": "基于 Unif Design 的独立 React Native 聊天组件",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -135,7 +135,8 @@
       "requireCommits": true
     },
     "npm": {
-      "publish": true
+      "publish": true,
+      "skipChecks": true
     },
     "github": {
       "release": true
