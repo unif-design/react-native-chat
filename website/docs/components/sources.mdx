@@ -1,0 +1,33 @@
+---
+title: Sources 参考来源
+description: 展示带编号或标记的来源集合。
+api: Sources
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { ApiReference } from '@site/src/components/ApiReference';
+import { SourcesDemo } from '@site/src/demos/SourcesDemo';
+
+展示带编号或标记的来源集合。
+
+## 交互示例
+
+<LiveDemo title="参考来源">
+  <SourcesDemo />
+</LiveDemo>
+
+## 用法
+
+```tsx
+<Sources items={sources} onPress={(item) => openSource(item)} />
+```
+
+## 行为与接入
+
+默认标题为“参考来源”。`label`、顺序、来源关系、标题与说明都由消费者提供；点击事件返回原项。
+
+禁用项不交付点击事件。组件不查询来源、不核实信息，也不自动打开链接；正文里的独立标记可使用 [Citation](./citation.mdx)。
+
+## API
+
+<ApiReference name="Sources" />

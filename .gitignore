@@ -107,3 +107,9 @@ lefthook-local.yaml
 *.keystore
 !example/android/app/debug.keystore
 example/ios/*.xcworkspace/
+
+# Docusaurus generated output
+website/.docusaurus/
+website/static/md/
+website/static/llms*.txt
+website/src/generated/

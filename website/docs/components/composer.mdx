@@ -1,0 +1,47 @@
+---
+title: Composer 消息输入
+description: 受控草稿、发送和停止，适用于聊天页与独立输入区。
+api: Composer
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { ApiReference } from '@site/src/components/ApiReference';
+import { ComposerDemo } from '@site/src/demos/ComposerDemo';
+
+受控草稿、发送和停止，适用于聊天页与独立输入区。
+
+## 交互示例
+
+<LiveDemo title="消息输入">
+  <ComposerDemo />
+</LiveDemo>
+
+## 用法
+
+```tsx
+import { useState } from 'react';
+import { Composer } from '@unif/react-native-chat';
+
+function InputDemo() {
+  const [text, setText] = useState('');
+  return (
+    <Composer
+      value={text}
+      onChangeText={setText}
+      primaryAction={{ kind: 'send', onPress: (value) => console.log(value) }}
+    />
+  );
+}
+```
+
+## 行为与接入
+
+`value` 与 `onChangeText` 共同维护受控草稿。发送交付输入原文，是否清空由调用方决定；仅有空白时默认不能发送，附件单独发送可设置 `allowEmpty`。
+
+`primaryAction.kind` 使用 `send`、`stop` 或 `busy`。`busy` 只展示等待状态。扩展操作通过 `actions` 提供，语音的真实采集与权限处理由 `voice` 回调交给应用。
+
+输入表面默认 `card`，可改为 `plain`；文字区域在高度范围内增长，页面负责键盘避让。`onHeightChange` 交付整个 Composer 的实测高度，ref 仅提供 `focus()` 与 `blur()`。
+
+## API
+
+<ApiReference name="Composer" />

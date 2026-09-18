@@ -1,0 +1,38 @@
+---
+title: Feedback 结果说明
+description: 呈现提示、结果或问题说明及明确的后续操作。
+api: Feedback
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { ApiReference } from '@site/src/components/ApiReference';
+import { FeedbackDemo } from '@site/src/demos/FeedbackDemo';
+
+呈现提示、结果或问题说明及明确的后续操作。
+
+## 交互示例
+
+<LiveDemo title="结果说明">
+  <FeedbackDemo />
+</LiveDemo>
+
+## 用法
+
+```tsx
+<Feedback
+  tone="warning"
+  title="资料尚未完整"
+  message="补充剩余信息后再继续。"
+  action={{ id: 'edit', label: '补充信息', onPress: openEditor }}
+/>
+```
+
+## 行为与接入
+
+`tone` 默认 `info`，还支持 `success`、`warning` 与 `error`。`message` 为必要说明，标题和操作可选。
+
+组件只显示给定内容，不从错误文字判断是否能重试。`action` 使用共同的 ChatAction；未传操作时不会增加按钮，也不会自动重发请求。
+
+## API
+
+<ApiReference name="Feedback" />

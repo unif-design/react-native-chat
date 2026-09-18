@@ -1,0 +1,41 @@
+---
+title: Message 消息
+description: 普通文本、Markdown 与自定义卡片共用的消息外壳。
+api: Message
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { ApiReference } from '@site/src/components/ApiReference';
+import { MessageDemo } from '@site/src/demos/MessageDemo';
+
+普通文本、Markdown 与自定义卡片共用的消息外壳。
+
+## 交互示例
+
+<LiveDemo title="消息">
+  <MessageDemo />
+</LiveDemo>
+
+## 用法
+
+```tsx
+<Message name="智能助手" text="你好，今天想聊些什么？" />
+<Message placement="end" text="帮我整理一份提纲。" />
+<Message
+  format="markdown"
+  text="**整理思路**：先确认主题，再补充资料。"
+  onLinkPress={(url) => openLink(url)}
+/>
+```
+
+## 行为与接入
+
+正文使用 `text` 或 `children`，两种形式互斥。`format="markdown"` 使用真实 Markdown 渲染器；链接点击由 `onLinkPress` 交出。自定义卡片可以包含按钮等交互内容。
+
+默认 `placement="start"`、`surface="bubble"`、`status="idle"`，`fullWidth` 默认关闭。身份、消息状态和附加区域只展示调用方提供的信息。
+
+`actions` 表示消息操作。正文中的链接、按钮等交互区域独立交付事件；消息外壳支持 `onPress` 和 `onLongPress`。
+
+## API
+
+<ApiReference name="Message" />

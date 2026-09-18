@@ -1,0 +1,44 @@
+---
+title: Chat 聊天布局
+description: 组合顶部内容、消息区域和底部输入区。
+api: Chat
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { ApiReference } from '@site/src/components/ApiReference';
+import { ChatDemo } from '@site/src/demos/ChatDemo';
+
+组合顶部内容、消息区域和底部输入区。
+
+## 交互示例
+
+<LiveDemo title="聊天布局">
+  <ChatDemo />
+</LiveDemo>
+
+## 用法
+
+```tsx
+<Chat
+  header={<ConversationHeader />}
+  composer={
+    <Composer value={text} onChangeText={setText} primaryAction={sendAction} />
+  }
+>
+  <MessageList
+    items={messages}
+    keyExtractor={(item) => item.id}
+    renderItem={(item) => <Message text={item.text} />}
+  />
+</Chat>
+```
+
+## 行为与接入
+
+Chat 只协调 `header`、`children`、`footer`、`composer` 和底部留白。`bottomInset` 默认 0；键盘与安全区补偿由持有页面布局的宿主统一负责。
+
+组件不持有消息、草稿或会话服务。需要独立输入区时可以直接使用 Composer，无需创建 Chat。完整消费方式见[主聊天](../composition/main-chat.mdx)与[抽屉输入](../composition/drawer-input.mdx)。
+
+## API
+
+<ApiReference name="Chat" />

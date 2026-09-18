@@ -1,0 +1,33 @@
+---
+title: Suggestions 快捷建议
+description: 展示选项与调用方提供的选择、禁用和等待状态。
+api: Suggestions
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { ApiReference } from '@site/src/components/ApiReference';
+import { SuggestionsDemo } from '@site/src/demos/SuggestionsDemo';
+
+展示选项与调用方提供的选择、禁用和等待状态。
+
+## 交互示例
+
+<LiveDemo title="快捷建议">
+  <SuggestionsDemo />
+</LiveDemo>
+
+## 用法
+
+```tsx
+<Suggestions items={suggestions} onSelect={(item) => setSelectedId(item.id)} />
+```
+
+## 行为与接入
+
+`onSelect` 返回原项，选中状态由每项的 `selected` 控制。`disabled` 或 `loading` 时不交付选择事件。
+
+默认从起始方向排列，`align="center"` 可居中。组件不自行选中、填入输入框或发送消息；需要哪一种结果，由场景在回调中决定。
+
+## API
+
+<ApiReference name="Suggestions" />

@@ -1,0 +1,18 @@
+{
+  "extends": "@docusaurus/tsconfig",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "customConditions": [
+      "unif-react-native-chat-source",
+      "react-native-strict-api"
+    ],
+    "paths": {
+      "@unif/react-native-chat": ["../src/index"],
+      "@site/*": ["./*"]
+    }
+  },
+  "include": ["src", "docs", "docusaurus.config.ts", "sidebars.ts"]
+}
