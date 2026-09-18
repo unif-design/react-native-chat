@@ -1,0 +1,16 @@
+export const EXAMPLES = [
+  { id: 'design', label: 'Design 接线' },
+  { id: 'composer', label: 'Composer' },
+  { id: 'attachments', label: 'Attachments' },
+  { id: 'message', label: 'Message' },
+  { id: 'messageList', label: 'MessageList' },
+  { id: 'suggestions', label: 'Suggestions' },
+  { id: 'confirmation', label: 'Confirmation' },
+  { id: 'process', label: 'Process' },
+  { id: 'sources', label: 'Sources' },
+  { id: 'citation', label: 'Citation' },
+  { id: 'feedback', label: 'Feedback' },
+  { id: 'chat', label: 'Chat 布局' },
+  { id: 'mainChat', label: '主聊天' },
+  { id: 'drawer', label: '抽屉输入' },
+] as const;

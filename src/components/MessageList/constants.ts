@@ -1,0 +1,1 @@
+export const DEFAULT_END_THRESHOLD = 24;

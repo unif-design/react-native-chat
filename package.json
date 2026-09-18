@@ -1,0 +1,177 @@
+{
+  "name": "@unif/react-native-chat",
+  "version": "0.1.0",
+  "description": "基于 Unif Design 的独立 React Native 聊天组件",
+  "main": "./lib/module/index.js",
+  "types": "./lib/typescript/src/index.d.ts",
+  "exports": {
+    ".": {
+      "unif-react-native-chat-source": "./src/index.tsx",
+      "types": "./lib/typescript/src/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/*.test.*",
+    "!**/*.spec.*",
+    "!**/.*"
+  ],
+  "scripts": {
+    "example": "yarn workspace @unif/react-native-chat-example",
+    "clean": "del-cli example/android/build example/android/app/build example/ios/build lib",
+    "prepare": "bob build",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "release": "release-it --only-version",
+    "web": "yarn example web",
+    "build:web": "yarn example build:web",
+    "lint": "eslint \"**/*.{js,jsx,mjs,ts,tsx}\"",
+    "format:check": "prettier --check ."
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "android"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unif-design/react-native-chat.git"
+  },
+  "author": "unif-design <382724935@qq.com> (https://github.com/unif-design)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/unif-design/react-native-chat/issues"
+  },
+  "homepage": "https://github.com/unif-design/react-native-chat#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@commitlint/config-conventional": "^21.2.0",
+    "@eslint/compat": "^2.1.0",
+    "@eslint/eslintrc": "^3.3.6",
+    "@eslint/js": "^9.39.5",
+    "@jest/globals": "^30.3.0",
+    "@react-native/babel-preset": "0.86.3",
+    "@react-native/eslint-config": "0.86.3",
+    "@react-native/jest-preset": "0.86.3",
+    "@react-native/metro-config": "0.86.3",
+    "@release-it/conventional-changelog": "^12.0.0",
+    "@sbaiahmed1/react-native-blur": "6.0.1",
+    "@testing-library/react-native": "13.3.3",
+    "@types/react": "^19.2.0",
+    "@unif/react-native-design": "0.32.0",
+    "commitlint": "^21.2.1",
+    "del-cli": "^7.0.0",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-ft-flow": "^3.0.11",
+    "eslint-plugin-prettier": "^5.5.6",
+    "hermes-eslint": "0.37.0",
+    "jest": "^30.3.0",
+    "lefthook": "^2.1.10",
+    "prettier": "^3.9.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-builder-bob": "^0.43.0",
+    "react-native-gesture-handler": "3.1.0",
+    "react-native-reanimated": "4.6.0",
+    "react-native-reanimated-carousel": "5.0.0",
+    "react-native-safe-area-context": "5.8.0",
+    "react-native-svg": "15.15.5",
+    "react-native-web": "~0.21.2",
+    "react-native-worklets": "0.12.1",
+    "react-test-renderer": "19.2.3",
+    "release-it": "^21.0.1",
+    "turbo": "^2.10.8",
+    "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "@unif/react-native-design": "^0.32.0",
+    "react": ">=19.2.3 <20.0.0",
+    "react-native": ">=0.86.0",
+    "react-native-svg": ">=15"
+  },
+  "workspaces": [
+    "example"
+  ],
+  "packageManager": "yarn@4.11.0",
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release ${version} [skip ci]",
+      "tagName": "v${version}",
+      "requireCommits": true
+    },
+    "npm": {
+      "publish": true
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": {
+          "name": "angular"
+        },
+        "infile": "CHANGELOG.md"
+      }
+    }
+  },
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
+  },
+  "create-react-native-library": {
+    "type": "library",
+    "languages": "js",
+    "tools": [
+      "jest",
+      "lefthook",
+      "release-it",
+      "vite",
+      "eslint"
+    ],
+    "version": "0.63.1"
+  },
+  "engines": {
+    "node": "^20.19.4 || ^22.13.0 || ^24.3.0 || >=25.0.0"
+  },
+  "dependencies": {
+    "react-native-marked": "8.2.0"
+  }
+}
