@@ -4,3 +4,8 @@ lib/
 yarn.lock
 example/android/
 example/ios/
+
+# 从 unif-design/.github 模板生成，保留源格式并由 actionlint / 模板比对检查。
+.github/
+lefthook.yml
+SECURITY.md
