@@ -1,0 +1,40 @@
+---
+title: Process 处理过程
+description: 展示已整理的步骤、状态、耗时和可展开详情。
+api: Process
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { ApiReference } from '@site/src/components/ApiReference';
+import { ProcessDemo } from '@site/src/demos/ProcessDemo';
+
+展示已整理的步骤、状态、耗时和可展开详情。
+
+## 交互示例
+
+<LiveDemo title="处理过程">
+  <ProcessDemo />
+</LiveDemo>
+
+## 用法
+
+```tsx
+<Process
+  title="资料整理"
+  steps={steps}
+  expandedIds={expandedIds}
+  onExpandedChange={setExpandedIds}
+/>
+```
+
+## 行为与接入
+
+每个步骤使用稳定 `id` 并显式提供 `status`。标题、说明、`elapsedMs` 和 `details` 均来自调用方；耗时不会在组件内自行计时。
+
+展开可使用受控的 `expandedIds` + `onExpandedChange`，也可通过 `defaultExpandedIds` 设置一次性初始值。默认收起；没有详情的项不提供展开操作。
+
+过程组件不执行任务、不解析工具协议，也不根据步骤名称推断业务行为。多组过程由页面组合多个 Process。
+
+## API
+
+<ApiReference name="Process" />

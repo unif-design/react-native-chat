@@ -1,3 +1,8 @@
+---
+title: 常见问题
+description: 排查输入、键盘、列表、附件和消息交互中的接入问题。
+---
+
 # 常见问题
 
 ## 为什么点击发送后输入框没有清空？
@@ -6,11 +11,11 @@ Composer 是受控输入。发送事件交付当前原始文字，应用决定�
 
 ## 键盘出现时，聊天区域由谁调整？
 
-页面或抽屉宿主负责键盘避让。Chat 和 Composer 不额外抬升键盘；组合示例见 [example](../example/README.md)，避免多个宿主重复补偿高度。
+页面或抽屉宿主负责键盘避让。Chat 和 Composer 不额外抬升键盘；组合示例见 [主聊天](./composition/main-chat)与[抽屉输入](./composition/drawer-input)，避免多个宿主重复补偿高度。
 
 ## MessageList 为什么不显示或滚动不正常？
 
-父容器需要有界高度，避免放入同方向无界 ScrollView。会话切换时使用 React `key` 重建对应列表；具体属性见 [MessageList 类型](../src/components/MessageList/types.ts)。
+父容器需要有界高度，避免放入同方向无界 ScrollView。会话切换时使用 React `key` 重建对应列表；具体属性见 [MessageList API](./components/message-list)。
 
 ## 附件是否会自动上传？
 
@@ -24,4 +29,4 @@ Composer 是受控输入。发送事件交付当前原始文字，应用决定�
 
 Message 使用 react-native-marked 渲染 Markdown，图片通过 Design 组件展示。支持范围以当前消息实现和依赖为准，不把消息内容当作业务指令执行。
 
-[返回 README](../README.md) · [开发资料](DEVELOPMENT.md)
+[快速开始](./getting-started) · [组件索引](./components/chat)

@@ -1,0 +1,36 @@
+---
+title: Citation 引用标记
+description: 可直接嵌入正文的短引用标记。
+api: Citation
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { ApiReference } from '@site/src/components/ApiReference';
+import { CitationDemo } from '@site/src/demos/CitationDemo';
+
+可直接嵌入正文的短引用标记。
+
+## 交互示例
+
+<LiveDemo title="引用标记">
+  <CitationDemo />
+</LiveDemo>
+
+## 用法
+
+```tsx
+<Text>
+  这份说明附有原始资料
+  <Citation label="1" onPress={() => openSource(source)} />
+</Text>
+```
+
+## 行为与接入
+
+`label` 作为括号内的内容展示，例如 `label="1"` 显示为 `[1]`，也可使用短名称；没有点击回调时仍可作为静态标记。`disabled` 会阻止点击，`accessibilityLabel` 可提供更完整的可访问名称。
+
+编号和来源对应关系由消费者维护。Citation 可独立使用，也可与 [Sources](./sources.mdx) 组合，不依赖全局来源注册表。
+
+## API
+
+<ApiReference name="Citation" />

@@ -9,3 +9,12 @@ example/ios/
 .github/
 lefthook.yml
 SECURITY.md
+
+website/build/
+website/.docusaurus/
+website/static/md/
+website/static/llms*.txt
+website/src/generated/
+
+# Release It owns conventional-changelog output formatting.
+CHANGELOG.md

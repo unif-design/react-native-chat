@@ -1,0 +1,53 @@
+---
+title: 安装与宿主
+api: ChatAction
+description: 安装 Chat，并接入 Design 主题、手势与安全区宿主。
+---
+
+import { ApiReference } from '@site/src/components/ApiReference';
+
+## 安装
+
+```sh
+npm install @unif/react-native-chat@^2 @unif/react-native-design@^0.32
+```
+
+Chat 2.0.0 的开发基线为 React 19.2.3、React Native 0.86.3、Design 0.32.0。应用还需按 Design 的公开要求配置 Gesture Handler、Reanimated、Safe Area Context 与 SVG 等依赖；已接入 Design 的应用复用现有宿主。
+
+## 应用宿主
+
+```tsx
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ThemeProvider } from '@unif/react-native-design';
+
+<GestureHandlerRootView style={{ flex: 1 }}>
+  <SafeAreaProvider>
+    <ThemeProvider>
+      <YourScreen />
+    </ThemeProvider>
+  </SafeAreaProvider>
+</GestureHandlerRootView>;
+```
+
+Chat 不需要单独的 Provider，也不创建消息服务。明暗主题和应用字号由同一个 Design ThemeProvider 提供，组件会消费其公开能力。
+
+## 页面布局
+
+MessageList 需要有界高度。由页面或抽屉宿主统一处理键盘避让和安全区，避免重复补偿；Composer 交付输入区高度但不自行抬升键盘。
+
+[主聊天](./composition/main-chat.mdx)展示消息与输入的组合，[抽屉输入](./composition/drawer-input.mdx)展示不依赖消息列表的独立输入区。
+
+## 共同操作
+
+消息操作、输入扩展操作、附件动作、过程动作与反馈按钮共享 ChatAction。`disabled` 或 `loading` 时阻止点击；按钮状态和业务防重复分别由 UI 与消费者处理。
+
+<ApiReference name="ChatAction" />
+
+组件回调交付用户操作，应用负责异步结果与下一次状态更新。草稿、文件上传、Agent / SSE、确认有效性与业务提交留在应用中。
+
+## 示例与平台验证
+
+文档站的预览使用真实 Chat 与 Design 组件，在浏览器中可切换明暗主题、示例字号并重置本地状态。示例中的消息和结果记录是本地交互，不连接业务服务。
+
+原生 example 位于仓库 `example/`。原生键盘、手势、图片加载与设备字体仍需在对应平台验证，浏览器预览不能替代设备验收。

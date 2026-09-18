@@ -10,7 +10,7 @@
 
 ## 工程接线
 
-- create-react-native-library 0.63.1，library/js 模板；库源码 TS/TSX，Bob 生成 ESM 和声明。Community CLI 原生 example 与 Vite Web 入口保持。
+- create-react-native-library 0.63.1，library/js 模板；库源码 TS/TSX，Bob 生成 ESM 和声明。Community CLI 原生 example 与 Docusaurus Web 文档站分别验证原生和浏览器消费。
 - 库名 @unif/react-native-chat，示例工作区 @unif/react-native-chat-example；React 19.2.3、RN 0.86.3、Design 0.32.0、Yarn 4.11.0。
 - Design 从包根消费，Thumbnail 尺寸对象/fallback、Textarea/TextFieldHandle、CircularProgress 按 0.32.0 实际接口使用。详细接线见[组合验证](../../unif-platform-architecture/libraries/react-native-chat/composition.md#6-design-依赖与接入验证)。
 - Markdown 使用 react-native-marked 8.2.0，归所属消息单元，不建立解析器、模型 SDK 或组件注册中心。
@@ -27,8 +27,14 @@
 
 组件实现位于 `src/components/<组件名>/`，包根为 `src/index.tsx`；文件细则通过 AGENTS.md 指定的开发技能取得。
 
+## 文档站
+
+`website/` 沿用 Design 的 Docusaurus 站点形式。`yarn web` 启动文档站；`yarn website typecheck` 检查 Web 消费。组件页的 API 从包根类型导出生成，MDX 是文档与 llms 资料的共同来源，生成产物不手改。构建及 GitHub Pages 部署使用组织标准 CI。
+
 ## 验证与交付
 
 命令以 [package.json](../package.json) 及 [README](../README.md#本地开始) 为准。`src/components/<组件名>/__tests__/` 验证所属组件；`type-tests/` 验证包根公开消费和互斥类型；`example/src/examples/` 提供独立样例。`example/src/__tests__/App.test.tsx` 验证 Design 宿主，`Composition.test.tsx` 验证主聊天与抽屉的草稿、发送和移除交接。
 
 [CI 配置](../.github/workflows/ci.yml)维护完整验证入口；提交检查见 [lefthook.yml](../lefthook.yml)，发布命令见 package.json。
+
+LLM 索引、链接与产物提交采用组织共用生成器；本库保留由公开类型生成 API 文本的转换。网站 API 展示和 Markdown 使用同一个 md/api.json 来源，生成失败不交付半套资料。

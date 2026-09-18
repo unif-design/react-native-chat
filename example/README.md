@@ -1,6 +1,6 @@
 # Chat 示例
 
-通过包根公开 API 展示聊天组件，提供 Web 和 Community CLI 原生入口。
+通过包根公开 API 展示聊天组件，提供 Community CLI 原生示例；Web 使用 Docusaurus 文档站。
 
 ## 运行
 
@@ -8,10 +8,10 @@
 
 ```sh
 yarn install --immutable --mode=skip-build
-yarn example web
+yarn web
 ```
 
-原生示例启动 Metro 使用 `yarn example start`。iOS、Android 的构建与完整测试由 CI 执行；开展真机测试时使用对应的 `yarn example ios` 或 `yarn example android`。
+Web 文档站展示组件 API 与交互示例；原生示例启动 Metro 使用 `yarn example start`。iOS、Android 的构建与完整测试由 CI 执行；开展真机测试时使用对应的 `yarn example ios` 或 `yarn example android`。
 
 ## 可以查看什么
 

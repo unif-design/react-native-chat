@@ -1,0 +1,1 @@
+export { AttachmentsDemo } from './AttachmentsDemo';

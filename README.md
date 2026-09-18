@@ -2,7 +2,7 @@
 
 基于 `@unif/react-native-design` 的 TypeScript 聊天 UI 组件库，支持独立组件和完整聊天布局，可供其他 React Native 项目复用。
 
-[组件源码](src/index.tsx) · [运行示例](example/README.md) · [常见问题](docs/FAQ.md) · [开发资料](docs/DEVELOPMENT.md)
+[文档站](https://unif-design.github.io/react-native-chat/) · [组件源码](src/index.tsx) · [运行示例](example/README.md) · [常见问题](https://unif-design.github.io/react-native-chat/docs/faq) · [开发资料](docs/DEVELOPMENT.md)
 
 ## 提供什么
 
@@ -44,13 +44,14 @@ export function ChatInput({ onSend }: { onSend: (text: string) => void }) {
 
 ```sh
 yarn install --immutable --mode=skip-build
-yarn example web
+yarn web
 ```
 
 仓库自带 Yarn；没有全局命令时可用 `node .yarn/releases/yarn-4.11.0.cjs` 代替 `yarn`。原生示例及检查入口见 [example](example/README.md)。
 
 ## 文档
 
+- [LLM 文档索引](https://unif-design.github.io/react-native-chat/llms.txt)：按需查询组件与 FAQ。
 - [公共导出](src/index.tsx)与[组件类型](src/components/)：查询当前可用 API。
 - [开发资料](docs/DEVELOPMENT.md)：架构契约、依赖说明和验证入口。
 - [研发技能](https://github.com/unif-skill/unif-portal-dev-skills) · [贡献指南](CONTRIBUTING.md) · [MIT 许可](LICENSE)

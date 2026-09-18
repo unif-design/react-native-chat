@@ -28,6 +28,13 @@ export default defineConfig([
     languageOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   },
   {
-    ignores: ['node_modules/', 'lib/'],
+    ignores: [
+      'node_modules/',
+      'lib/',
+      'website/build/',
+      'website/.docusaurus/',
+      'website/static/md/',
+      'website/src/generated/',
+    ],
   },
 ]);
