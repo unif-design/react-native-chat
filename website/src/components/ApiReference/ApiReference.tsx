@@ -1,5 +1,5 @@
 import CodeBlock from '@theme/CodeBlock';
-import api from '@site/src/generated/api.json';
+import api from '@site/static/md/api.json';
 import type { ApiReferenceProps } from './types';
 
 export function ApiReference({ name }: ApiReferenceProps) {

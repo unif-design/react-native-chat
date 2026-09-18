@@ -1,7 +1,8 @@
-const fs = require('node:fs');
+'use strict';
 const path = require('node:path');
 const matter = require('gray-matter');
 const { readPublicApi } = require('./public-api');
+const { buildBundle, commitBundle } = require('./llms/bundle');
 
 async function createBundle(root) {
   const [
@@ -18,118 +19,68 @@ async function createBundle(root) {
   const parser = unified().use(parse).use(mdx);
   const printer = unified().use(stringify, { fences: true });
   const api = readPublicApi(path.dirname(root));
-  const config = fs.readFileSync(
-    path.join(root, 'docusaurus.config.ts'),
-    'utf8'
-  );
-  const url = config.match(/\burl:\s*'([^']+)'/)?.[1];
-  const baseUrl = config.match(/\bbaseUrl:\s*'([^']+)'/)?.[1];
-  const title = config.match(/\btitle:\s*'([^']+)'/)?.[1];
-  if (!url || !baseUrl || !title)
-    throw new Error('Missing site URL, baseUrl or title');
-  const site = new URL(baseUrl, url);
-  const docsDir = path.join(root, 'docs');
-  const files = fs
-    .readdirSync(docsDir, { recursive: true })
-    .filter((file) => /\.mdx?$/.test(file))
-    .sort();
-  const pages = files.map((file) => {
-    const { data, content } = matter(
-      fs.readFileSync(path.join(docsDir, file), 'utf8')
-    );
-    const slug = (data.slug || file.replace(/\.mdx?$/, '')).replace(/^\//, '');
-    if (
-      !data.title ||
-      !/^[a-z0-9/-]+$/i.test(slug) ||
-      slug.split('/').includes('..')
-    )
-      throw new Error(`Invalid documentation route: ${file}`);
-    return {
-      file,
-      data,
-      content,
-      slug,
-      url: new URL(`docs/${slug}`, site).href,
-    };
-  });
-  if (new Set(pages.map((page) => page.slug)).size !== pages.length)
-    throw new Error('Duplicate documentation route');
-  const routes = new Map(pages.map((page) => [page.file, page.url]));
-  const bundle = {};
-  const index = [
-    `# ${title}`,
-    '',
-    '> 独立、可组合的 React Native 聊天组件。',
-    '',
-    '## 文档',
-    '',
-  ];
-  const full = [`# ${title}`, ''];
-  for (const page of pages) {
-    const tree = parser.parse(page.content);
-    const clean = (node) => {
-      if (
-        node.type === 'link' &&
-        node.url &&
-        !/^(?:[a-z]+:|#)/i.test(node.url)
-      ) {
-        const [pathname, hash] = node.url.split('#');
-        const target = path.posix.normalize(
-          path.posix.join(path.posix.dirname(page.file), pathname)
-        );
-        const linked =
-          routes.get(target) ||
-          routes.get(`${target}.mdx`) ||
-          routes.get(`${target}.md`);
-        node.url = linked
-          ? linked + (hash ? `#${hash}` : '')
-          : new URL(node.url, page.url).href;
-      }
-      if (node.children)
+  const bundle = buildBundle({
+    root,
+    publicApi: api,
+    renderDocument(document) {
+      const { data } = matter(document.raw);
+      const tree = parser.parse(document.body);
+      function clean(node) {
+        if (!node.children) return node;
         node.children = node.children
-          .filter((child) => !child.type.startsWith('mdx'))
+          .filter((child) => {
+            if (child.type === 'mdxjsEsm' && /^import\s/.test(child.value))
+              return false;
+            if (!child.type.startsWith('mdx')) return true;
+            if (
+              ['LiveDemo', 'ComponentCatalog', 'ApiReference'].includes(
+                child.name
+              )
+            ) {
+              if (child.name === 'ApiReference') {
+                const name = child.attributes.find(
+                  (attribute) => attribute.name === 'name'
+                )?.value;
+                if (name !== data.api)
+                  throw new Error(
+                    `${document.sourceName}: API reference does not match page metadata`
+                  );
+              }
+              return false;
+            }
+            throw new Error(
+              `${document.sourceName}: Unsupported MDX content ${child.name || child.type}`
+            );
+          })
           .map(clean);
-      return node;
-    };
-    let markdown = `# ${page.data.title}\n\n来源：${page.url}\n\n${printer.stringify(clean(tree))}`;
-    if (page.data.api) {
-      if (!api[page.data.api]) throw new Error(`Missing API ${page.data.api}`);
-      markdown += `\n## 公开类型\n\n\`\`\`ts\n${api[page.data.api]}\`\`\`\n`;
-    }
-    bundle[`md/${page.slug}.md`] = markdown;
-    index.push(
-      `- [${page.data.title}](${new URL(`md/${page.slug}.md`, site).href})${page.data.description ? ` — ${page.data.description}` : ''}`
-    );
-    full.push(markdown);
-  }
-  bundle['llms.txt'] = index.join('\n') + '\n';
-  bundle['llms-full.txt'] = full.join('\n---\n\n');
+        return node;
+      }
+      let markdown = printer.stringify(clean(tree));
+      if (!/^# /m.test(markdown))
+        markdown = `# ${document.title}\n\n${markdown}`;
+      if (data.api) {
+        if (!api[data.api]) throw new Error(`Missing API ${data.api}`);
+        markdown += `\n## 公开类型\n\n\`\`\`ts\n${api[data.api]}\`\`\`\n`;
+      }
+      return markdown;
+    },
+  });
   return { bundle, api };
 }
 
 async function build(root) {
-  const { bundle, api } = await createBundle(root);
-  const output = path.join(root, 'static');
-  fs.rmSync(path.join(output, 'md'), { recursive: true, force: true });
-  for (const [file, content] of Object.entries(bundle)) {
-    const target = path.join(output, file);
-    fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.writeFileSync(target, content);
-  }
-  const generated = path.join(root, 'src/generated');
-  fs.mkdirSync(generated, { recursive: true });
-  fs.writeFileSync(
-    path.join(generated, 'api.json'),
-    JSON.stringify(api, null, 2) + '\n'
-  );
+  const { bundle } = await createBundle(root);
+  commitBundle(path.join(root, 'static'), bundle);
+  const count = Object.keys(bundle).filter((file) =>
+    /^md\/.+\.md$/.test(file)
+  ).length;
   process.stdout.write(
-    `Generated ${Object.keys(bundle).length - 2} documentation pages and public API text.\n`
+    `Generated ${count} documentation pages and public API text.\n`
   );
 }
-if (require.main === module) {
+if (require.main === module)
   build(path.join(__dirname, '..')).catch((error) => {
     process.stderr.write(`${error.message}\n`);
     process.exitCode = 1;
   });
-}
 module.exports = { createBundle };

@@ -3,6 +3,7 @@ const sidebars: SidebarsConfig = {
   componentsSidebar: [
     'components/overview',
     'getting-started',
+    'faq',
     {
       type: 'category',
       label: '输入与附件',

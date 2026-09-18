@@ -6,7 +6,7 @@
 
 规范仓默认与本库并列。先读[Chat 架构与组件索引](../../unif-platform-architecture/libraries/react-native-chat.md)和[共同契约](../../unif-platform-architecture/libraries/react-native-chat/contracts.md)，再读取当前单元；详细 props 不在本库复制成第二套定义。
 
-当前实现范围与单元清单以组件索引为准。
+目标设计见上述契约；当前可用组件与类型以 [src/index.tsx](../src/index.tsx) 的实际导出为准。
 
 ## 工程接线
 
@@ -21,12 +21,9 @@
 
 当前依赖的 Web 差异：Design Button 的 disabled 状态经 RNGH 3.1.0／RN Web 0.21.2 未输出 `aria-disabled`，点击禁用仍生效；react-native-svg 15.15.5 将圆环 origin 转为 `transform-origin`，触发 React 19 的 DOM 属性开发警告。这两项属于基础依赖的 Web 接线，不能用 Chat 的 Jest 状态断言代替浏览器无障碍证据。
 
-## 开发顺序与文件归属
+## 组件与文件归属
 
-1. Composer 与 Attachments：受控输入、原项事件、Design 输入/图片/进度，分别提供独立 example。
-2. Message 与 MessageList：Markdown、长文、流式全文、前插、末尾跟随和嵌套点击。
-3. Suggestions、Confirmation、Process、Feedback、Sources、Citation：各自的展示和明确事件。
-4. 可选 Chat：组合已有组件形成主聊天和抽屉输入样例，不加载 Portal 或业务系统。
+按本次组件读取实现、类型及对应 example。输入、附件、消息列表和交互反馈分别验证；Chat 组合现有组件，应用负责会话与业务流程。
 
 组件实现位于 `src/components/<组件名>/`，包根为 `src/index.tsx`；文件细则通过 AGENTS.md 指定的开发技能取得。
 
@@ -39,3 +36,5 @@
 命令以 [package.json](../package.json) 及 [README](../README.md#本地开始) 为准。`src/components/<组件名>/__tests__/` 验证所属组件；`type-tests/` 验证包根公开消费和互斥类型；`example/src/examples/` 提供独立样例。`example/src/__tests__/App.test.tsx` 验证 Design 宿主，`Composition.test.tsx` 验证主聊天与抽屉的草稿、发送和移除交接。
 
 [CI 配置](../.github/workflows/ci.yml)维护完整验证入口；提交检查见 [lefthook.yml](../lefthook.yml)，发布命令见 package.json。
+
+LLM 索引、链接与产物提交采用组织共用生成器；本库保留由公开类型生成 API 文本的转换。网站 API 展示和 Markdown 使用同一个 md/api.json 来源，生成失败不交付半套资料。
