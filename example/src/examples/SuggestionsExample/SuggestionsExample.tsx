@@ -8,8 +8,18 @@ export function SuggestionsExample() {
   const [selectedId, setSelectedId] = useState<string>();
   const styles = useThemedStyles(createStyles);
   const items = [
-    { id: 'customer', label: '查询客户', selected: selectedId === 'customer' },
-    { id: 'order', label: '查看订单', selected: selectedId === 'order' },
+    {
+      id: 'customer',
+      label: '查询客户',
+      icon: 'spark',
+      selected: selectedId === 'customer',
+    },
+    {
+      id: 'order',
+      label: '查看订单',
+      icon: 'list',
+      selected: selectedId === 'order',
+    },
     { id: 'busy', label: '同步中', loading: true },
   ] as const;
 

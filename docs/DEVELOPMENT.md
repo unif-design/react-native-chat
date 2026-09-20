@@ -11,8 +11,8 @@
 ## 工程接线
 
 - create-react-native-library 0.63.1，library/js 模板；库源码 TS/TSX，Bob 生成 ESM 和声明。Community CLI 原生 example 与 Docusaurus Web 文档站分别验证原生和浏览器消费。
-- 库名 @unif/react-native-chat，示例工作区 @unif/react-native-chat-example；React 19.2.3、RN 0.86.3、Design 0.32.0、Yarn 4.11.0。
-- Design 从包根消费，Thumbnail 尺寸对象/fallback、Textarea/TextFieldHandle、CircularProgress 按 0.32.0 实际接口使用。详细接线见[组合验证](../../unif-platform-architecture/libraries/react-native-chat/composition.md#6-design-依赖与接入验证)。
+- 库名 @unif/react-native-chat，示例工作区 @unif/react-native-chat-example；React 19.2.3、RN 0.86.3、Design 0.33.0、Yarn 4.11.0。
+- Design 从包根消费，Thumbnail 尺寸对象/fallback、Textarea（含 plain 表面）/TextFieldHandle、CircularProgress 按 0.33.0 实际接口使用。详细接线见[组合验证](../../unif-platform-architecture/libraries/react-native-chat/composition.md#6-design-依赖与接入验证)。
 - Markdown 使用 react-native-marked 8.2.0，归所属消息单元，不建立解析器、模型 SDK 或组件注册中心。
 - Yarn 默认提升相同版本依赖，根库和 example 共用 React/原生模块实例；测试复用 Design 公开 preset。
 - src/index.tsx 只导出真实实现；type-tests 验证依赖公开类型，example 验证公开消费。Git 忽略安装、构建和本地资料；npm files 只发布源码、构建产物及标准包说明。

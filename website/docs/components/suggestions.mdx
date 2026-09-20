@@ -26,6 +26,8 @@ import { SuggestionsDemo } from '@site/src/demos/SuggestionsDemo';
 
 `onSelect` 返回原项，选中状态由每项的 `selected` 控制。`disabled` 或 `loading` 时不交付选择事件。
 
+`icon` 保留调用方提供的图标名称，以 14 布局单位和当前主题主色展示；普通与选中状态使用相同图标样式，图标不随应用字号整体放大。没有 `icon` 时只展示文字。
+
 默认从起始方向排列，`align="center"` 可居中。组件不自行选中、填入输入框或发送消息；需要哪一种结果，由场景在回调中决定。
 
 ## API

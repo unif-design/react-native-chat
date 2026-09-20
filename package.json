@@ -68,7 +68,7 @@
     "@sbaiahmed1/react-native-blur": "6.0.1",
     "@testing-library/react-native": "13.3.3",
     "@types/react": "^19.2.0",
-    "@unif/react-native-design": "0.32.0",
+    "@unif/react-native-design": "0.33.0",
     "commitlint": "^21.2.1",
     "del-cli": "^7.0.0",
     "eslint": "^9.39.5",
@@ -96,7 +96,7 @@
     "typescript": "^6.0.3"
   },
   "peerDependencies": {
-    "@unif/react-native-design": "^0.32.0",
+    "@unif/react-native-design": "^0.33.0",
     "react": ">=19.2.3 <20.0.0",
     "react-native": ">=0.86.0",
     "react-native-svg": ">=15"

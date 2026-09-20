@@ -1,8 +1,13 @@
 import { createRef } from 'react';
-import { Text } from 'react-native';
+import { StyleSheet, Text, TextInput } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { describe, expect, jest, test } from '@jest/globals';
-import { Textarea, ThemeProvider } from '@unif/react-native-design';
+import {
+  Textarea,
+  ThemeProvider,
+  space,
+  type as typography,
+} from '@unif/react-native-design';
 import { Composer } from '..';
 import type { ComposerHandle, ComposerProps, ComposerVoiceStatus } from '..';
 
@@ -34,7 +39,7 @@ describe('Composer', () => {
       primaryAction: { kind: 'send', onPress: onSend },
     };
     const view = renderComposer(props);
-    expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: '发送' })).toBeNull();
     view.rerender(
       <Composer
         {...props}
@@ -80,12 +85,41 @@ describe('Composer', () => {
       primaryAction: { kind: 'busy' },
       onFocusChange,
       actions: [
-        { id: 'pick', label: '选择文件', onPress },
+        { id: 'pick', label: '选择文件', icon: 'file', onPress },
         { id: 'busy', label: '准备文件', loading: true, onPress },
+        { id: 'unnamed', label: ' ', icon: 'file', onPress },
       ],
     });
     fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
+    expect(
+      StyleSheet.flatten(screen.getByTestId('composer-menu').props.style)
+    ).toMatchObject({
+      position: 'absolute',
+      bottom: '100%',
+      left: space[6],
+    });
+    expect(
+      StyleSheet.flatten(
+        screen.getByTestId('composer-menu-content').props.style
+      ).overflow
+    ).toBe('hidden');
+    expect(
+      StyleSheet.flatten(
+        screen.getByTestId('composer-menu-icon-pick', {
+          includeHiddenElements: true,
+        }).props.style
+      )
+    ).toMatchObject({ width: 40, height: 40, borderRadius: 20 });
+    expect(
+      screen.getByRole('button', { name: '准备文件' }).props.accessibilityState
+    ).toMatchObject({ disabled: true, busy: true });
     fireEvent.press(screen.getByRole('button', { name: '准备文件' }));
+    fireEvent.press(
+      screen.getByTestId('composer-menu-icon-unnamed', {
+        includeHiddenElements: true,
+      })
+    );
+    expect(screen.queryByRole('button', { name: ' ' })).toBeNull();
     expect(onPress).not.toHaveBeenCalled();
     fireEvent.press(screen.getByRole('button', { name: '选择文件' }));
     expect(onPress).toHaveBeenCalledTimes(1);
@@ -98,6 +132,32 @@ describe('Composer', () => {
     expect(screen.queryByRole('button', { name: '选择文件' })).toBeNull();
     fireEvent(screen.getByLabelText('消息输入框'), 'blur', { nativeEvent: {} });
     expect(onFocusChange).toHaveBeenLastCalledWith(false);
+  });
+
+  test('发送和开始语音先收起菜单，事件不清空文字', () => {
+    const onSend = jest.fn();
+    const onStart = jest.fn();
+    renderComposer({
+      value: '保留原文',
+      onChangeText: jest.fn(),
+      primaryAction: { kind: 'send', onPress: onSend },
+      voice: {
+        status: 'idle',
+        onStart,
+        onStop: jest.fn(),
+        onCancel: jest.fn(),
+      },
+      actions: [{ id: 'photo', label: '选择照片', onPress: jest.fn() }],
+    });
+    fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
+    fireEvent.press(screen.getByRole('button', { name: '发送' }));
+    expect(screen.queryByTestId('composer-menu')).toBeNull();
+    expect(onSend).toHaveBeenCalledWith('保留原文');
+    fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
+    fireEvent.press(screen.getByRole('button', { name: '开始语音输入' }));
+    expect(screen.queryByTestId('composer-menu')).toBeNull();
+    expect(onStart).toHaveBeenCalledTimes(1);
+    expect(screen.getByDisplayValue('保留原文')).toBeOnTheScreen();
   });
 
   test.each<ComposerVoiceStatus>([
@@ -164,6 +224,95 @@ describe('Composer', () => {
   });
 });
 
+test('空白时同一行，聚焦或有文字后展开且不重新挂载 Textarea', () => {
+  const props: ComposerProps = {
+    value: '',
+    onChangeText: jest.fn(),
+    primaryAction: { kind: 'send', onPress: jest.fn() },
+    actions: [
+      { id: 'photo', label: '选择照片', icon: 'image', onPress: jest.fn() },
+    ],
+    voice: {
+      status: 'idle',
+      onStart: jest.fn(),
+      onStop: jest.fn(),
+      onCancel: jest.fn(),
+    },
+  };
+  const view = renderComposer(props);
+  const textarea = screen.UNSAFE_getByType(Textarea);
+  const nativeInput = screen.UNSAFE_getByType(TextInput).instance;
+  expect(textarea.props.surface).toBe('plain');
+  expect(
+    StyleSheet.flatten(screen.getByTestId('composer-regular').props.style)
+      .flexDirection
+  ).toBe('row');
+  fireEvent(screen.getByLabelText('消息输入框'), 'focus', { nativeEvent: {} });
+  expect(
+    StyleSheet.flatten(screen.getByTestId('composer-regular').props.style)
+      .flexDirection
+  ).toBe('column');
+  expect(screen.UNSAFE_getByType(TextInput).instance).toBe(nativeInput);
+  view.rerender(<Composer {...props} value="已经输入" />);
+  fireEvent(screen.getByLabelText('消息输入框'), 'blur', { nativeEvent: {} });
+  expect(
+    StyleSheet.flatten(screen.getByTestId('composer-regular').props.style)
+      .flexDirection
+  ).toBe('column');
+  expect(screen.UNSAFE_getByType(TextInput).instance).toBe(nativeInput);
+  expect(screen.getByRole('button', { name: '发送' })).toBeOnTheScreen();
+  expect(screen.queryByText('发送')).toBeNull();
+  view.rerender(<Composer {...props} />);
+  expect(
+    StyleSheet.flatten(screen.getByTestId('composer-regular').props.style)
+      .flexDirection
+  ).toBe('row');
+  expect(screen.UNSAFE_getByType(TextInput).instance).toBe(nativeInput);
+});
+
+test('统一卡片可交给外层，两个表面均使用无独立表面的 Textarea', () => {
+  const props: ComposerProps = {
+    value: '',
+    onChangeText: jest.fn(),
+    primaryAction: { kind: 'busy' },
+    testID: 'composer',
+  };
+  const view = renderComposer(props);
+  expect(
+    StyleSheet.flatten(screen.getByTestId('composer').props.style)
+  ).toMatchObject({ borderWidth: 0.5 });
+  expect(screen.UNSAFE_getByType(Textarea).props.surface).toBe('plain');
+  view.rerender(<Composer {...props} surface="plain" />);
+  const root = StyleSheet.flatten(screen.getByTestId('composer').props.style);
+  expect(root.borderWidth).toBeUndefined();
+  expect(root.backgroundColor).toBeUndefined();
+  expect(screen.UNSAFE_getByType(Textarea).props.surface).toBe('plain');
+});
+
+test('空输入失焦后保留原加号与 Textarea 实例，原按钮仍可打开菜单并交付操作', () => {
+  const onSelect = jest.fn();
+  renderComposer({
+    value: '',
+    onChangeText: jest.fn(),
+    primaryAction: { kind: 'send', onPress: jest.fn() },
+    actions: [{ id: 'photo', label: '选择照片', onPress: onSelect }],
+  });
+  const input = screen.UNSAFE_getByType(TextInput).instance;
+  const compactMore = screen.getByRole('button', { name: '更多操作' });
+  fireEvent(screen.getByLabelText('消息输入框'), 'focus', { nativeEvent: {} });
+  const focusedMore = screen.getByRole('button', { name: '更多操作' });
+  expect(focusedMore).toBe(compactMore);
+  expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
+  fireEvent(screen.getByLabelText('消息输入框'), 'blur', { nativeEvent: {} });
+  expect(screen.getByRole('button', { name: '更多操作' })).toBe(focusedMore);
+  expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
+  fireEvent.press(focusedMore);
+  expect(screen.getByRole('button', { name: '选择照片' })).toBeOnTheScreen();
+  fireEvent.press(screen.getByRole('button', { name: '选择照片' }));
+  expect(onSelect).toHaveBeenCalledTimes(1);
+  expect(screen.queryByTestId('composer-menu')).toBeNull();
+});
+
 test('真实 Textarea 接收字体相关高度、ref 转交且进入语音时失焦', () => {
   const inputRef = createRef<ComposerHandle>();
   const voice = {
@@ -185,7 +334,9 @@ test('真实 Textarea 接收字体相关高度、ref 转交且进入语音时失
   );
   const input = screen.UNSAFE_getByType(Textarea);
   expect(input.props.minHeight).toBe(44);
-  expect(input.props.maxHeight).toBe(180);
+  expect(input.props.maxHeight).toBe(
+    Math.round(typography.body * 1.4) * 4 * 1.5 + 2 * space[4]
+  );
   const focus = jest.spyOn(input.props.ref.current, 'focus');
   const blur = jest.spyOn(input.props.ref.current, 'blur');
   inputRef.current?.focus();
@@ -211,7 +362,9 @@ test('真实 Textarea 接收字体相关高度、ref 转交且进入语音时失
     </ThemeProvider>
   );
   expect(screen.UNSAFE_getByType(Textarea).props.minHeight).toBe(44);
-  expect(screen.UNSAFE_getByType(Textarea).props.maxHeight).toBe(120);
+  expect(screen.UNSAFE_getByType(Textarea).props.maxHeight).toBe(
+    Math.round(typography.body * 1.4) * 4 + 2 * space[4]
+  );
   fireEvent.press(screen.getByRole('button', { name: '开始语音输入' }));
   expect(voice.onStart).not.toHaveBeenCalled();
 });

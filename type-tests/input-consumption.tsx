@@ -36,6 +36,9 @@ const composerProps: ComposerProps = {
   ],
   header: <Text>附件位置</Text>,
   footer: <Text>说明位置</Text>,
+  surface: 'plain',
+  minInputHeight: 44,
+  maxInputHeight: 160,
   onFocusChange: (focused) => focused,
   onHeightChange: (height) => height,
 };
@@ -77,6 +80,16 @@ export const invalidComposerPrimaryAction = (
     onChangeText={() => undefined}
     // @ts-expect-error busy 主动作没有 onPress。
     primaryAction={{ kind: 'busy', onPress: () => undefined }}
+  />
+);
+
+export const invalidComposerSurface = (
+  <Composer
+    value=""
+    onChangeText={() => undefined}
+    primaryAction={{ kind: 'send', onPress: () => undefined }}
+    // @ts-expect-error surface 只接受 card 和 plain。
+    surface="unknown"
   />
 );
 

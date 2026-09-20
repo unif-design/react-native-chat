@@ -1,6 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { expect, jest, test } from '@jest/globals';
-import { ThemeProvider } from '@unif/react-native-design';
+import {
+  Chip,
+  ThemeProvider,
+  darkColors,
+  lightColors,
+} from '@unif/react-native-design';
 import { Suggestions } from '..';
 import type { SuggestionItem } from '..';
 
@@ -63,3 +68,40 @@ test('没有选择回调时静态显示', () => {
   expect(screen.getByText('仅展示')).toBeOnTheScreen();
   expect(screen.queryByRole('button')).toBeNull();
 });
+
+test.each([
+  ['light', lightColors.primary],
+  ['dark', darkColors.primary],
+] as const)(
+  '%s 主题的普通与选中图标均为14和主色，保留传入图标名',
+  (scheme, primary) => {
+    render(
+      <ThemeProvider forceScheme={scheme} fontScale={1.35}>
+        <Suggestions
+          items={[
+            { id: 'plain', label: '普通建议', icon: 'spark' },
+            {
+              id: 'selected',
+              label: '已选建议',
+              icon: 'check',
+              selected: true,
+            },
+            { id: 'text', label: '文字建议' },
+          ]}
+        />
+      </ThemeProvider>
+    );
+    const chips = screen.UNSAFE_getAllByType(Chip);
+    expect(chips[0]!.props.leading.props).toMatchObject({
+      name: 'spark',
+      size: 14,
+      color: primary,
+    });
+    expect(chips[1]!.props.leading.props).toMatchObject({
+      name: 'check',
+      size: 14,
+      color: primary,
+    });
+    expect(chips[2]!.props.leading).toBeUndefined();
+  }
+);

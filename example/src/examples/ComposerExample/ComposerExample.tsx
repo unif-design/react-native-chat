@@ -13,7 +13,7 @@ import type { ComposerExampleVoiceStatus, ComposerPrimaryMode } from './types';
 
 export function ComposerExample() {
   const composerRef = useRef<ComposerHandle>(null);
-  const [value, setValue] = useState('商品甲两箱');
+  const [value, setValue] = useState('');
   const [allowEmpty, setAllowEmpty] = useState(false);
   const [primaryMode, setPrimaryMode] = useState<ComposerPrimaryMode>('send');
   const [voiceStatus, setVoiceStatus] =
@@ -64,6 +64,9 @@ export function ComposerExample() {
       contentContainerStyle={styles.scrollContent}
     >
       <Text style={styles.title}>Composer</Text>
+      <Text style={styles.note}>
+        空值未聚焦时为单行；聚焦或输入文字后展开。语音控件只演示状态与事件。
+      </Text>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>受控文字与高度</Text>
@@ -147,12 +150,6 @@ export function ComposerExample() {
             onPress: () => setLastAction('收到选择文件入口事件'),
           },
         ]}
-        header={<Text style={styles.note}>输入前内容位置</Text>}
-        footer={
-          <Text style={styles.note}>
-            输入后内容位置；示例只记录事件，不执行上传或业务提交。
-          </Text>
-        }
         onFocusChange={setFocused}
         onHeightChange={setHeight}
       />
