@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.1.1](https://github.com/unif-design/react-native-chat/compare/v2.1.0...v2.1.1) (2026-09-20)
+
+### Bug Fixes
+
+* **composer:** 展开时保持原生输入层级稳定 ([#6](https://github.com/unif-design/react-native-chat/issues/6)) ([ddef28e](https://github.com/unif-design/react-native-chat/commit/ddef28e81bf5b85163bfe0d828b2460a65a12583))
+
 # [2.1.0](https://github.com/unif-design/react-native-chat/compare/v2.0.0...v2.1.0) (2026-09-20)
 
 ### Features
