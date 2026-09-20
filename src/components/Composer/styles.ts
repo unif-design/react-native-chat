@@ -28,12 +28,12 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
     hidden: { display: 'none' },
     input: { flex: 1, minWidth: 0 },
     inputExpanded: { flex: 0, width: '100%' },
-    more: { width: fixed.hitTarget, height: fixed.hitTarget },
+    // 保持原生堆叠特征稳定，避免聚焦展开时重排输入所在的原生视图树。
+    more: { width: fixed.hitTarget, height: fixed.hitTarget, zIndex: 1 },
     moreExpanded: {
       position: 'absolute',
       left: space[2],
       bottom: space[1],
-      zIndex: 1,
     },
     toolbar: { flexDirection: 'row', alignItems: 'center' },
     toolbarExpanded: {
