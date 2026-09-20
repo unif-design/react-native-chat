@@ -10,6 +10,7 @@ import {
 } from '@unif/react-native-design';
 import { Composer } from '..';
 import type { ComposerHandle, ComposerProps, ComposerVoiceStatus } from '..';
+import { ComposerIconAction } from '../ComposerIconAction';
 
 const renderComposer = (props: ComposerProps) =>
   render(<Composer {...props} />, { wrapper: ThemeProvider });
@@ -289,7 +290,7 @@ test('统一卡片可交给外层，两个表面均使用无独立表面的 Text
   expect(screen.UNSAFE_getByType(Textarea).props.surface).toBe('plain');
 });
 
-test('空输入失焦后保留原加号与 Textarea 实例，原按钮仍可打开菜单并交付操作', () => {
+test('空输入失焦后保留原加号、Textarea 实例与原生堆叠层级，原按钮仍可交付操作', () => {
   const onSelect = jest.fn();
   renderComposer({
     value: '',
@@ -299,13 +300,25 @@ test('空输入失焦后保留原加号与 Textarea 实例，原按钮仍可打�
   });
   const input = screen.UNSAFE_getByType(TextInput).instance;
   const compactMore = screen.getByRole('button', { name: '更多操作' });
+  const more = screen
+    .UNSAFE_getAllByType(ComposerIconAction)
+    .find((node) => node.props.label === '更多操作')!;
+  const moreContainer = more.parent!;
+  const compactZIndex = StyleSheet.flatten(moreContainer.props.style).zIndex;
   fireEvent(screen.getByLabelText('消息输入框'), 'focus', { nativeEvent: {} });
   const focusedMore = screen.getByRole('button', { name: '更多操作' });
   expect(focusedMore).toBe(compactMore);
   expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
+  expect(more.parent).toBe(moreContainer);
+  expect(StyleSheet.flatten(moreContainer.props.style).zIndex).toBe(
+    compactZIndex
+  );
   fireEvent(screen.getByLabelText('消息输入框'), 'blur', { nativeEvent: {} });
   expect(screen.getByRole('button', { name: '更多操作' })).toBe(focusedMore);
   expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
+  expect(StyleSheet.flatten(moreContainer.props.style).zIndex).toBe(
+    compactZIndex
+  );
   fireEvent.press(focusedMore);
   expect(screen.getByRole('button', { name: '选择照片' })).toBeOnTheScreen();
   fireEvent.press(screen.getByRole('button', { name: '选择照片' }));
