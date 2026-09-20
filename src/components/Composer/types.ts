@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import type { TextFieldHandle } from '@unif/react-native-design';
+import type { IconName, TextFieldHandle } from '@unif/react-native-design';
 import type { ChatAction } from '../../actions';
 
 export interface ComposerSendAction {
@@ -8,6 +8,7 @@ export interface ComposerSendAction {
   onPress(value: string): void;
   allowEmpty?: boolean;
   disabled?: boolean;
+  /** 图标按钮的可访问名称，默认“发送”。 */
   label?: string;
 }
 
@@ -49,8 +50,11 @@ export interface ComposerProps {
   voice?: ComposerVoiceControl;
   header?: ReactNode;
   footer?: ReactNode;
+  /** card 提供统一表面；plain 由外层提供表面，内部 Textarea 均不单独绘制表面。 */
   surface?: 'card' | 'plain';
+  /** Textarea 整体最小高度（含内间距），默认 44，不低于最小触达高度。 */
   minInputHeight?: number;
+  /** Textarea 整体最大高度；默认四行文字预算加 plain 内间距，随应用字号变化。 */
   maxInputHeight?: number;
   onFocusChange?(focused: boolean): void;
   onHeightChange?(height: number): void;
@@ -59,3 +63,19 @@ export interface ComposerProps {
 }
 
 export type ComposerHandle = TextFieldHandle;
+
+export interface ComposerIconActionProps {
+  icon: IconName;
+  label: string;
+  onPress?(): void;
+  disabled?: boolean;
+  busy?: boolean;
+  expanded?: boolean;
+  visual?: 'icon' | 'primary' | 'cancel';
+}
+
+export interface ComposerMenuItemProps {
+  action: ChatAction;
+  disabled: boolean;
+  onPress(): void;
+}

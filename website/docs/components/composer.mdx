@@ -36,11 +36,17 @@ function InputDemo() {
 
 ## 行为与接入
 
-`value` 与 `onChangeText` 共同维护受控草稿。发送交付输入原文，是否清空由调用方决定；仅有空白时默认不能发送，附件单独发送可设置 `allowEmpty`。
+`value` 与 `onChangeText` 共同维护受控草稿。空值未聚焦时，文字与操作按钮在同一行；聚焦或有文字后，操作区移到文字下方。两种布局始终使用同一个 Textarea，切换不会重建输入或清空文字。
 
-`primaryAction.kind` 使用 `send`、`stop` 或 `busy`。`busy` 只展示等待状态。扩展操作通过 `actions` 提供，语音的真实采集与权限处理由 `voice` 回调交给应用。
+发送使用图标按钮并交付原文，是否清空由调用方决定。仅有空白时默认隐藏发送，附件单独发送可设置 `allowEmpty`。`primaryAction.kind` 使用 `send`、`stop` 或 `busy`；`label` 是对应图标的可访问名称，`busy` 只展示等待状态。
 
-输入表面默认 `card`，可改为 `plain`；文字区域在高度范围内增长，页面负责键盘避让。`onHeightChange` 交付整个 Composer 的实测高度，ref 仅提供 `focus()` 与 `blur()`。
+扩展操作通过 `actions` 提供，点击加号打开输入区上方的竖向菜单。选择操作、再次点击加号、触碰输入或聚焦时收起菜单。语音的采集与权限处理由 `voice` 回调交给应用；聆听区域只呈现外部状态与文字，不生成音量、追加草稿或自动发送。
+
+输入表面默认 `card`，由 Composer 绘制统一圆角、描边和阴影；`plain` 交给外层提供表面。内部使用 Design Textarea 的 `plain` 表面，保留文字内间距，不叠加第二层底色或焦点描边。
+
+`minInputHeight` 与 `maxInputHeight` 是 Textarea 整体高度，包含其文字内间距。最小高度默认 44；默认上限为四行文字预算加 plain 上下内间距：`round(type.body × 1.4) × 4 × fontScale + 2 × space[4]`，且不小于最小高度。应用字号只缩放文字预算一次；显式高度按提供的布局单位使用，超过上限在输入内部滚动。
+
+页面负责键盘避让与安全区。`header` 和 `footer` 是输入前后的内容位置；独立于卡片的常驻说明由外层组合。`onHeightChange` 交付整个 Composer 的实测高度，ref 仅提供 `focus()` 与 `blur()`。
 
 ## API
 

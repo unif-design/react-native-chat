@@ -13,7 +13,7 @@
   "dependencies": {
     "@sbaiahmed1/react-native-blur": "6.0.1",
     "@unif/react-native-chat": "workspace:*",
-    "@unif/react-native-design": "0.32.0",
+    "@unif/react-native-design": "0.33.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.3",

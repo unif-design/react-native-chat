@@ -1,5 +1,6 @@
 import { View } from 'react-native';
-import { Chip, Icon } from '@unif/react-native-design';
+import { Chip, Icon, useColors } from '@unif/react-native-design';
+import { SUGGESTION_ICON_SIZE } from './constants';
 import { styles } from './styles';
 import type { SuggestionsProps } from './types';
 
@@ -10,6 +11,7 @@ export function Suggestions({
   style,
   testID,
 }: SuggestionsProps): React.JSX.Element | null {
+  const colors = useColors();
   if (items.length === 0) return null;
 
   return (
@@ -25,7 +27,15 @@ export function Suggestions({
           selected={item.selected}
           busy={item.loading}
           disabled={item.disabled}
-          leading={item.icon ? <Icon name={item.icon} /> : undefined}
+          leading={
+            item.icon ? (
+              <Icon
+                name={item.icon}
+                size={SUGGESTION_ICON_SIZE}
+                color={colors.primary}
+              />
+            ) : undefined
+          }
           onPress={onSelect ? () => onSelect(item) : undefined}
         />
       ))}

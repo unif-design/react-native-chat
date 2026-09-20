@@ -28,5 +28,5 @@ test('抽屉独立输入接收发送和移除事件，关闭后由消费者保�
   ).toBeGreaterThan(0);
   fireEvent.press(screen.getByRole('button', { name: '移除样例附件' }));
   expect(screen.queryByText('样例附件')).toBeNull();
-  expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
+  expect(screen.queryByRole('button', { name: '发送' })).toBeNull();
 });

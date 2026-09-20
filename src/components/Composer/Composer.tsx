@@ -5,21 +5,23 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View, useWindowDimensions } from 'react-native';
 import {
-  Button,
   fixed,
-  IconButton,
   Textarea,
   useTheme,
   useThemedStyles,
 } from '@unif/react-native-design';
 import type { TextFieldHandle } from '@unif/react-native-design';
 import {
-  DEFAULT_MAX_INPUT_HEIGHT,
+  COMPOSER_INPUT_LINE_HEIGHT,
+  COMPOSER_INPUT_MAX_LINES,
+  COMPOSER_PLAIN_VERTICAL_INSET,
   PRIMARY_LABELS,
   VOICE_LABELS,
 } from './constants';
+import { ComposerIconAction } from './ComposerIconAction';
+import { ComposerMenuItem } from './ComposerMenuItem';
 import { createStyles } from './styles';
 import type { ComposerHandle, ComposerProps } from './types';
 
@@ -49,20 +51,35 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
   ) {
     const styles = useThemedStyles(createStyles);
     const { fontScale } = useTheme();
+    const { height: windowHeight } = useWindowDimensions();
     const inputRef = useRef<TextFieldHandle>(null);
     const lastHeight = useRef<number | undefined>(undefined);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [focused, setFocused] = useState(false);
     const voiceActive = voice !== undefined && voice.status !== 'idle';
+    const expanded = focused || value.length > 0;
     const minHeight = Number.isFinite(minInputHeight)
       ? Math.max(fixed.hitTarget, minInputHeight!)
       : fixed.hitTarget;
     const defaultMaxHeight = Math.max(
       minHeight,
-      DEFAULT_MAX_INPUT_HEIGHT * fontScale
+      COMPOSER_INPUT_LINE_HEIGHT * COMPOSER_INPUT_MAX_LINES * fontScale +
+        COMPOSER_PLAIN_VERTICAL_INSET
     );
     const maxHeight = Number.isFinite(maxInputHeight)
       ? Math.max(minHeight, maxInputHeight!)
       : defaultMaxHeight;
+    const showPrimary =
+      primaryAction.kind !== 'send' ||
+      primaryAction.allowEmpty ||
+      value.trim().length > 0;
+    const primaryDisabled =
+      disabled || primaryAction.kind === 'busy' || primaryAction.disabled;
+    const showToolbar =
+      (expanded && actions.length > 0) || Boolean(voice) || showPrimary;
+    const primaryLabel = primaryAction.label?.trim()
+      ? primaryAction.label
+      : PRIMARY_LABELS[primaryAction.kind];
 
     useImperativeHandle(
       ref,
@@ -76,17 +93,23 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
     );
 
     useEffect(() => {
-      if (voiceActive) inputRef.current?.blur();
+      if (voiceActive) {
+        inputRef.current?.blur();
+        setFocused(false);
+      }
       if (voiceActive || disabled) setMenuOpen(false);
     }, [voiceActive, disabled]);
 
-    const primaryDisabled =
-      disabled ||
-      primaryAction.kind === 'busy' ||
-      primaryAction.disabled ||
-      (primaryAction.kind === 'send' &&
-        !primaryAction.allowEmpty &&
-        value.trim().length === 0);
+    const moreAction =
+      actions.length > 0 ? (
+        <ComposerIconAction
+          icon="plus"
+          label="更多操作"
+          expanded={menuOpen}
+          disabled={disabled}
+          onPress={() => setMenuOpen((open) => !open)}
+        />
+      ) : null;
 
     return (
       <View
@@ -99,109 +122,156 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
           }
         }}
       >
-        {header}
+        {header != null ? <View style={styles.accessory}>{header}</View> : null}
+        {menuOpen && !disabled && !voiceActive && actions.length > 0 ? (
+          <>
+            <Pressable
+              style={[styles.backdrop, { height: windowHeight }]}
+              accessibilityRole="button"
+              accessibilityLabel="收起更多操作"
+              onPress={() => setMenuOpen(false)}
+            />
+            <View style={styles.menu} testID="composer-menu">
+              <View style={styles.menuClip} testID="composer-menu-content">
+                {actions.map((action) => (
+                  <ComposerMenuItem
+                    key={action.id}
+                    action={action}
+                    disabled={disabled}
+                    onPress={() => {
+                      if (disabled || action.disabled || action.loading) return;
+                      setMenuOpen(false);
+                      action.onPress();
+                    }}
+                  />
+                ))}
+              </View>
+            </View>
+          </>
+        ) : null}
         <View
-          style={[styles.regular, voiceActive && styles.hidden]}
+          testID="composer-regular"
+          style={[
+            styles.regular,
+            expanded && styles.expanded,
+            voiceActive && styles.hidden,
+          ]}
           importantForAccessibility={
             voiceActive ? 'no-hide-descendants' : 'auto'
           }
         >
-          <Textarea
-            ref={inputRef}
-            value={value}
-            onChangeText={onChangeText}
-            editable={editable}
-            disabled={disabled || voiceActive}
-            placeholder={placeholder}
-            accessibilityLabel={inputAccessibilityLabel}
-            minHeight={minHeight}
-            maxHeight={maxHeight}
-            submitBehavior="newline"
-            onFocus={() => {
-              setMenuOpen(false);
-              onFocusChange?.(true);
-            }}
-            onBlur={() => onFocusChange?.(false)}
-          />
-          <View style={styles.toolbar}>
-            {actions.length > 0 ? (
-              <IconButton
-                icon="more-h"
-                size="lg"
-                accessibilityLabel="更多操作"
-                accessibilityState={{ expanded: menuOpen }}
-                disabled={disabled}
-                onPress={() => setMenuOpen((open) => !open)}
-              />
-            ) : null}
-            {voice ? (
-              <IconButton
-                icon="mic"
-                size="lg"
-                accessibilityLabel="开始语音输入"
-                disabled={disabled || voice.disabled}
-                onPress={voice.onStart}
-              />
-            ) : null}
-            <Button
-              label={primaryAction.label ?? PRIMARY_LABELS[primaryAction.kind]}
-              size="lg"
-              style={styles.primary}
-              disabled={primaryDisabled}
-              loading={primaryAction.kind === 'busy'}
-              onPress={() => {
-                if (primaryDisabled) return;
-                if (primaryAction.kind === 'send') primaryAction.onPress(value);
-                else if (primaryAction.kind === 'stop') primaryAction.onPress();
+          {moreAction ? (
+            <View
+              key="more"
+              style={[styles.more, expanded && styles.moreExpanded]}
+            >
+              {moreAction}
+            </View>
+          ) : null}
+          <View
+            key="input"
+            style={[styles.input, expanded && styles.inputExpanded]}
+          >
+            <Textarea
+              ref={inputRef}
+              surface="plain"
+              value={value}
+              onChangeText={onChangeText}
+              editable={editable}
+              disabled={disabled || voiceActive}
+              placeholder={placeholder}
+              accessibilityLabel={inputAccessibilityLabel}
+              minHeight={minHeight}
+              maxHeight={maxHeight}
+              submitBehavior="newline"
+              onPressIn={() => setMenuOpen(false)}
+              onFocus={() => {
+                setMenuOpen(false);
+                setFocused(true);
+                onFocusChange?.(true);
+              }}
+              onBlur={() => {
+                setFocused(false);
+                onFocusChange?.(false);
               }}
             />
           </View>
-          {menuOpen && actions.length > 0 ? (
-            <View style={styles.menu}>
-              {actions.map((action) => (
-                <Button
-                  key={action.id}
-                  label={action.label}
-                  leftIcon={action.icon}
-                  disabled={disabled || action.disabled}
-                  loading={action.loading}
-                  variant="secondary"
-                  accessibilityHint={action.accessibilityHint}
-                  onPress={() => {
-                    if (disabled || action.disabled || action.loading) return;
-                    setMenuOpen(false);
-                    action.onPress();
-                  }}
-                />
-              ))}
+          {showToolbar ? (
+            <View
+              key="toolbar"
+              style={[
+                styles.toolbar,
+                expanded && styles.toolbarExpanded,
+                expanded && moreAction != null && styles.toolbarWithMore,
+              ]}
+            >
+              <View style={styles.trailingActions}>
+                {voice ? (
+                  <ComposerIconAction
+                    icon="mic"
+                    label="开始语音输入"
+                    disabled={disabled || voice.disabled}
+                    onPress={() => {
+                      setMenuOpen(false);
+                      voice.onStart();
+                    }}
+                  />
+                ) : null}
+                {showPrimary ? (
+                  <ComposerIconAction
+                    icon={primaryAction.kind === 'send' ? 'send' : 'stop'}
+                    label={primaryLabel}
+                    visual="primary"
+                    disabled={primaryDisabled}
+                    busy={primaryAction.kind === 'busy'}
+                    onPress={() => {
+                      if (primaryDisabled) return;
+                      setMenuOpen(false);
+                      if (primaryAction.kind === 'send')
+                        primaryAction.onPress(value);
+                      else if (primaryAction.kind === 'stop')
+                        primaryAction.onPress();
+                    }}
+                  />
+                ) : null}
+              </View>
             </View>
           ) : null}
         </View>
         {voice && voice.status !== 'idle' ? (
           <View style={styles.voice}>
-            <Text style={styles.transcript} accessibilityLiveRegion="polite">
+            <ComposerIconAction
+              icon="close"
+              visual="cancel"
+              label="取消语音输入"
+              disabled={disabled || voice.disabled}
+              onPress={voice.onCancel}
+            />
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="head"
+              style={[
+                styles.transcript,
+                !voice.transcript && styles.transcriptPlaceholder,
+              ]}
+              accessibilityLiveRegion="polite"
+            >
               {voice.status === 'starting'
                 ? VOICE_LABELS.starting
                 : voice.transcript || VOICE_LABELS[voice.status]}
             </Text>
-            <View style={styles.toolbar}>
-              {voice.status === 'listening' ? (
-                <Button
-                  label="停止语音输入"
-                  disabled={disabled || voice.disabled}
-                  onPress={voice.onStop}
-                />
-              ) : null}
-              <Button
-                label="取消语音输入"
-                variant="secondary"
+            {voice.status === 'listening' ? (
+              <ComposerIconAction
+                icon="stop"
+                visual="primary"
+                label="停止语音输入"
                 disabled={disabled || voice.disabled}
-                onPress={voice.onCancel}
+                onPress={voice.onStop}
               />
-            </View>
+            ) : null}
           </View>
         ) : null}
-        {footer}
+        {footer != null ? <View style={styles.accessory}>{footer}</View> : null}
       </View>
     );
   }
