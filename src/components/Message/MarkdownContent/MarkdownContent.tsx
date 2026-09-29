@@ -1,9 +1,15 @@
-import { Children, Fragment, useMemo } from 'react';
+import {
+  Children,
+  cloneElement,
+  Fragment,
+  isValidElement,
+  useMemo,
+} from 'react';
 import { Pressable, Text } from 'react-native';
 import { Renderer, useMarkdown } from 'react-native-marked';
 import { useTheme, useThemedStyles } from '@unif/react-native-design';
 import { createStyles } from './styles';
-import type { MarkdownContentProps } from './types';
+import type { MarkdownContentProps, MarkdownSvgLabelProps } from './types';
 import { MarkdownImage } from './MarkdownImage/MarkdownImage';
 
 export function MarkdownContent({ text, onLinkPress }: MarkdownContentProps) {
@@ -16,9 +22,20 @@ export function MarkdownContent({ text, onLinkPress }: MarkdownContentProps) {
     instance.table = (...args) => (
       <Fragment key={instance.getKey()}>{renderTable(...args)}</Fragment>
     );
-    instance.image = (uri, alt, _imageStyle, title) => (
-      <MarkdownImage key={instance.getKey()} uri={uri} label={alt || title} />
-    );
+    const renderImage = instance.image.bind(instance);
+    instance.image = (uri, alt, imageStyle, title) => {
+      // 沿用上游的 SVG 识别与加载，位图适配只避免重复测量。
+      if (uri.endsWith('.svg')) {
+        const image = renderImage(uri, alt, imageStyle, title);
+        // 上游 SVG 节点支持 alt，但 Renderer 未转交 Markdown 的标签。
+        return isValidElement<MarkdownSvgLabelProps>(image)
+          ? cloneElement(image, { alt: alt || title || undefined })
+          : image;
+      }
+      return (
+        <MarkdownImage key={instance.getKey()} uri={uri} label={alt || title} />
+      );
+    };
     instance.link = (children, href, linkStyle, title) => (
       <Text
         key={instance.getKey()}
