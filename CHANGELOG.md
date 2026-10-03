@@ -1,5 +1,11 @@
 # Changelog
 
+# [2.2.0](https://github.com/unif-design/react-native-chat/compare/v2.1.2...v2.2.0) (2026-10-03)
+
+### Features
+
+* add compact progress display and simplify attachments ([6cd87f6](https://github.com/unif-design/react-native-chat/commit/6cd87f6c735e298d612181b2d01f88e6dbe78bea))
+
 ## [2.1.2](https://github.com/unif-design/react-native-chat/compare/v2.1.1...v2.1.2) (2026-10-03)
 
 ### Bug Fixes
