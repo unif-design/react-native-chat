@@ -36,11 +36,11 @@ export const INITIAL_ATTACHMENT_ITEMS: readonly ChatAttachmentItem[] = [
     thumbnail: { uri: LOCAL_IMAGE_DATA_URI },
   },
   {
-    id: 'uploading-border',
-    name: '未知比例（边缘）',
+    id: 'uploading-unknown',
+    name: '未知比例（中央）',
     kind: 'video',
     status: 'uploading',
-    loadingVisual: 'border',
+    loadingVisual: 'center',
   },
   {
     id: 'processing-caption',

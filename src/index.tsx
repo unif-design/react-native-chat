@@ -53,6 +53,8 @@ export type {
   ProcessStep,
   ProcessStepStatus,
 } from './components/Process';
+export { ProcessingProgress } from './components/ProcessingProgress';
+export type { ProcessingProgressProps } from './components/ProcessingProgress';
 export { Feedback } from './components/Feedback';
 export type { FeedbackProps, FeedbackTone } from './components/Feedback';
 export { Sources } from './components/Sources';

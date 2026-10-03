@@ -9,6 +9,7 @@ import { MessageListExample } from '../examples/MessageListExample/MessageListEx
 import { SuggestionsExample } from '../examples/SuggestionsExample/SuggestionsExample';
 import { ConfirmationExample } from '../examples/ConfirmationExample/ConfirmationExample';
 import { ProcessExample } from '../examples/ProcessExample/ProcessExample';
+import { ProcessingProgressExample } from '../examples/ProcessingProgressExample/ProcessingProgressExample';
 import { SourcesExample } from '../examples/SourcesExample/SourcesExample';
 import { CitationExample } from '../examples/CitationExample/CitationExample';
 import { FeedbackExample } from '../examples/FeedbackExample/FeedbackExample';
@@ -37,6 +38,8 @@ function renderExample(name: ExampleName) {
       return <ConfirmationExample />;
     case 'process':
       return <ProcessExample />;
+    case 'processingProgress':
+      return <ProcessingProgressExample />;
     case 'sources':
       return <SourcesExample />;
     case 'citation':

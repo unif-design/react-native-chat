@@ -6479,7 +6479,7 @@ __metadata:
     "@sbaiahmed1/react-native-blur": "npm:6.0.1"
     "@types/react": "npm:^19.2.0"
     "@unif/react-native-chat": "workspace:*"
-    "@unif/react-native-design": "npm:0.33.0"
+    "@unif/react-native-design": "npm:0.34.0"
     react: "npm:19.2.3"
     react-dom: "npm:19.2.3"
     react-native: "npm:0.86.3"
@@ -6515,7 +6515,7 @@ __metadata:
     "@sbaiahmed1/react-native-blur": "npm:6.0.1"
     "@types/react": "npm:^19.2.0"
     "@unif/react-native-chat": "workspace:*"
-    "@unif/react-native-design": "npm:0.33.0"
+    "@unif/react-native-design": "npm:0.34.0"
     babel-loader: "npm:^9.2.1"
     gray-matter: "npm:^4.0.3"
     prism-react-renderer: "npm:^2.3.0"
@@ -6556,7 +6556,7 @@ __metadata:
     "@sbaiahmed1/react-native-blur": "npm:6.0.1"
     "@testing-library/react-native": "npm:13.3.3"
     "@types/react": "npm:^19.2.0"
-    "@unif/react-native-design": "npm:0.33.0"
+    "@unif/react-native-design": "npm:0.34.0"
     commitlint: "npm:^21.2.1"
     del-cli: "npm:^7.0.0"
     eslint: "npm:^9.39.5"
@@ -6584,16 +6584,16 @@ __metadata:
     turbo: "npm:^2.10.8"
     typescript: "npm:^6.0.3"
   peerDependencies:
-    "@unif/react-native-design": ^0.33.0
+    "@unif/react-native-design": ^0.34.0
     react: ">=19.2.3 <20.0.0"
     react-native: ">=0.86.0"
     react-native-svg: ">=15"
   languageName: unknown
   linkType: soft
 
-"@unif/react-native-design@npm:0.33.0":
-  version: 0.33.0
-  resolution: "@unif/react-native-design@npm:0.33.0"
+"@unif/react-native-design@npm:0.34.0":
+  version: 0.34.0
+  resolution: "@unif/react-native-design@npm:0.34.0"
   peerDependencies:
     "@sbaiahmed1/react-native-blur": ">=4"
     react: ">=19.2.3 <20.0.0"
@@ -6604,7 +6604,7 @@ __metadata:
     react-native-safe-area-context: ">=5"
     react-native-svg: ">=15"
     react-native-worklets: ">=0.11.0 <0.13.0"
-  checksum: 10c0/99bbc67ac36cb84b0261fa34d2e17afff8a502344ee54544f99deb1848631b20b094314dad9c5ddc6b11948146b6286f7d4908544a43b0de15d33efcc9ba6d3b
+  checksum: 10c0/776f6e118effcc3bed7a822b7d8e002f4d7409887fd3a2e6bd83151fae6aaf182912c49f720c51210ea8482495cbefe24590508fe391edd067c6d42658c402e7
   languageName: node
   linkType: hard
 

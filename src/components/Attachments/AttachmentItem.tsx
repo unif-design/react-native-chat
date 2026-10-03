@@ -1,6 +1,5 @@
 import { Text, View } from 'react-native';
 import {
-  BorderBeam,
   Button,
   CircularProgress,
   Icon,
@@ -81,11 +80,7 @@ export function AttachmentItem({
 
   return (
     <View style={[styles.item, row ? styles.row : { width }]}>
-      {busy && loadingVisual === 'border' ? (
-        <BorderBeam>{media}</BorderBeam>
-      ) : (
-        media
-      )}
+      {media}
       <View style={[styles.content, row && styles.rowContent]}>
         <Text style={styles.name}>{name}</Text>
         {item.meta ? <Text style={styles.meta}>{item.meta}</Text> : null}
@@ -98,7 +93,7 @@ export function AttachmentItem({
           </Text>
         ) : null}
         {busy &&
-        loadingVisual !== 'center' &&
+        loadingVisual === 'caption' &&
         showProgressLabel &&
         progress !== undefined ? (
           <Text style={styles.meta}>{`${Math.round(progress * 100)}%`}</Text>

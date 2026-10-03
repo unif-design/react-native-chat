@@ -28,6 +28,7 @@ const sidebars: SidebarsConfig = {
         'components/suggestions',
         'components/confirmation',
         'components/process',
+        'components/processing-progress',
         'components/feedback',
       ],
     },
