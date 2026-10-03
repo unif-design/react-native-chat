@@ -34,6 +34,8 @@ import { MessageListDemo } from '@site/src/demos/MessageListDemo';
 
 父容器必须提供有界高度，避免嵌套在同方向的无界 ScrollView 中。数据类型由调用方决定，`renderItem` 可以返回 Message 或任意自定义行。
 
+更新消息时创建新的 `items` 数组，并保留未变化项的引用。列表会复用未变化行；流式场景可用 `useCallback` 保持 `keyExtractor`、`renderItem` 和 `renderSeparator` 稳定。行依赖选中状态等外部数据时，通过 `extraData` 通知更新；不能原地修改 `items` 后期待列表自动识别变化。
+
 默认从 `initialPosition="end"` 开始，`followOutput="whenAtEnd"` 仅在用户位于末尾时跟随新增内容；阅读历史时不会强行跳到最新。纯前插保持当前可见内容的位置。
 
 历史入口需要同时提供 `hasEarlier` 与 `onRequestEarlier`；加载状态由 `loadingEarlier` 控制。滚动不会自动发起历史请求。ref 的 `scrollToEnd()` 可显式回到末尾。切换会话时用 React `key` 重建实例。
