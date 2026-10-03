@@ -38,3 +38,17 @@
 [CI 配置](../.github/workflows/ci.yml)维护完整验证入口；提交检查见 [lefthook.yml](../lefthook.yml)，发布命令见 package.json。
 
 LLM 索引、链接与产物提交采用组织共用生成器；本库保留由公开类型生成 API 文本的转换。网站 API 展示和 Markdown 使用同一个 md/api.json 来源，生成失败不交付半套资料。
+
+## 2026-09-30 MessageList 优化验证
+
+基于 `00ea125`，把滚动测量与跟随整理到所属私有 hook，稳定 FlatList 的回调与展示输入，按项、索引、前项、renderer 和 extraData 复用行。Web 锚点继续响应实际 DOM / 尺寸变化，相同列表输入的父级刷新不再重复扫描行节点。公开接口和原有滚动行为不变。
+
+新增回归先确认旧实现 3 项性能断言失败、4 项显示更新保护通过；Web 另有 1 项重复扫描断言失败。初版优化的 Bob 和文档站构建通过。
+
+审查补充了 header 仅改变高度的回归：行和视口尺寸不变时，下一次前插应补偿 100，修复前错误补偿 180。真实浏览器还复现了 header 增高 80、footer 同时缩短 80 的情况：内容总高不变，仅观察内容容器仍会遗漏锚点位移。核对 RN Web 0.21.2 的 ScrollView 与 VirtualizedList 实现后，通过滚动节点的 `getInnerViewNode()` 取得内容容器，将容器及其直接子包装节点加入已有 ResizeObserver。没有扩大到属性变化观察；节点替换时解除旧目标，卸载时释放观察器、监听与待执行帧。
+
+两种高度变化、内容节点与 header 包装节点替换均先有失败回归，修复后与行尺寸变化、前插、相同输入不扫描及卸载清理一起通过。最终定向测试为 3 suites / 19 tests，库与 example 的完整 Jest 为 17 suites / 109 tests，类型检查与 Bob 构建通过。Lint 为 0 errors，保留 5 个既有 warnings。
+
+真实 MessageList + RN FlatList 的 Jest renderer 中，1000 条数据保持同一引用、keyExtractor 和 renderItem 稳定时，一次父级重渲染从 1023 次取 key / 10 次行渲染降为 0 / 0；仅更新屏外一项时，可见行渲染从 10 次降为 0。只改变一条可见消息时只重渲染该行。extraData、renderer 变化、分隔符前项、前插和重排索引均有行为保护。这些是调用次数，不代表设备帧耗时。
+
+IAB 真实浏览器另用 React 19.2.3、RN Web 0.21.2 和当前 MessageList／Web hook 完成两种前插验收。普通场景从 header 100 增至 180，前插 100 后锚点仍为 180、scrollTop 为 100、内容高为 1408；抵消场景在 header 增高时内容高保持 1228，前插后锚点仍为 180、scrollTop 为 100、内容高为 1328。两者锚点位移均为 0。样例仅对未启用的 Design 按钮和 spacing 导入提供边界替身，未替换 FlatList、布局算法或浏览器观察器。以上证明这两个 Web 布局场景，手机长列表性能、原生动态高度与键盘仍需设备验收。

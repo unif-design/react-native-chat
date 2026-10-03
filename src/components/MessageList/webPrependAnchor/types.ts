@@ -14,6 +14,8 @@ export interface WebElementLike {
   id: string;
   scrollTop: number;
   scrollHeight: number;
+  readonly children?: ArrayLike<unknown>;
+  getInnerViewNode?(): unknown;
   getBoundingClientRect(): WebRectLike;
   querySelectorAll(selector: string): ArrayLike<unknown>;
   contains(candidate: unknown): boolean;

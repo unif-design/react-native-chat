@@ -1,4 +1,4 @@
-import { useId, useLayoutEffect, useRef } from 'react';
+import { useCallback, useId, useLayoutEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 import { USER_INTERACTION_EVENTS } from './constants';
 import type {
@@ -26,8 +26,9 @@ function isWebElementLike(value: unknown): value is WebElementLike {
 
 function sameKeys(left: readonly string[], right: readonly string[]): boolean {
   return (
-    left.length === right.length &&
-    left.every((key, index) => key === right[index])
+    left === right ||
+    (left.length === right.length &&
+      left.every((key, index) => key === right[index]))
   );
 }
 
@@ -79,111 +80,135 @@ export function useWebPrependAnchor({
 
   const globals = globalThis as unknown as WebGlobals;
 
-  const getRowNativeID = (key: string) =>
-    `${rowNativeIDPrefix}-${encodeURIComponent(key)}`;
+  const getRowNativeID = useCallback(
+    (key: string) => `${rowNativeIDPrefix}-${encodeURIComponent(key)}`,
+    [rowNativeIDPrefix]
+  );
 
-  const getRows = (scroller: WebElementLike): WebElementLike[] =>
-    Array.from(scroller.querySelectorAll('[id]')).filter(
-      (candidate): candidate is WebElementLike =>
-        isWebElementLike(candidate) &&
-        candidate.id.startsWith(`${rowNativeIDPrefix}-`)
-    );
+  const getRows = useCallback(
+    (scroller: WebElementLike): WebElementLike[] =>
+      Array.from(scroller.querySelectorAll('[id]')).filter(
+        (candidate): candidate is WebElementLike =>
+          isWebElementLike(candidate) &&
+          candidate.id.startsWith(`${rowNativeIDPrefix}-`)
+      ),
+    [rowNativeIDPrefix]
+  );
 
-  const findRow = (
-    scroller: WebElementLike,
-    id: string
-  ): WebElementLike | undefined => {
-    const candidate = globals.document?.getElementById(id);
-    return isWebElementLike(candidate) && scroller.contains(candidate)
-      ? candidate
-      : undefined;
-  };
+  const findRow = useCallback(
+    (scroller: WebElementLike, id: string): WebElementLike | undefined => {
+      const candidate = globals.document?.getElementById(id);
+      return isWebElementLike(candidate) && scroller.contains(candidate)
+        ? candidate
+        : undefined;
+    },
+    [globals]
+  );
 
-  const captureAnchor = (connection: WebPrependAnchorConnection) => {
-    const viewport = connection.scroller.getBoundingClientRect();
-    const firstVisible = getRows(connection.scroller).find((row) => {
-      const rect = row.getBoundingClientRect();
-      return rect.bottom > viewport.top && rect.top < viewport.bottom;
-    });
-    if (!firstVisible) return;
-    lastAnchorRef.current = {
-      id: firstVisible.id,
-      top: firstVisible.getBoundingClientRect().top - viewport.top,
-      scrollHeight: connection.scroller.scrollHeight,
-      scrollTop: connection.scroller.scrollTop,
-    };
-  };
-
-  const refreshResizeTargets = (connection: WebPrependAnchorConnection) => {
-    const resizeObserver = connection.resizeObserver;
-    if (!resizeObserver) return;
-    const nextTargets = new Set([
-      connection.scroller,
-      ...getRows(connection.scroller),
-    ]);
-    connection.resizeTargets.forEach((target) => {
-      if (!nextTargets.has(target)) resizeObserver.unobserve?.(target);
-    });
-    nextTargets.forEach((target) => {
-      if (!connection.resizeTargets.has(target)) resizeObserver.observe(target);
-    });
-    connection.resizeTargets = nextTargets;
-  };
-
-  const correctPrepend = (connection: WebPrependAnchorConnection) => {
-    const preservation = preservationRef.current;
-    if (!preservation) return;
-    const anchor = findRow(connection.scroller, preservation.id);
-    if (anchor) {
+  const captureAnchor = useCallback(
+    (connection: WebPrependAnchorConnection) => {
       const viewport = connection.scroller.getBoundingClientRect();
-      const currentTop = anchor.getBoundingClientRect().top - viewport.top;
-      const delta = currentTop - preservation.top;
-      if (Math.abs(delta) > 0.5) {
+      const firstVisible = getRows(connection.scroller).find((row) => {
+        const rect = row.getBoundingClientRect();
+        return rect.bottom > viewport.top && rect.top < viewport.bottom;
+      });
+      if (!firstVisible) return;
+      lastAnchorRef.current = {
+        id: firstVisible.id,
+        top: firstVisible.getBoundingClientRect().top - viewport.top,
+        scrollHeight: connection.scroller.scrollHeight,
+        scrollTop: connection.scroller.scrollTop,
+      };
+    },
+    [getRows]
+  );
+
+  const refreshResizeTargets = useCallback(
+    (connection: WebPrependAnchorConnection) => {
+      const resizeObserver = connection.resizeObserver;
+      if (!resizeObserver) return;
+      const nextTargets = new Set([
+        connection.scroller,
+        ...getRows(connection.scroller),
+      ]);
+      // RN Web exposes its content node here. Observe direct wrappers too:
+      // opposite header/footer resizes can leave the total height unchanged.
+      const content = connection.scroller.getInnerViewNode?.();
+      if (isWebElementLike(content)) {
+        nextTargets.add(content);
+        for (const child of Array.from(content.children ?? [])) {
+          if (isWebElementLike(child)) nextTargets.add(child);
+        }
+      }
+      connection.resizeTargets.forEach((target) => {
+        if (!nextTargets.has(target)) resizeObserver.unobserve?.(target);
+      });
+      nextTargets.forEach((target) => {
+        if (!connection.resizeTargets.has(target))
+          resizeObserver.observe(target);
+      });
+      connection.resizeTargets = nextTargets;
+    },
+    [getRows]
+  );
+
+  const correctPrepend = useCallback(
+    (connection: WebPrependAnchorConnection) => {
+      const preservation = preservationRef.current;
+      if (!preservation) return;
+      const anchor = findRow(connection.scroller, preservation.id);
+      if (anchor) {
+        const viewport = connection.scroller.getBoundingClientRect();
+        const currentTop = anchor.getBoundingClientRect().top - viewport.top;
+        const delta = currentTop - preservation.top;
+        if (Math.abs(delta) > 0.5) {
+          connection.list.scrollToOffset({
+            offset: Math.max(0, connection.scroller.scrollTop + delta),
+            animated: false,
+          });
+        }
+        return;
+      }
+
+      const heightDelta = Math.max(
+        0,
+        connection.scroller.scrollHeight - preservation.scrollHeight
+      );
+      if (heightDelta > 0) {
         connection.list.scrollToOffset({
-          offset: Math.max(0, connection.scroller.scrollTop + delta),
+          offset: Math.max(0, preservation.scrollTop + heightDelta),
           animated: false,
         });
       }
-      return;
-    }
+    },
+    [findRow]
+  );
 
-    const heightDelta = Math.max(
-      0,
-      connection.scroller.scrollHeight - preservation.scrollHeight
-    );
-    if (heightDelta > 0) {
-      connection.list.scrollToOffset({
-        offset: Math.max(0, preservation.scrollTop + heightDelta),
-        animated: false,
-      });
-    }
-  };
-
-  const runFrame = () => {
+  const runFrame = useCallback(() => {
     frameRef.current = undefined;
     const connection = connectionRef.current;
     if (!connection) return;
     refreshResizeTargets(connection);
     if (preservingPrependRef.current) correctPrepend(connection);
     else captureAnchor(connection);
-  };
+  }, [captureAnchor, correctPrepend, refreshResizeTargets]);
 
-  const scheduleFrame = () => {
+  const scheduleFrame = useCallback(() => {
     if (frameRef.current !== undefined) return;
     if (globals.requestAnimationFrame) {
       frameRef.current = globals.requestAnimationFrame(runFrame);
     } else {
       runFrame();
     }
-  };
+  }, [globals, runFrame]);
 
-  const stopPreserving = () => {
+  const stopPreserving = useCallback(() => {
     preservingPrependRef.current = false;
     preservationRef.current = undefined;
     lastAnchorRef.current = undefined;
-  };
+  }, []);
 
-  const disconnect = () => {
+  const disconnect = useCallback(() => {
     const connection = connectionRef.current;
     disconnectConnection(connection);
     connectionRef.current = undefined;
@@ -191,9 +216,9 @@ export function useWebPrependAnchor({
       globals.cancelAnimationFrame?.(frameRef.current);
       frameRef.current = undefined;
     }
-  };
+  }, [globals]);
 
-  const ensureConnected = () => {
+  const ensureConnected = useCallback(() => {
     if (Platform.OS !== 'web') return;
     const list = listRef.current;
     const scroller = list ? list.getScrollableNode() : undefined;
@@ -241,12 +266,20 @@ export function useWebPrependAnchor({
     scroller.addEventListener('scroll', scroll, { passive: true });
     refreshResizeTargets(connection);
     scheduleFrame();
-  };
+  }, [
+    captureAnchor,
+    disconnect,
+    globals,
+    listRef,
+    refreshResizeTargets,
+    scheduleFrame,
+    stopPreserving,
+  ]);
 
-  const cancelPrependPreservation = () => {
+  const cancelPrependPreservation = useCallback(() => {
     stopPreserving();
     scheduleFrame();
-  };
+  }, [scheduleFrame, stopPreserving]);
 
   useLayoutEffect(() => {
     ensureConnected();
@@ -266,8 +299,9 @@ export function useWebPrependAnchor({
       }
     }
     previousIdentityRef.current = itemsIdentity;
-    previousKeysRef.current = [...keys];
-    scheduleFrame();
+    previousKeysRef.current = keys;
+    if (!previousKeys || previousKeys !== keys || identityChanged)
+      scheduleFrame();
   });
 
   useLayoutEffect(
