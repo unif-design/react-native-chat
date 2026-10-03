@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.1.2](https://github.com/unif-design/react-native-chat/compare/v2.1.1...v2.1.2) (2026-10-03)
+
+### Bug Fixes
+
+* **chat:** restore markdown images and stabilize message list updates ([5868c15](https://github.com/unif-design/react-native-chat/commit/5868c15999fd4c1ae4368db72f3953791222f2c9))
+
 ## [2.1.1](https://github.com/unif-design/react-native-chat/compare/v2.1.0...v2.1.1) (2026-09-20)
 
 ### Bug Fixes
