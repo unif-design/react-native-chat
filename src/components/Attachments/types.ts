@@ -12,7 +12,7 @@ export interface ChatAttachmentItem {
   status?: ChatAttachmentStatus;
   statusText?: string;
   progress?: number;
-  loadingVisual?: 'center' | 'border' | 'caption';
+  loadingVisual?: 'center' | 'caption';
   previewable?: boolean;
   removable?: boolean;
   removeDisabled?: boolean;

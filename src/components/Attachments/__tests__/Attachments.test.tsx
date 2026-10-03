@@ -74,7 +74,7 @@ describe('Attachments', () => {
     }
   );
 
-  test.each(['center', 'border', 'caption'] as const)(
+  test.each(['center', 'caption'] as const)(
     '%s 只在 uploading 显示实际比例，processing 不沿用旧比例',
     (loadingVisual) => {
       const item: ChatAttachmentItem = {
