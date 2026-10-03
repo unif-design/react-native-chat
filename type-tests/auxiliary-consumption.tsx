@@ -4,6 +4,7 @@ import {
   Confirmation,
   Feedback,
   Process,
+  ProcessingProgress,
   Sources,
   Suggestions,
 } from '@unif/react-native-chat';
@@ -11,6 +12,7 @@ import type {
   ConfirmationStatus,
   FeedbackTone,
   ProcessStep,
+  ProcessingProgressProps,
   SourceItem,
   SuggestionItem,
 } from '@unif/react-native-chat';
@@ -28,6 +30,7 @@ const processStep: ProcessStep = {
   title: '读取附件',
   status: 'completed',
 };
+const progress: ProcessingProgressProps = { progress: '正在读取资料 · 附件一' };
 
 export const auxiliaryConsumption = (
   <View>
@@ -36,6 +39,7 @@ export const auxiliaryConsumption = (
       <Text>客户甲</Text>
     </Confirmation>
     <Process steps={[processStep]} defaultExpandedIds={[]} />
+    <ProcessingProgress {...progress} />
     <Process
       steps={[processStep]}
       expandedIds={[]}

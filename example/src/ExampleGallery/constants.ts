@@ -7,6 +7,7 @@ export const EXAMPLES = [
   { id: 'suggestions', label: 'Suggestions' },
   { id: 'confirmation', label: 'Confirmation' },
   { id: 'process', label: 'Process' },
+  { id: 'processingProgress', label: 'ProcessingProgress' },
   { id: 'sources', label: 'Sources' },
   { id: 'citation', label: 'Citation' },
   { id: 'feedback', label: 'Feedback' },

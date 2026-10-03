@@ -15,12 +15,12 @@ Web 文档站展示组件 API 与交互示例；原生示例启动 Metro 使用 
 
 ## 可以查看什么
 
-| 入口        | 内容                                                                                                               |
-| ----------- | ------------------------------------------------------------------------------------------------------------------ |
-| 独立组件    | Composer、Attachments、Message、MessageList、Suggestions、Confirmation、Process、Sources、Citation、Feedback、Chat |
-| 主聊天      | 消息、受控草稿、发送及附件移除的组合                                                                               |
-| 抽屉输入    | 独立草稿与键盘宿主的组合                                                                                           |
-| Design 接线 | 基础输入、浅色／深色和应用字号                                                                                     |
+| 入口        | 内容                                                                                                                                   |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| 独立组件    | Composer、Attachments、Message、MessageList、Suggestions、Confirmation、Process、ProcessingProgress、Sources、Citation、Feedback、Chat |
+| 主聊天      | 消息、受控草稿、发送及附件移除的组合                                                                                                   |
+| 抽屉输入    | 独立草稿与键盘宿主的组合                                                                                                               |
+| Design 接线 | 基础输入、浅色／深色和应用字号                                                                                                         |
 
 完整入口见[示例索引](src/ExampleGallery/constants.ts)。样例使用本地状态和事件，不连接 Agent 或业务系统。
 

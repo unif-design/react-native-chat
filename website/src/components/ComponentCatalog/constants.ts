@@ -48,6 +48,12 @@ export const COMPONENTS = [
     path: '/docs/components/process',
   },
   {
+    name: 'ProcessingProgress',
+    label: '紧凑进度',
+    description: '单行公开进度、前缀文字动画与完整忙碌朗读。',
+    path: '/docs/components/processing-progress',
+  },
+  {
     name: 'Feedback',
     label: '结果说明',
     description: '呈现提示、结果或问题说明及明确的后续操作。',

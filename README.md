@@ -6,12 +6,12 @@
 
 ## 提供什么
 
-| 用途           | 组件                               |
-| -------------- | ---------------------------------- |
-| 聊天布局与消息 | Chat、MessageList、Message         |
-| 输入与附件     | Composer、Attachments、Suggestions |
-| 交互与反馈     | Confirmation、Process、Feedback    |
-| 来源与引用     | Sources、Citation                  |
+| 用途           | 组件                                                |
+| -------------- | --------------------------------------------------- |
+| 聊天布局与消息 | Chat、MessageList、Message                          |
+| 输入与附件     | Composer、Attachments、Suggestions                  |
+| 交互与反馈     | Confirmation、Process、ProcessingProgress、Feedback |
+| 来源与引用     | Sources、Citation                                   |
 
 组件负责展示和事件；应用负责会话、草稿、文件上传、Agent 请求和业务处理。Markdown 使用 `react-native-marked`。
 

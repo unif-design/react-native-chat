@@ -1,0 +1,39 @@
+---
+title: ProcessingProgress 紧凑进度
+description: 单行呈现正在处理的公开文案，支持前缀文字动画和完整忙碌朗读。
+api: ProcessingProgress
+---
+
+import { LiveDemo } from '@site/src/components/LiveDemo';
+import { ApiReference } from '@site/src/components/ApiReference';
+import { ProcessingProgressDemo } from '@site/src/demos/ProcessingProgressDemo';
+
+在消息或独立输入区旁单行展示正在处理的公开进度。需要展示步骤、状态与详情时使用 [Process](./process.mdx)。
+
+## 交互示例
+
+<LiveDemo title="紧凑进度">
+  <ProcessingProgressDemo />
+</LiveDemo>
+
+点击“更新说明”改变后缀，“更换阶段”改变前缀。切换大字号、深浅主题或“长文案”可检查显示；系统的减少动态效果设置会关闭文字动画。
+
+## 用法
+
+```tsx
+import { ProcessingProgress } from '@unif/react-native-chat';
+
+<ProcessingProgress progress="正在读取资料 · 附件一" />;
+```
+
+## 行为与接入
+
+`progress` 按首个 `·` 分成前缀与说明，分隔符和两侧空格原样保留。前缀文字有循环动效，后缀更新不会重启动画。没有分隔符时整段作为前缀；空文字不补充默认进度。
+
+整行超出宽度时尾部省略，读屏仍读取完整文案，并标记忙碌状态和礼貌更新。组件使用 Design 的主题与字号，减少动态效果时保持静态文字。
+
+调用方提供文案和展示结束时机。组件持续显示收到的进度，卸载时清理动画；请求、SSE、取消和最终结果由应用处理。
+
+## API
+
+<ApiReference name="ProcessingProgress" />
