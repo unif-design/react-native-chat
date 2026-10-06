@@ -6,6 +6,7 @@ export const createStyles = (colors: ColorTokens) =>
   StyleSheet.create({
     compactRoot: { gap: space[2] },
     compactSteps: { gap: space[2] },
+    compactAction: { minWidth: 44, minHeight: 44 },
     compactHeader: {
       flexDirection: 'row',
       alignItems: 'center',

@@ -93,6 +93,7 @@ export function ProcessCompactStep({
           {step.actions.map((action) => (
             <Button
               key={action.id}
+              style={styles.compactAction}
               label={action.label}
               leftIcon={action.icon}
               onPress={action.onPress}
