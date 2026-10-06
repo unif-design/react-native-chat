@@ -1,5 +1,15 @@
 # Changelog
 
+# [3.0.0](https://github.com/unif-design/react-native-chat/compare/v2.2.0...v3.0.0) (2026-10-06)
+
+* feat!: adopt Design 0.35 glass foundation (#9) ([10edde6](https://github.com/unif-design/react-native-chat/commit/10edde68171c6f0a22233228d1c23659ffefdab1)), closes [#9](https://github.com/unif-design/react-native-chat/issues/9)
+
+### BREAKING CHANGES
+
+* Chat now requires @unif/react-native-design ^0.35.0.
+  Hosts must replace Design's previous blur peer with @callstack/liquid-glass
+  and reinstall iOS Pods.
+
 # [2.2.0](https://github.com/unif-design/react-native-chat/compare/v2.1.2...v2.2.0) (2026-10-03)
 
 ### Features
