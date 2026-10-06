@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { ScrollViewProps, StyleProp, ViewStyle } from 'react-native';
 
 export interface MessageListScrollOptions {
   animated?: boolean;
@@ -20,11 +20,15 @@ export interface MessageListProps<T> {
   followOutput?: 'whenAtEnd' | 'never';
   endThreshold?: number;
   showScrollToEnd?: boolean;
+  /** 外部仍在生成内容时显示返回入口的进度外环，不影响滚动操作。 */
+  scrollToEndBusy?: boolean;
   onAtEndChange?(atEnd: boolean): void;
   hasEarlier?: boolean;
   loadingEarlier?: boolean;
   onRequestEarlier?(): void;
-  keyboardDismissMode?: 'none' | 'on-drag';
+  keyboardDismissMode?: ScrollViewProps['keyboardDismissMode'];
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  showsVerticalScrollIndicator?: boolean;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }

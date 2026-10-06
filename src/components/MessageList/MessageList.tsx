@@ -2,9 +2,14 @@ import { useCallback, useImperativeHandle, useMemo, useRef } from 'react';
 import type { RefAttributes } from 'react';
 import { FlatList, View } from 'react-native';
 import type { ListRenderItemInfo } from 'react-native';
-import { Button } from '@unif/react-native-design';
+import {
+  Button,
+  IconButton,
+  Spinner,
+  useThemedStyles,
+} from '@unif/react-native-design';
 import { DEFAULT_END_THRESHOLD } from './constants';
-import { styles } from './styles';
+import { createStyles } from './styles';
 import { useWebPrependAnchor } from './webPrependAnchor';
 import { useMessageListScroll } from './useMessageListScroll';
 import { MessageListRow } from './MessageListRow';
@@ -25,15 +30,19 @@ export function MessageList<T>({
   followOutput = 'whenAtEnd',
   endThreshold = DEFAULT_END_THRESHOLD,
   showScrollToEnd = true,
+  scrollToEndBusy = false,
   onAtEndChange,
   hasEarlier = false,
   loadingEarlier = false,
   onRequestEarlier,
   keyboardDismissMode = 'on-drag',
+  contentContainerStyle,
+  showsVerticalScrollIndicator = false,
   style,
   testID,
   ref,
 }: MessageListProps<T> & RefAttributes<MessageListHandle>) {
+  const styles = useThemedStyles(createStyles);
   const listRef = useRef<FlatList<T>>(null);
   const keys = useMemo(() => items.map(keyExtractor), [items, keyExtractor]);
   const { getRowNativeID, preservingPrependRef, cancelPrependPreservation } =
@@ -97,10 +106,7 @@ export function MessageList<T>({
     () => (footer ? <View>{footer}</View> : undefined),
     [footer]
   );
-  const listEmpty = useMemo(
-    () => (empty ? <View>{empty}</View> : undefined),
-    [empty]
-  );
+  const listEmpty = useMemo(() => (empty ? <>{empty}</> : undefined), [empty]);
   return (
     <View style={[styles.root, style]} testID={testID}>
       <FlatList
@@ -116,6 +122,8 @@ export function MessageList<T>({
         ListEmptyComponent={listEmpty}
         maintainVisibleContentPosition={MAINTAIN_VISIBLE_POSITION}
         keyboardDismissMode={keyboardDismissMode}
+        contentContainerStyle={contentContainerStyle}
+        showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         keyboardShouldPersistTaps="handled"
         scrollEventThrottle={16}
         onLayout={onLayout}
@@ -127,12 +135,25 @@ export function MessageList<T>({
         onMomentumScrollEnd={onMomentumScrollEnd}
       />
       {showScrollToEnd && items.length > 0 && !atEnd ? (
-        <Button
-          label="回到最新消息"
-          variant="secondary"
-          style={styles.returnToEnd}
-          onPress={() => scrollToEnd()}
-        />
+        <View style={styles.returnToEnd} pointerEvents="box-none">
+          {scrollToEndBusy ? (
+            <View style={styles.returnProgress} pointerEvents="none">
+              <Spinner size={44} thickness={2} />
+            </View>
+          ) : null}
+          <IconButton
+            icon="arrow-down"
+            accessibilityLabel={
+              scrollToEndBusy ? '回到最新消息，正在处理' : '回到最新消息'
+            }
+            variant="ghost"
+            size="md"
+            surfaceSize={36}
+            iconSize={18}
+            style={styles.returnButton}
+            onPress={() => scrollToEnd()}
+          />
+        </View>
       ) : null}
     </View>
   );

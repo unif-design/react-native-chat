@@ -34,6 +34,8 @@ import { MessageListDemo } from '@site/src/demos/MessageListDemo';
 
 父容器必须提供有界高度，避免嵌套在同方向的无界 ScrollView 中。数据类型由调用方决定，`renderItem` 可以返回 Message 或任意自定义行。
 
+`contentContainerStyle` 只调整列表内容布局，可用于页面消息留白和空态居中；`style` 仍只调整外层视口。`keyboardDismissMode` 支持 RN 的 `interactive`，默认 `on-drag`。`showsVerticalScrollIndicator` 默认 false。离开末尾后的返回入口采用 36 的视觉圆、44 的触达区，中文可访问名称仍是“回到最新消息”。
+
 更新消息时创建新的 `items` 数组，并保留未变化项的引用。列表会复用未变化行；流式场景可用 `useCallback` 保持 `keyExtractor`、`renderItem` 和 `renderSeparator` 稳定。行依赖选中状态等外部数据时，通过 `extraData` 通知更新；不能原地修改 `items` 后期待列表自动识别变化。
 
 默认从 `initialPosition="end"` 开始，`followOutput="whenAtEnd"` 仅在用户位于末尾时跟随新增内容；阅读历史时不会强行跳到最新。纯前插保持当前可见内容的位置。
@@ -43,3 +45,5 @@ import { MessageListDemo } from '@site/src/demos/MessageListDemo';
 ## API
 
 <ApiReference name="MessageList" />
+
+`scrollToEndBusy` 默认 false，外部正在生成内容时可显示 44 的进度外环并提供中文状态名称；按钮仍可滚动，不将生成状态变成禁用。空内容不增加阻断弹性布局的包层，欢迎页和加载占位分别由场景决定居中或从顶部排列。

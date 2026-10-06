@@ -1,6 +1,8 @@
 import { Image, Linking, Text } from 'react-native';
 import {
   ThemeProvider,
+  lightColors,
+  darkColors,
   Button,
   type as typography,
 } from '@unif/react-native-design';
@@ -104,13 +106,77 @@ describe('Message', () => {
       </ThemeProvider>
     );
     expect(screen.getByText('普通正文')).toHaveStyle({
-      fontSize: typography.body * 1.5,
+      fontSize: typography.sm * 1.5,
     });
     expect(screen.getByText('Markdown 正文')).toHaveStyle({
-      fontSize: typography.body * 1.5,
+      fontSize: typography.sm * 1.5,
     });
   });
 });
+
+test('图标消息操作只显示图标，保留中文名称、禁用与原操作交接', async () => {
+  const copy = jest.fn();
+  const view = render(
+    <Message
+      text="回复正文"
+      actions={[{ id: 'copy', label: '复制', icon: 'copy', onPress: copy }]}
+    />,
+    { wrapper: ThemeProvider }
+  );
+  expect(screen.queryByText('复制')).toBeNull();
+  fireEvent.press(screen.getByRole('button', { name: '复制' }));
+  expect(copy).toHaveBeenCalledTimes(1);
+  view.rerender(
+    <Message
+      text="回复正文"
+      actions={[
+        {
+          id: 'copy',
+          label: '复制',
+          icon: 'copy',
+          onPress: copy,
+          disabled: true,
+        },
+      ]}
+    />
+  );
+  await userEvent.press(screen.getByRole('button', { name: '复制' }));
+  expect(copy).toHaveBeenCalledTimes(1);
+});
+
+test.each(['light', 'dark'] as const)(
+  '外发 Markdown 在 %s 品牌气泡中保留可见文字与链接，中性代码仍可读',
+  (scheme) => {
+    const colors = scheme === 'light' ? lightColors : darkColors;
+    render(
+      <ThemeProvider forceScheme={scheme}>
+        <Message format="markdown" text="传入正文" />
+        <Message
+          placement="end"
+          format="markdown"
+          text={
+            '正文\n\n[资料](https://example.invalid/a)\n\n`中性代码`\n\n```ts\n块内代码\n```'
+          }
+          onLinkPress={jest.fn()}
+        />
+      </ThemeProvider>
+    );
+    expect(screen.getByText('正文')).toHaveStyle({ color: colors.onPrimary });
+    expect(screen.getByText('传入正文')).toHaveStyle({
+      color: colors.foreground,
+    });
+    expect(screen.getByText('块内代码')).toHaveStyle({
+      color: colors.foreground,
+    });
+    expect(screen.getByRole('link', { name: '资料' })).toHaveStyle({
+      color: colors.onPrimary,
+    });
+    expect(screen.getByText('中性代码')).toHaveStyle({
+      color: colors.foreground,
+      backgroundColor: colors.surfaceContainer,
+    });
+  }
+);
 
 test('Markdown 成功图片只取一次尺寸，正文更新保留同一图片实例', async () => {
   const getSize = jest.spyOn(Image, 'getSize');

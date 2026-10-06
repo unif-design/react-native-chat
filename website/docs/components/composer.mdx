@@ -10,6 +10,8 @@ import { ComposerDemo } from '@site/src/demos/ComposerDemo';
 
 受控草稿、发送和停止，适用于聊天页与独立输入区。
 
+内部复用 Design 的 `Textarea surface="plain" contentAlignment="center"`，保留自然行高和至少 44 的输入触达区域。文字留白使用 `space[3]`；`header` 与输入共用同一个卡片表面，并以细分隔线衔接。场景提供底部提示和安全区，不在库内写入应用文案或重复键盘避让。
+
 ## 交互示例
 
 <LiveDemo title="消息输入">
@@ -51,3 +53,5 @@ function InputDemo() {
 ## API
 
 <ApiReference name="Composer" />
+
+聆听区保留五条装饰波形、转录文字及取消／停止图标。波形遵守减少动画设置，卸载停止本组件动画；它不读取音频、启动录音或改变外部语音状态。

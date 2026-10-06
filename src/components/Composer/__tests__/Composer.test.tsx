@@ -348,7 +348,7 @@ test('真实 Textarea 接收字体相关高度、ref 转交且进入语音时失
   const input = screen.UNSAFE_getByType(Textarea);
   expect(input.props.minHeight).toBe(44);
   expect(input.props.maxHeight).toBe(
-    Math.round(typography.body * 1.4) * 4 * 1.5 + 2 * space[4]
+    Math.round(typography.body * 1.4) * 4 * 1.5 + 2 * space[3]
   );
   const focus = jest.spyOn(input.props.ref.current, 'focus');
   const blur = jest.spyOn(input.props.ref.current, 'blur');
@@ -376,7 +376,7 @@ test('真实 Textarea 接收字体相关高度、ref 转交且进入语音时失
   );
   expect(screen.UNSAFE_getByType(Textarea).props.minHeight).toBe(44);
   expect(screen.UNSAFE_getByType(Textarea).props.maxHeight).toBe(
-    Math.round(typography.body * 1.4) * 4 + 2 * space[4]
+    Math.round(typography.body * 1.4) * 4 + 2 * space[3]
   );
   fireEvent.press(screen.getByRole('button', { name: '开始语音输入' }));
   expect(voice.onStart).not.toHaveBeenCalled();
