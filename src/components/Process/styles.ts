@@ -1,9 +1,35 @@
 import { StyleSheet } from 'react-native';
-import { fw, radius, space, type } from '@unif/react-native-design';
+import { fw, r, radius, space, type } from '@unif/react-native-design';
 import type { ColorTokens } from '@unif/react-native-design';
 
 export const createStyles = (colors: ColorTokens) =>
   StyleSheet.create({
+    compactRoot: { gap: space[2] },
+    compactSteps: { gap: space[2] },
+    compactHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[2],
+      minHeight: 44,
+      paddingVertical: space[1],
+    },
+    compactTitle: {
+      flex: 1,
+      minWidth: 0,
+      color: colors.foregroundMuted,
+      fontSize: type.xs,
+      fontWeight: fw.medium,
+    },
+    compactDescription: {
+      color: colors.foregroundMuted,
+      fontSize: type.xs,
+      lineHeight: type.xs * 1.6,
+    },
+    compactDetails: {
+      maxHeight: r(180),
+      paddingTop: space[3],
+      paddingBottom: space[2],
+    },
     root: {
       gap: space[4],
       padding: space[5],

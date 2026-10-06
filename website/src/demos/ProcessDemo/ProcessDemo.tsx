@@ -41,6 +41,7 @@ export function ProcessDemo() {
   return (
     <View style={styles.root}>
       <Process
+        variant="compact"
         title="回答整理过程"
         identity={<Avatar label="AI" size="sm" variant="brand" />}
         steps={steps}

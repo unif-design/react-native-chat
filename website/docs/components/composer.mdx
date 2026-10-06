@@ -46,7 +46,7 @@ function InputDemo() {
 
 输入表面默认 `card`，由 Composer 绘制统一圆角、描边和阴影；`plain` 交给外层提供表面。内部使用 Design Textarea 的 `plain` 表面，保留文字内间距，不叠加第二层底色或焦点描边。
 
-`minInputHeight` 与 `maxInputHeight` 是 Textarea 整体高度，包含其文字内间距。最小高度默认 44；默认上限为四行文字预算加 plain 上下内间距：`round(type.body × 1.4) × 4 × fontScale + 2 × space[4]`，且不小于最小高度。应用字号只缩放文字预算一次；显式高度按提供的布局单位使用，超过上限在输入内部滚动。
+`minInputHeight` 与 `maxInputHeight` 是 Textarea 整体高度，包含其文字内间距。最小高度默认 44；默认上限为四行文字预算加 plain 上下内间距：`round(type.body × 1.4) × 4 × fontScale + 2 × space[3]`，且不小于最小高度。应用字号只缩放文字预算一次；显式高度按提供的布局单位使用，超过上限在输入内部滚动。
 
 页面负责键盘避让与安全区。`header` 和 `footer` 是输入前后的内容位置；独立于卡片的常驻说明由外层组合。`onHeightChange` 交付整个 Composer 的实测高度，ref 仅提供 `focus()` 与 `blur()`。
 

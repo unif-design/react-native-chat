@@ -8,6 +8,7 @@ import {
 } from '@unif/react-native-design';
 import { PROCESS_STATUS_ICONS, PROCESS_STATUS_LABELS } from './constants';
 import { createStyles } from './styles';
+import { ProcessCompactStep } from './ProcessCompactStep';
 import type { ProcessProps, ProcessStep } from './types';
 
 function idsWithDetails(
@@ -43,7 +44,7 @@ function formatElapsedMs(elapsedMs: number | undefined): string | undefined {
 }
 
 export function Process(props: ProcessProps): React.JSX.Element {
-  const { steps, title, identity, style, testID } = props;
+  const { steps, title, identity, style, testID, variant = 'card' } = props;
   const styles = useThemedStyles(createStyles);
   const colors = useColors();
   const isControlled = props.expandedIds !== undefined;
@@ -71,18 +72,31 @@ export function Process(props: ProcessProps): React.JSX.Element {
   };
 
   return (
-    <View style={[styles.root, style]} testID={testID}>
+    <View
+      style={[variant === 'compact' ? styles.compactRoot : styles.root, style]}
+      testID={testID}
+    >
       {title || identity ? (
         <View style={styles.heading}>
           {identity}
           {title ? <Text style={styles.headingTitle}>{title}</Text> : null}
         </View>
       ) : null}
-      <View style={styles.steps}>
+      <View style={variant === 'compact' ? styles.compactSteps : styles.steps}>
         {steps.map((step, index) => {
           const statusLabel = PROCESS_STATUS_LABELS[step.status];
           const elapsed = formatElapsedMs(step.elapsedMs);
           const isExpanded = expandedIds.includes(step.id);
+          if (variant === 'compact')
+            return (
+              <ProcessCompactStep
+                key={step.id}
+                step={step}
+                expanded={isExpanded}
+                elapsed={elapsed}
+                onToggle={() => toggleDetails(step.id)}
+              />
+            );
           return (
             <View
               key={step.id}
