@@ -63,3 +63,31 @@ test('紧凑过程有界滚动，受控展开仅交事件，无详情不提供�
   });
   expect(page.queryByRole('button', { name: /等待数据/ })).toBeNull();
 });
+
+test('紧凑停止动作有独立44触达，点击只交动作不切换过程详情', () => {
+  const stop = jest.fn();
+  const changed = jest.fn();
+  const page = render(
+    <ThemeProvider>
+      <Process
+        variant="compact"
+        onExpandedChange={changed}
+        steps={[
+          {
+            id: 't',
+            title: '公开过程',
+            status: 'running',
+            details: <Text>公开说明</Text>,
+            actions: [{ id: 'stop', label: '停止', onPress: stop }],
+          },
+        ]}
+      />
+    </ThemeProvider>
+  );
+  const button = page.getByRole('button', { name: '停止' });
+  expect(button).toHaveStyle({ minWidth: 44, minHeight: 44 });
+  fireEvent.press(button);
+  expect(stop).toHaveBeenCalledTimes(1);
+  expect(changed).not.toHaveBeenCalled();
+  expect(page.queryByText('公开说明')).toBeNull();
+});
