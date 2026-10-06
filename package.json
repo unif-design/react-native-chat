@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
+    "@callstack/liquid-glass": "0.8.2",
     "@commitlint/config-conventional": "^21.2.0",
     "@eslint/compat": "^2.1.0",
     "@eslint/eslintrc": "^3.3.6",
@@ -65,10 +66,9 @@
     "@react-native/jest-preset": "0.86.3",
     "@react-native/metro-config": "0.86.3",
     "@release-it/conventional-changelog": "^12.0.0",
-    "@sbaiahmed1/react-native-blur": "6.0.1",
     "@testing-library/react-native": "13.3.3",
     "@types/react": "^19.2.0",
-    "@unif/react-native-design": "0.34.0",
+    "@unif/react-native-design": "0.35.0",
     "commitlint": "^21.2.1",
     "del-cli": "^7.0.0",
     "eslint": "^9.39.5",
@@ -96,7 +96,7 @@
     "typescript": "^6.0.3"
   },
   "peerDependencies": {
-    "@unif/react-native-design": "^0.34.0",
+    "@unif/react-native-design": "^0.35.0",
     "react": ">=19.2.3 <20.0.0",
     "react-native": ">=0.86.0",
     "react-native-svg": ">=15"

@@ -27,7 +27,7 @@ module.exports = function reactNativeWebPlugin(context) {
     ])
   );
   const rnPackages =
-    /node_modules\/(react-native-(?:marked|reanimated(?:-carousel|-table)?|worklets|gesture-handler|svg|safe-area-context|web)|@jsamr\/react-native-li|@sbaiahmed1\/react-native-blur)\//;
+    /node_modules\/(react-native-(?:marked|reanimated(?:-carousel|-table)?|worklets|gesture-handler|svg|safe-area-context|web)|@jsamr\/react-native-li)\//;
   const animationFrame = path.join(__dirname, 'shims/AnimationFrame.js');
   return {
     name: 'docusaurus-rnw',
