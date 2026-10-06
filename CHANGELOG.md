@@ -1,5 +1,11 @@
 # Changelog
 
+# [3.1.0](https://github.com/unif-design/react-native-chat/compare/v3.0.0...v3.1.0) (2026-10-06)
+
+### Features
+
+* **chat:** restore reference message and composer presentation ([#10](https://github.com/unif-design/react-native-chat/issues/10)) ([43c3d6e](https://github.com/unif-design/react-native-chat/commit/43c3d6ecb0bcf4dce524f50b7ad13bb6d2b48735))
+
 # [3.0.0](https://github.com/unif-design/react-native-chat/compare/v2.2.0...v3.0.0) (2026-10-06)
 
 * feat!: adopt Design 0.35 glass foundation (#9) ([10edde6](https://github.com/unif-design/react-native-chat/commit/10edde68171c6f0a22233228d1c23659ffefdab1)), closes [#9](https://github.com/unif-design/react-native-chat/issues/9)
