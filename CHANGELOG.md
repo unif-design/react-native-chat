@@ -1,5 +1,11 @@
 # Changelog
 
+# [3.2.0](https://github.com/unif-design/react-native-chat/compare/v3.1.0...v3.2.0) (2026-10-06)
+
+### Features
+
+* **process:** add compact public progress display ([#11](https://github.com/unif-design/react-native-chat/issues/11)) ([e2b9333](https://github.com/unif-design/react-native-chat/commit/e2b9333095f4aaed1317e7542155c7383373c14f))
+
 # [3.1.0](https://github.com/unif-design/react-native-chat/compare/v3.0.0...v3.1.0) (2026-10-06)
 
 ### Features
