@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.2.1](https://github.com/unif-design/react-native-chat/compare/v3.2.0...v3.2.1) (2026-10-06)
+
+### Bug Fixes
+
+* **process:** preserve compact action touch targets ([#12](https://github.com/unif-design/react-native-chat/issues/12)) ([5295d2a](https://github.com/unif-design/react-native-chat/commit/5295d2aae1866e80052f65a0837721c7308ea71a))
+
 # [3.2.0](https://github.com/unif-design/react-native-chat/compare/v3.1.0...v3.2.0) (2026-10-06)
 
 ### Features
