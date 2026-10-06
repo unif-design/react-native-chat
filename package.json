@@ -96,7 +96,7 @@
     "typescript": "^6.0.3"
   },
   "peerDependencies": {
-    "@unif/react-native-design": "^0.36.0",
+    "@unif/react-native-design": ">=0.36.0",
     "react": ">=19.2.3 <20.0.0",
     "react-native": ">=0.86.0",
     "react-native-svg": ">=15"

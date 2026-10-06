@@ -16,11 +16,20 @@ export interface ProcessStep {
 }
 
 export interface ProcessBaseProps {
+  /** card 为完整步骤面板；compact 为可整行展开、有界详情的轻量过程展示。 */
+  variant?: 'card' | 'compact';
   steps: readonly ProcessStep[];
   title?: string;
   identity?: ReactNode;
   style?: StyleProp<ViewStyle>;
   testID?: string;
+}
+
+export interface ProcessCompactStepProps {
+  step: ProcessStep;
+  expanded: boolean;
+  elapsed?: string;
+  onToggle(): void;
 }
 
 export interface ProcessControlledExpansion {

@@ -37,4 +37,10 @@ import { ProcessDemo } from '@site/src/demos/ProcessDemo';
 
 ## API
 
+`variant="compact"` 使用轻量过程行：有详情时整行可展开，详情区域以 180 布局单位的缩放预算限制高度并独立滚动。流式更新保留展开选择，完成、失败或取消由外部真实状态决定；不由组件生成推理内容或推测业务成功。默认 `card` 保留完整步骤面板。
+
+```tsx
+<Process variant="compact" steps={publicSteps} />
+```
+
 <ApiReference name="Process" />
