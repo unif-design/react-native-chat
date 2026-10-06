@@ -17,6 +17,10 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
       ...shadows.card,
     },
     accessory: { padding: space[3] },
+    header: {
+      borderBottomWidth: 0.5,
+      borderBottomColor: colors.outlineVariant,
+    },
     regular: {
       flexDirection: 'row',
       alignItems: 'flex-end',
@@ -26,7 +30,12 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
     },
     expanded: { flexDirection: 'column', alignItems: 'stretch', gap: 0 },
     hidden: { display: 'none' },
-    input: { flex: 1, minWidth: 0 },
+    input: {
+      flex: 1,
+      minWidth: 0,
+      alignSelf: 'stretch',
+      justifyContent: 'center',
+    },
     inputExpanded: { flex: 0, width: '100%' },
     // 保持原生堆叠特征稳定，避免聚焦展开时重排输入所在的原生视图树。
     more: { width: fixed.hitTarget, height: fixed.hitTarget, zIndex: 1 },
@@ -119,11 +128,13 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
     voice: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: space[2],
+      gap: space[3],
       paddingVertical: space[1],
       paddingHorizontal: space[2],
       borderRadius: radius['3xl'],
       backgroundColor: colors.primaryContainerSubtle,
+      borderWidth: 0.5,
+      borderColor: colors.brandTint14,
     },
     transcript: {
       flex: 1,
@@ -131,5 +142,15 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
       color: colors.foreground,
       fontSize: type.body,
     },
+    voiceBody: {
+      flex: 1,
+      minWidth: 0,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[4],
+      minHeight: r(34),
+    },
+    wave: { flexDirection: 'row', alignItems: 'center', gap: 3, height: r(20) },
+    waveBar: { width: 2.5, borderRadius: 1.5, backgroundColor: colors.primary },
     transcriptPlaceholder: { color: colors.foregroundSubtle },
   });

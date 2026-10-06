@@ -3,6 +3,7 @@ import { Icon, useColors, useThemedStyles } from '@unif/react-native-design';
 import {
   COMPOSER_ACTION_ICON_SIZE,
   COMPOSER_PRIMARY_ICON_SIZE,
+  COMPOSER_CANCEL_ICON_SIZE,
 } from './constants';
 import { createStyles } from './styles';
 import { useMousePress } from './useMousePress';
@@ -56,7 +57,11 @@ export function ComposerIconAction({
             <Icon
               name={icon}
               size={
-                primary ? COMPOSER_PRIMARY_ICON_SIZE : COMPOSER_ACTION_ICON_SIZE
+                primary
+                  ? COMPOSER_PRIMARY_ICON_SIZE
+                  : visual === 'cancel'
+                    ? COMPOSER_CANCEL_ICON_SIZE
+                    : COMPOSER_ACTION_ICON_SIZE
               }
               color={color}
               style={

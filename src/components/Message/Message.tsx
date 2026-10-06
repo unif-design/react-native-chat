@@ -1,5 +1,11 @@
 import { Pressable, Text, View } from 'react-native';
-import { Button, Spinner, useThemedStyles } from '@unif/react-native-design';
+import {
+  Button,
+  IconButton,
+  Spinner,
+  useThemedStyles,
+  useColors,
+} from '@unif/react-native-design';
 import { MarkdownContent } from './MarkdownContent/MarkdownContent';
 import { createStyles } from './styles';
 import { isNestedAction } from './isNestedAction';
@@ -23,6 +29,7 @@ export function Message(props: MessageProps) {
     testID,
   } = props;
   const styles = useThemedStyles(createStyles);
+  const colors = useColors();
   const hasContent =
     Boolean(props.text?.length) ||
     (props.children !== undefined &&
@@ -47,11 +54,20 @@ export function Message(props: MessageProps) {
       {header}
       {props.text !== undefined ? (
         props.format === 'markdown' ? (
-          <MarkdownContent text={props.text} onLinkPress={props.onLinkPress} />
+          <MarkdownContent
+            text={props.text}
+            onLinkPress={props.onLinkPress}
+            outgoing={surface === 'bubble' && placement === 'end'}
+          />
         ) : (
           <Text
             selectable
-            style={styles.text}
+            style={[
+              styles.text,
+              surface === 'bubble' &&
+                placement === 'end' &&
+                styles.outgoingText,
+            ]}
             numberOfLines={props.numberOfLines}
           >
             {props.text}
@@ -117,18 +133,33 @@ export function Message(props: MessageProps) {
         )}
         {actions.length ? (
           <View style={styles.actions}>
-            {actions.map((action) => (
-              <Button
-                key={action.id}
-                label={action.label}
-                leftIcon={action.icon}
-                disabled={action.disabled}
-                loading={action.loading}
-                accessibilityHint={action.accessibilityHint}
-                variant="text"
-                onPress={action.onPress}
-              />
-            ))}
+            {actions.map((action) =>
+              action.icon ? (
+                <IconButton
+                  key={action.id}
+                  icon={action.icon}
+                  size="sm"
+                  variant="ghost"
+                  color={colors.foregroundSubtle}
+                  accessibilityLabel={action.label}
+                  accessibilityHint={action.accessibilityHint}
+                  disabled={action.disabled}
+                  loading={action.loading}
+                  onPress={action.onPress}
+                />
+              ) : (
+                <Button
+                  key={action.id}
+                  label={action.label}
+                  leftIcon={action.icon}
+                  disabled={action.disabled}
+                  loading={action.loading}
+                  accessibilityHint={action.accessibilityHint}
+                  variant="text"
+                  onPress={action.onPress}
+                />
+              )
+            )}
           </View>
         ) : null}
       </View>

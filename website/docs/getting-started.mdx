@@ -12,7 +12,7 @@ import { ApiReference } from '@site/src/components/ApiReference';
 npm install @unif/react-native-chat@^3 @unif/react-native-design@^0.35 @callstack/liquid-glass@^0.8.2
 ```
 
-当前开发基线为 React 19.2.3、React Native 0.86.3、Design 0.35.0，Chat 3 的 Design peer 范围为 `^0.35.0`。应用还需按 Design 的公开要求配置 Liquid Glass、Gesture Handler、Reanimated、Safe Area Context 与 SVG 等依赖；已接入 Design 的应用复用现有宿主。
+当前开发基线为 React 19.2.3、React Native 0.86.3、Design 0.36.0，Chat 3 的 Design peer 范围为 `^0.36.0`。应用还需按 Design 的公开要求配置 Liquid Glass、Gesture Handler、Reanimated、Safe Area Context 与 SVG 等依赖；已接入 Design 的应用复用现有宿主。
 
 从 Chat 2 升级时，同步升级 Design 并将其旧 blur 依赖替换为 `@callstack/liquid-glass`。本仓使用 0.8.2；iOS 安装依赖后重新执行 `pod install`。
 

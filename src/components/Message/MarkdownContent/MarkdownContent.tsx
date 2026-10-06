@@ -8,15 +8,27 @@ import {
 import { Pressable, Text } from 'react-native';
 import { Renderer, useMarkdown } from 'react-native-marked';
 import { useTheme, useThemedStyles } from '@unif/react-native-design';
-import { createStyles } from './styles';
+import { createStyles, createOutgoingStyles } from './styles';
 import type { MarkdownContentProps, MarkdownSvgLabelProps } from './types';
 import { MarkdownImage } from './MarkdownImage/MarkdownImage';
 
-export function MarkdownContent({ text, onLinkPress }: MarkdownContentProps) {
+export function MarkdownContent({
+  text,
+  onLinkPress,
+  outgoing = false,
+}: MarkdownContentProps) {
   const { scheme } = useTheme();
-  const styles = useThemedStyles(createStyles);
+  const styles = useThemedStyles(
+    outgoing ? createOutgoingStyles : createStyles
+  );
   const markdown = useMemo(() => {
     const instance = new Renderer();
+    const renderCode = instance.code.bind(instance);
+    instance.code = (value, language, containerStyle, textStyle) =>
+      renderCode(value, language, containerStyle, {
+        ...textStyle,
+        ...styles.codeText,
+      });
     // 上游 table 节点未提供 key，保留其渲染并补齐稳定的节点身份。
     const renderTable = instance.table.bind(instance);
     instance.table = (...args) => (

@@ -22,6 +22,7 @@ import {
 } from './constants';
 import { ComposerIconAction } from './ComposerIconAction';
 import { ComposerMenuItem } from './ComposerMenuItem';
+import { ComposerVoiceWave } from './ComposerVoiceWave';
 import { createStyles } from './styles';
 import type { ComposerHandle, ComposerProps } from './types';
 
@@ -122,7 +123,9 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
           }
         }}
       >
-        {header != null ? <View style={styles.accessory}>{header}</View> : null}
+        {header != null ? (
+          <View style={[styles.accessory, styles.header]}>{header}</View>
+        ) : null}
         {menuOpen && !disabled && !voiceActive && actions.length > 0 ? (
           <>
             <Pressable
@@ -175,6 +178,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
             <Textarea
               ref={inputRef}
               surface="plain"
+              contentAlignment="center"
               value={value}
               onChangeText={onChangeText}
               editable={editable}
@@ -247,19 +251,22 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
               disabled={disabled || voice.disabled}
               onPress={voice.onCancel}
             />
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="head"
-              style={[
-                styles.transcript,
-                !voice.transcript && styles.transcriptPlaceholder,
-              ]}
-              accessibilityLiveRegion="polite"
-            >
-              {voice.status === 'starting'
-                ? VOICE_LABELS.starting
-                : voice.transcript || VOICE_LABELS[voice.status]}
-            </Text>
+            <View style={styles.voiceBody}>
+              {voice.status !== 'starting' ? <ComposerVoiceWave /> : null}
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="head"
+                style={[
+                  styles.transcript,
+                  !voice.transcript && styles.transcriptPlaceholder,
+                ]}
+                accessibilityLiveRegion="polite"
+              >
+                {voice.status === 'starting'
+                  ? VOICE_LABELS.starting
+                  : voice.transcript || VOICE_LABELS[voice.status]}
+              </Text>
+            </View>
             {voice.status === 'listening' ? (
               <ComposerIconAction
                 icon="stop"

@@ -38,6 +38,10 @@ Markdown 图片使用原始资源地址，位图保持比例，SVG 沿 `react-na
 
 `actions` 表示消息操作。正文中的链接、按钮等交互区域独立交付事件；消息外壳支持 `onPress` 和 `onLongPress`。
 
+默认气泡使用 `radius['2xl']`，水平 `space[5]`、垂直 `space[4]` 留白，最大占消息行宽的 78%。外发文字采用品牌色底与 `onPrimary` 文字；卡片使用 `fullWidth` 和 `surface="plain"`，附件自行提供中性表面。普通正文和 Markdown 正文采用 `type.sm`，字体系数只应用一次。
+
+有 `icon` 的消息操作显示独立图标按钮，`label` 保留为中文可访问名称；没有图标的动作显示文字按钮。
+
 ## API
 
 <ApiReference name="Message" />
