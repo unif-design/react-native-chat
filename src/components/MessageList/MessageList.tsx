@@ -120,7 +120,9 @@ export function MessageList<T>({
         ListHeaderComponent={listHeader}
         ListFooterComponent={listFooter}
         ListEmptyComponent={listEmpty}
-        maintainVisibleContentPosition={MAINTAIN_VISIBLE_POSITION}
+        maintainVisibleContentPosition={
+          items.length > 0 ? MAINTAIN_VISIBLE_POSITION : undefined
+        }
         keyboardDismissMode={keyboardDismissMode}
         contentContainerStyle={contentContainerStyle}
         showsVerticalScrollIndicator={showsVerticalScrollIndicator}
