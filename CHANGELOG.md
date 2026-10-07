@@ -1,5 +1,11 @@
 # Changelog
 
+# [3.3.0](https://github.com/unif-design/react-native-chat/compare/v3.2.4...v3.3.0) (2026-10-07)
+
+### Features
+
+* align chat presentation and add explicit message anchoring ([#16](https://github.com/unif-design/react-native-chat/issues/16)) ([62a2627](https://github.com/unif-design/react-native-chat/commit/62a2627250ab30318997e3147f05aa1c089228e5))
+
 ## [3.2.4](https://github.com/unif-design/react-native-chat/compare/v3.2.3...v3.2.4) (2026-10-07)
 
 ### Bug Fixes
