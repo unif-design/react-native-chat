@@ -64,6 +64,9 @@ export function ProcessCompactStep({
         >
           {step.title}
         </Text>
+        <Text style={[styles.statusText, { color }]}>
+          {PROCESS_STATUS_LABELS[step.status]}
+        </Text>
         {elapsed ? <Text style={styles.elapsed}>{elapsed}</Text> : null}
         {hasDetails ? (
           <Icon
