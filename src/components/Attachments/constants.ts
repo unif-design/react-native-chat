@@ -10,6 +10,7 @@ export const ATTACHMENT_STATUS_OWNER_SIZE = Math.max(
   44,
   ATTACHMENT_STATUS_SIZE
 );
+export const ATTACHMENT_REMOVE_OWNER_SIZE = 44;
 export const ATTACHMENT_ICONS: Record<
   NonNullable<ChatAttachmentItem['kind']>,
   IconName

@@ -31,7 +31,7 @@ import { AttachmentsDemo } from '@site/src/demos/AttachmentsDemo';
 
 `items` 使用稳定的 `id`，预览和移除事件返回原项。没有条目时不占位；未提供名称显示“未命名附件”。
 
-`layout` 默认 `grid`，也支持 `compact`、`mixed`、`carousel` 与 `list`。`compact` 将移除入口保留在76缩略格的右上角，不为它扩大每项占宽；预览、移除和重试继续交付各自原项。图片与进度复用 Design。`status` 默认 `idle`，`loadingVisual` 默认 `center`，也支持仅显示文字的 `caption`；`showProgressLabel` 默认关闭。
+`layout` 默认 `grid`，也支持 `compact`、`mixed`、`carousel` 与 `list`。`compact` 在仅有移除操作时将入口保留在缩略格右上角；同时支持整图预览或中央重试时，保留独立的44点移除操作槽，避免点图片中心误删，此时占宽超过图片框。预览、移除和重试继续交付各自原项。图片与进度复用 Design。`status` 默认 `idle`，`loadingVisual` 默认 `center`，也支持仅显示文字的 `caption`；`showProgressLabel` 默认关闭。
 
 图片使用 `r(76)` 的缩略图，不额外显示图片文件名；可预览时点击整图。`mixed` 中的文档使用 `r(64)` 的整行和 `r(36)` 的缩略图，保留名称与元信息，点击名称或缩略图交付同一个预览事件。移除目标独立于预览，中心上传/处理状态和失败重试也保留各自的命中范围。
 

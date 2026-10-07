@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { ThemeProvider, Thumbnail, r } from '@unif/react-native-design';
 import { Attachments } from '..';
 
-it('compact移除保持在76格内且不触发整图预览', () => {
+it('compact同时预览与移除时保留独立触达区域，图片中心不能误触移除', () => {
   const onPreview = jest.fn();
   const onRemove = jest.fn();
   const item = {
@@ -25,13 +25,67 @@ it('compact移除保持在76格内且不触发整图预览', () => {
     { wrapper: ThemeProvider }
   );
   const remove = screen.getByRole('button', { name: '移除门店照片' });
+  const preview = screen.getByRole('button', { name: '预览门店照片' });
   const removeStyle = StyleSheet.flatten(remove.props.style);
-  expect(removeStyle.left + removeStyle.width).toBeLessThanOrEqual(r(76));
+  const previewStyle = StyleSheet.flatten(preview.props.style);
+  expect(removeStyle.left).toBeGreaterThanOrEqual(previewStyle.width);
+  expect(removeStyle.width).toBeGreaterThanOrEqual(44);
+  expect(removeStyle.height).toBeGreaterThanOrEqual(44);
   fireEvent.press(remove);
   expect(onRemove).toHaveBeenCalledWith(item);
   expect(onPreview).not.toHaveBeenCalled();
-  fireEvent.press(screen.getByRole('button', { name: '预览门店照片' }));
+  fireEvent.press(preview);
   expect(onPreview).toHaveBeenCalledWith(item);
+});
+
+it('compact仅移除时仍保持76格宽，不新增无用操作区', () => {
+  render(
+    <Attachments
+      layout="compact"
+      items={[
+        {
+          id: 'upload',
+          kind: 'image',
+          name: '上传照片',
+          status: 'uploading',
+          removable: true,
+        },
+      ]}
+      onRemove={jest.fn()}
+    />,
+    { wrapper: ThemeProvider }
+  );
+  const target = screen.getByRole('button', { name: '移除上传照片' });
+  const style = StyleSheet.flatten(target.props.style);
+  expect(style.left + style.width).toBeLessThanOrEqual(r(76));
+});
+
+it('compact中心重试与移除不重叠，分别交付原动作和原附件', () => {
+  const retry = jest.fn(),
+    remove = jest.fn();
+  const item = {
+    id: 'retry',
+    kind: 'image' as const,
+    name: '失败照片',
+    status: 'failed' as const,
+    removable: true,
+    actions: [{ id: 'retry', label: '重新上传', onPress: retry }],
+  };
+  render(<Attachments layout="compact" items={[item]} onRemove={remove} />, {
+    wrapper: ThemeProvider,
+  });
+  const retryButton = screen.getByRole('button', { name: '重新上传' });
+  const removeButton = screen.getByRole('button', { name: '移除失败照片' });
+  const retryStyle = StyleSheet.flatten(retryButton.props.style);
+  const removeStyle = StyleSheet.flatten(removeButton.props.style);
+  expect(removeStyle.left).toBeGreaterThanOrEqual(
+    retryStyle.left + retryStyle.width
+  );
+  fireEvent.press(retryButton);
+  expect(retry).toHaveBeenCalledTimes(1);
+  expect(remove).not.toHaveBeenCalled();
+  fireEvent.press(removeButton);
+  expect(remove).toHaveBeenCalledWith(item);
 });
 
 it('图片以76缩略图展示，预览点击原图，不额外生成文件名卡片', () => {

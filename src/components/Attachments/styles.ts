@@ -12,6 +12,7 @@ import type { ColorTokens } from '@unif/react-native-design';
 import {
   ATTACHMENT_STATUS_OWNER_SIZE,
   ATTACHMENT_STATUS_SIZE,
+  ATTACHMENT_REMOVE_OWNER_SIZE,
   CARD_WIDTH,
 } from './constants';
 
@@ -65,8 +66,9 @@ export const createStyles = (colors: ColorTokens) =>
       height: r(64),
       paddingVertical: 0,
       paddingHorizontal: space[3],
-      borderWidth: 0,
-      borderRadius: 0,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderRadius: radius.md,
+      backgroundColor: colors.surfaceContainerHigh,
     },
     content: { minWidth: 0, flexShrink: 1 },
     rowContent: { flex: 1 },
@@ -102,8 +104,8 @@ export const createStyles = (colors: ColorTokens) =>
     removeOwner: {
       position: 'absolute',
       top: 0,
-      width: 44,
-      height: 44,
+      width: ATTACHMENT_REMOVE_OWNER_SIZE,
+      height: ATTACHMENT_REMOVE_OWNER_SIZE,
       paddingTop: space[1],
       zIndex: 2,
       elevation: 2,
