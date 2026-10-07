@@ -1,9 +1,48 @@
 import { StyleSheet } from 'react-native';
-import { fw, r, radius, space, type } from '@unif/react-native-design';
+import { fw, icon, r, radius, space, type } from '@unif/react-native-design';
 import type { ColorTokens } from '@unif/react-native-design';
 
 export const createStyles = (colors: ColorTokens) =>
   StyleSheet.create({
+    timelineRoot: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.lg,
+      padding: space[5],
+    },
+    timelineStep: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: space[4],
+    },
+    timelineGutter: {
+      alignItems: 'center',
+      width: icon.xs,
+      alignSelf: 'stretch',
+    },
+    timelineLine: {
+      width: r(1.5),
+      flex: 1,
+      backgroundColor: colors.outline,
+      marginTop: r(2),
+      minHeight: space[5],
+    },
+    timelineBody: { flex: 1 },
+    timelineBodyNotLast: { paddingBottom: space[7] },
+    timelineTitle: {
+      flex: 1,
+      fontSize: type.xs,
+      fontWeight: fw.medium,
+      color: colors.foreground,
+      lineHeight: type.xs * 1.4,
+    },
+    timelineActive: { color: colors.primary },
+    timelinePending: { color: colors.foregroundSubtle, fontWeight: fw.regular },
+    timelineDescription: {
+      flexShrink: 0,
+      fontSize: type.xs,
+      color: colors.foregroundSubtle,
+    },
+    timelineError: { color: colors.error },
     compactRoot: { gap: space[2] },
     compactSteps: { gap: space[2] },
     compactAction: { minWidth: 44, minHeight: 44 },
@@ -21,16 +60,22 @@ export const createStyles = (colors: ColorTokens) =>
       fontSize: type.xs,
       fontWeight: fw.medium,
     },
+    spacer: { flex: 1 },
+    compactStatus: {
+      fontSize: type.xs,
+      fontWeight: fw.medium,
+      color: colors.foregroundMuted,
+    },
     compactDescription: {
       color: colors.foregroundMuted,
       fontSize: type.xs,
       lineHeight: type.xs * 1.6,
     },
-    compactDetails: {
-      maxHeight: r(180),
+    compactDetailsContainer: {
       paddingTop: space[3],
       paddingBottom: space[2],
     },
+    compactDetails: { maxHeight: r(180) },
     root: {
       gap: space[4],
       padding: space[5],

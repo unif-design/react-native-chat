@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { radius, space, type } from '@unif/react-native-design';
+import { r, radius, space, type } from '@unif/react-native-design';
 import type { ColorTokens } from '@unif/react-native-design';
 
 export const createStyles = (colors: ColorTokens) =>
@@ -35,7 +35,30 @@ export const createStyles = (colors: ColorTokens) =>
       borderWidth: 1,
       borderColor: colors.outline,
     },
-    failed: { borderWidth: 1, borderColor: colors.error },
+    failed: { opacity: 0.7 },
+    failureRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      alignSelf: 'stretch',
+      gap: space[2],
+    },
+    failureContent: { flexShrink: 1 },
+    failureAction: { alignSelf: 'center' },
+    failureFullWidth: { flex: 1 },
+    waitingBubble: { width: r(240), borderTopLeftRadius: 0 },
+    waitingRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+    waitingDots: { flexDirection: 'row', gap: r(3) },
+    waitingDot: {
+      width: r(6),
+      height: r(6),
+      borderRadius: r(3),
+      backgroundColor: colors.foregroundSubtle,
+    },
+    waitingLabel: {
+      fontSize: type.xxs,
+      color: colors.foregroundSubtle,
+      flexShrink: 1,
+    },
     text: {
       fontSize: type.sm,
       lineHeight: type.sm * 1.5,

@@ -4,8 +4,8 @@ import {
   Icon,
   Pulse,
   Reveal,
+  motion,
   pressedOpacity,
-  r,
   useColors,
   useThemedStyles,
 } from '@unif/react-native-design';
@@ -15,6 +15,7 @@ import type { ProcessCompactStepProps } from './types';
 
 export function ProcessCompactStep({
   step,
+  identity,
   expanded,
   elapsed,
   onToggle,
@@ -23,6 +24,7 @@ export function ProcessCompactStep({
   const colors = useColors();
   const hasDetails = step.details != null;
   const running = step.status === 'running';
+  const statusText = step.statusText ?? PROCESS_STATUS_LABELS[step.status];
   const color = running
     ? colors.primary
     : step.status === 'completed'
@@ -37,7 +39,7 @@ export function ProcessCompactStep({
           ? 'spark'
           : PROCESS_STATUS_ICONS[step.status]
       }
-      size={r(14)}
+      size={14}
       color={color}
     />
   );
@@ -47,31 +49,44 @@ export function ProcessCompactStep({
         testID={`process-step-${step.id}-toggle`}
         accessible
         accessibilityRole={hasDetails ? 'button' : undefined}
-        accessibilityLabel={`${step.title}，${PROCESS_STATUS_LABELS[step.status]}${elapsed ? `，${elapsed}` : ''}`}
+        accessibilityLabel={`${step.title}，${statusText}${elapsed ? `，${elapsed}` : ''}`}
         accessibilityState={hasDetails ? { expanded } : undefined}
         disabled={!hasDetails}
+        hitSlop={10}
         onPress={onToggle}
         style={({ pressed }) => [
           styles.compactHeader,
           pressed && { opacity: pressedOpacity },
         ]}
       >
-        {running ? <Pulse>{icon}</Pulse> : icon}
-        <Text
-          style={styles.compactTitle}
-          testID={`process-step-title-${step.id}`}
-          numberOfLines={1}
-        >
-          {step.title}
-        </Text>
-        <Text style={[styles.statusText, { color }]}>
-          {PROCESS_STATUS_LABELS[step.status]}
-        </Text>
+        {identity ? (
+          <>
+            {identity}
+            <View style={styles.spacer} />
+          </>
+        ) : null}
+        {running ? (
+          <Pulse from={0.4} duration={motion.pulse / 2}>
+            {icon}
+          </Pulse>
+        ) : (
+          icon
+        )}
+        {!identity ? (
+          <Text
+            style={styles.compactTitle}
+            testID={`process-step-title-${step.id}`}
+            numberOfLines={1}
+          >
+            {step.title}
+          </Text>
+        ) : null}
+        <Text style={styles.compactStatus}>{statusText}</Text>
         {elapsed ? <Text style={styles.elapsed}>{elapsed}</Text> : null}
         {hasDetails ? (
           <Icon
             name={expanded ? 'chevron-up' : 'chevron-down'}
-            size={r(14)}
+            size={14}
             color={colors.foregroundSubtle}
           />
         ) : null}
@@ -80,11 +95,12 @@ export function ProcessCompactStep({
         <Text style={styles.compactDescription}>{step.description}</Text>
       ) : null}
       {hasDetails && expanded ? (
-        <Reveal>
+        <Reveal style={styles.compactDetailsContainer}>
           <ScrollView
             testID={`process-step-${step.id}-details`}
             style={styles.compactDetails}
             nestedScrollEnabled
+            showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
             {step.details}

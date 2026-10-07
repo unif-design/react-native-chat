@@ -186,6 +186,12 @@ describe('Composer', () => {
       if (status === 'listening') {
         fireEvent.press(screen.getByRole('button', { name: '停止语音输入' }));
         expect(onStop).toHaveBeenCalledTimes(1);
+      } else if (status === 'finishing') {
+        expect(
+          screen.getByRole('button', { name: '停止语音输入' })
+        ).toBeDisabled();
+        fireEvent.press(screen.getByRole('button', { name: '停止语音输入' }));
+        expect(onStop).not.toHaveBeenCalled();
       } else {
         expect(
           screen.queryByRole('button', { name: '停止语音输入' })
@@ -380,4 +386,26 @@ test('真实 Textarea 接收字体相关高度、ref 转交且进入语音时失
   );
   fireEvent.press(screen.getByRole('button', { name: '开始语音输入' }));
   expect(voice.onStart).not.toHaveBeenCalled();
+});
+
+test('全部附件操作不可用时更多入口禁用，已打开菜单随状态关闭', () => {
+  const props: ComposerProps = {
+    value: '',
+    onChangeText: jest.fn(),
+    primaryAction: { kind: 'send', onPress: jest.fn() },
+    actions: [{ id: 'photo', label: '照片', onPress: jest.fn() }],
+  };
+  const view = renderComposer(props);
+  fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
+  expect(screen.getByRole('button', { name: '照片' })).toBeOnTheScreen();
+  view.rerender(
+    <Composer
+      {...props}
+      actions={props.actions!.map((action) => ({ ...action, disabled: true }))}
+    />
+  );
+  expect(screen.getByRole('button', { name: '更多操作' })).toBeDisabled();
+  expect(screen.queryByTestId('composer-menu')).toBeNull();
+  fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
+  expect(screen.queryByTestId('composer-menu')).toBeNull();
 });

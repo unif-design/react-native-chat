@@ -20,7 +20,7 @@ export interface ChatAttachmentItem {
 }
 export interface AttachmentsProps {
   items: readonly ChatAttachmentItem[];
-  layout?: 'grid' | 'mixed' | 'carousel' | 'list';
+  layout?: 'grid' | 'compact' | 'mixed' | 'carousel' | 'list';
   showProgressLabel?: boolean;
   onPreview?(item: ChatAttachmentItem): void;
   onRemove?(item: ChatAttachmentItem): void;
@@ -36,4 +36,5 @@ export interface AttachmentItemProps extends Pick<
   imageSize: number;
   row: boolean;
   mixed?: boolean;
+  compact?: boolean;
 }

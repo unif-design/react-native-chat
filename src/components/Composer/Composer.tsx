@@ -5,12 +5,19 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Pressable, Text, View, useWindowDimensions } from 'react-native';
+import {
+  LayoutAnimation,
+  Pressable,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import {
   fixed,
   Textarea,
   useTheme,
   useThemedStyles,
+  usePrefersReducedMotion,
 } from '@unif/react-native-design';
 import type { TextFieldHandle } from '@unif/react-native-design';
 import {
@@ -52,6 +59,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
   ) {
     const styles = useThemedStyles(createStyles);
     const { fontScale } = useTheme();
+    const reducedMotion = usePrefersReducedMotion();
     const { height: windowHeight } = useWindowDimensions();
     const inputRef = useRef<TextFieldHandle>(null);
     const lastHeight = useRef<number | undefined>(undefined);
@@ -59,6 +67,12 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
     const [focused, setFocused] = useState(false);
     const voiceActive = voice !== undefined && voice.status !== 'idle';
     const expanded = focused || value.length > 0;
+    const moreDisabled =
+      disabled ||
+      voiceActive ||
+      actions.every(
+        (action) => !action.label.trim() || action.disabled || action.loading
+      );
     const minHeight = Number.isFinite(minInputHeight)
       ? Math.max(fixed.hitTarget, minInputHeight!)
       : fixed.hitTarget;
@@ -98,8 +112,8 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
         inputRef.current?.blur();
         setFocused(false);
       }
-      if (voiceActive || disabled) setMenuOpen(false);
-    }, [voiceActive, disabled]);
+      if (moreDisabled) setMenuOpen(false);
+    }, [voiceActive, moreDisabled]);
 
     const moreAction =
       actions.length > 0 ? (
@@ -107,7 +121,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
           icon="plus"
           label="更多操作"
           expanded={menuOpen}
-          disabled={disabled}
+          disabled={moreDisabled}
           onPress={() => setMenuOpen((open) => !open)}
         />
       ) : null;
@@ -126,7 +140,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
         {header != null ? (
           <View style={[styles.accessory, styles.header]}>{header}</View>
         ) : null}
-        {menuOpen && !disabled && !voiceActive && actions.length > 0 ? (
+        {menuOpen && !moreDisabled && actions.length > 0 ? (
           <>
             <Pressable
               style={[styles.backdrop, { height: windowHeight }]}
@@ -191,10 +205,18 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
               onPressIn={() => setMenuOpen(false)}
               onFocus={() => {
                 setMenuOpen(false);
+                if (!focused && !value.length && !reducedMotion)
+                  LayoutAnimation.configureNext(
+                    LayoutAnimation.Presets.easeInEaseOut
+                  );
                 setFocused(true);
                 onFocusChange?.(true);
               }}
               onBlur={() => {
+                if (focused && !value.length && !reducedMotion)
+                  LayoutAnimation.configureNext(
+                    LayoutAnimation.Presets.easeInEaseOut
+                  );
                 setFocused(false);
                 onFocusChange?.(false);
               }}
@@ -267,13 +289,17 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
                   : voice.transcript || VOICE_LABELS[voice.status]}
               </Text>
             </View>
-            {voice.status === 'listening' ? (
+            {voice.status === 'listening' || voice.status === 'finishing' ? (
               <ComposerIconAction
                 icon="stop"
                 visual="primary"
                 label="停止语音输入"
-                disabled={disabled || voice.disabled}
-                onPress={voice.onStop}
+                disabled={
+                  disabled || voice.disabled || voice.status === 'finishing'
+                }
+                onPress={
+                  voice.status === 'listening' ? voice.onStop : undefined
+                }
               />
             ) : null}
           </View>

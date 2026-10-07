@@ -1,19 +1,25 @@
-import { useCallback, useImperativeHandle, useMemo, useRef } from 'react';
-import type { RefAttributes } from 'react';
-import { FlatList, View } from 'react-native';
-import type { ListRenderItemInfo } from 'react-native';
 import {
-  Button,
-  IconButton,
-  Spinner,
-  useThemedStyles,
-} from '@unif/react-native-design';
+  useCallback,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from 'react';
+import type { RefAttributes } from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
+import type { ListRenderItemInfo } from 'react-native';
+import { Button, useThemedStyles } from '@unif/react-native-design';
 import { DEFAULT_END_THRESHOLD } from './constants';
 import { createStyles } from './styles';
 import { useWebPrependAnchor } from './webPrependAnchor';
 import { useMessageListScroll } from './useMessageListScroll';
 import { MessageListRow } from './MessageListRow';
-import type { MessageListHandle, MessageListProps } from './types';
+import { MessageListEndButton } from './MessageListEndButton';
+import type {
+  MessageListCellProps,
+  MessageListHandle,
+  MessageListProps,
+} from './types';
 
 const MAINTAIN_VISIBLE_POSITION = { minIndexForVisible: 0 };
 
@@ -44,16 +50,27 @@ export function MessageList<T>({
 }: MessageListProps<T> & RefAttributes<MessageListHandle>) {
   const styles = useThemedStyles(createStyles);
   const listRef = useRef<FlatList<T>>(null);
+  const listTestID = useRef(testID);
+  listTestID.current = testID;
+  const contentStyle = StyleSheet.flatten(contentContainerStyle);
   const keys = useMemo(() => items.map(keyExtractor), [items, keyExtractor]);
   const { getRowNativeID, preservingPrependRef, cancelPrependPreservation } =
     useWebPrependAnchor({ listRef, itemsIdentity: items, keys });
   const {
     atEnd,
+    anchorMinimumHeight,
+    anchorToItem,
+    onCellLayout,
+    onItemLayout,
+    onCellUnmount,
+    onFooterLayout,
+    onScrollToIndexFailed,
     scrollToEnd,
     onLayout,
     onContentSizeChange,
     onScroll,
     onUserScrollBegin,
+    onMomentumScrollBegin,
     onScrollEndDrag,
     onMomentumScrollEnd,
   } = useMessageListScroll({
@@ -63,16 +80,68 @@ export function MessageList<T>({
     followOutput,
     endThreshold,
     onAtEndChange,
+    hasFooter: !!footer,
+    contentMinimumHeight: contentStyle?.minHeight,
+    contentBottomPadding:
+      contentStyle?.paddingBottom ??
+      contentStyle?.paddingVertical ??
+      contentStyle?.padding,
     preservingPrependRef,
     cancelPrependPreservation,
   });
-  useImperativeHandle(ref, () => ({ scrollToEnd }), [scrollToEnd]);
+  useImperativeHandle(ref, () => ({ scrollToEnd, anchorToItem }), [
+    scrollToEnd,
+    anchorToItem,
+  ]);
+
+  const CellRenderer = useCallback(
+    function MessageListCell({
+      cellKey,
+      index,
+      children,
+      style: cellStyle,
+      onLayout: reportLayout,
+      onFocusCapture,
+    }: MessageListCellProps<T>) {
+      const currentIndex = useRef(index);
+      currentIndex.current = index;
+      useLayoutEffect(
+        () => () => onCellUnmount(cellKey, currentIndex.current),
+        [cellKey]
+      );
+      return (
+        <View
+          style={cellStyle}
+          onFocusCapture={onFocusCapture}
+          testID={
+            listTestID.current
+              ? `${listTestID.current}-cell-${encodeURIComponent(cellKey)}`
+              : undefined
+          }
+          onLayout={(event) => {
+            reportLayout?.(event);
+            onCellLayout(cellKey, index, event.nativeEvent.layout);
+          }}
+        >
+          {children}
+        </View>
+      );
+    },
+    [onCellLayout, onCellUnmount]
+  );
 
   const renderRow = useCallback(
     ({ item, index }: ListRenderItemInfo<T>) => (
       <MessageListRow
         item={item}
         index={index}
+        itemKey={keys[index]!}
+        onItemLayout={onItemLayout}
+        testID={
+          testID
+            ? `${testID}-item-${encodeURIComponent(keys[index]!)}`
+            : undefined
+        }
         previous={renderSeparator ? items[index - 1] : undefined}
         nativeID={getRowNativeID(keys[index]!)}
         renderItem={renderItem}
@@ -80,7 +149,16 @@ export function MessageList<T>({
         extraData={extraData}
       />
     ),
-    [extraData, getRowNativeID, items, keys, renderItem, renderSeparator]
+    [
+      extraData,
+      getRowNativeID,
+      items,
+      keys,
+      onItemLayout,
+      renderItem,
+      renderSeparator,
+      testID,
+    ]
   );
 
   const history = hasEarlier && onRequestEarlier;
@@ -103,8 +181,9 @@ export function MessageList<T>({
     [hasHeader, header, history, loadingEarlier, onRequestEarlier]
   );
   const listFooter = useMemo(
-    () => (footer ? <View>{footer}</View> : undefined),
-    [footer]
+    () =>
+      footer ? <View onLayout={onFooterLayout}>{footer}</View> : undefined,
+    [footer, onFooterLayout]
   );
   const listEmpty = useMemo(() => (empty ? <>{empty}</> : undefined), [empty]);
   return (
@@ -117,14 +196,21 @@ export function MessageList<T>({
         keyExtractor={keyExtractor}
         extraData={extraData}
         renderItem={renderRow}
+        CellRendererComponent={CellRenderer}
         ListHeaderComponent={listHeader}
         ListFooterComponent={listFooter}
         ListEmptyComponent={listEmpty}
         maintainVisibleContentPosition={
-          items.length > 0 ? MAINTAIN_VISIBLE_POSITION : undefined
+          items.length > 0 && anchorMinimumHeight === undefined
+            ? MAINTAIN_VISIBLE_POSITION
+            : undefined
         }
         keyboardDismissMode={keyboardDismissMode}
-        contentContainerStyle={contentContainerStyle}
+        contentContainerStyle={
+          anchorMinimumHeight
+            ? [contentContainerStyle, { minHeight: anchorMinimumHeight }]
+            : contentContainerStyle
+        }
         showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         keyboardShouldPersistTaps="handled"
         scrollEventThrottle={16}
@@ -132,30 +218,16 @@ export function MessageList<T>({
         onContentSizeChange={onContentSizeChange}
         onScroll={onScroll}
         onScrollBeginDrag={onUserScrollBegin}
-        onMomentumScrollBegin={onUserScrollBegin}
+        onMomentumScrollBegin={onMomentumScrollBegin}
         onScrollEndDrag={onScrollEndDrag}
         onMomentumScrollEnd={onMomentumScrollEnd}
+        onScrollToIndexFailed={onScrollToIndexFailed}
       />
       {showScrollToEnd && items.length > 0 && !atEnd ? (
-        <View style={styles.returnToEnd} pointerEvents="box-none">
-          {scrollToEndBusy ? (
-            <View style={styles.returnProgress} pointerEvents="none">
-              <Spinner size={44} thickness={2} />
-            </View>
-          ) : null}
-          <IconButton
-            icon="arrow-down"
-            accessibilityLabel={
-              scrollToEndBusy ? '回到最新消息，正在处理' : '回到最新消息'
-            }
-            variant="ghost"
-            size="md"
-            surfaceSize={36}
-            iconSize={18}
-            style={styles.returnButton}
-            onPress={() => scrollToEnd()}
-          />
-        </View>
+        <MessageListEndButton
+          busy={scrollToEndBusy}
+          onPress={() => scrollToEnd()}
+        />
       ) : null}
     </View>
   );

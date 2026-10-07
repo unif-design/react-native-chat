@@ -9,6 +9,7 @@ import {
 import { PROCESS_STATUS_ICONS, PROCESS_STATUS_LABELS } from './constants';
 import { createStyles } from './styles';
 import { ProcessCompactStep } from './ProcessCompactStep';
+import { ProcessTimelineStep } from './ProcessTimelineStep';
 import type { ProcessProps, ProcessStep } from './types';
 
 function idsWithDetails(
@@ -45,6 +46,10 @@ function formatElapsedMs(elapsedMs: number | undefined): string | undefined {
 
 export function Process(props: ProcessProps): React.JSX.Element {
   const { steps, title, identity, style, testID, variant = 'card' } = props;
+  const inlineIdentity =
+    variant === 'compact' &&
+    steps.length === 1 &&
+    props.identityPlacement === 'inline';
   const styles = useThemedStyles(createStyles);
   const colors = useColors();
   const isControlled = props.expandedIds !== undefined;
@@ -73,25 +78,53 @@ export function Process(props: ProcessProps): React.JSX.Element {
 
   return (
     <View
-      style={[variant === 'compact' ? styles.compactRoot : styles.root, style]}
+      style={[
+        variant === 'compact'
+          ? styles.compactRoot
+          : variant === 'timeline'
+            ? styles.timelineRoot
+            : styles.root,
+        style,
+      ]}
       testID={testID}
     >
-      {title || identity ? (
+      {title || (identity && !inlineIdentity) ? (
         <View style={styles.heading}>
-          {identity}
+          {!inlineIdentity ? identity : null}
           {title ? <Text style={styles.headingTitle}>{title}</Text> : null}
         </View>
       ) : null}
-      <View style={variant === 'compact' ? styles.compactSteps : styles.steps}>
+      <View
+        style={
+          variant === 'compact'
+            ? styles.compactSteps
+            : variant === 'timeline'
+              ? undefined
+              : styles.steps
+        }
+      >
         {steps.map((step, index) => {
-          const statusLabel = PROCESS_STATUS_LABELS[step.status];
+          const statusLabel =
+            step.statusText ?? PROCESS_STATUS_LABELS[step.status];
           const elapsed = formatElapsedMs(step.elapsedMs);
           const isExpanded = expandedIds.includes(step.id);
+          if (variant === 'timeline')
+            return (
+              <ProcessTimelineStep
+                key={step.id}
+                step={step}
+                last={index === steps.length - 1}
+                expanded={isExpanded}
+                elapsed={elapsed}
+                onToggle={() => toggleDetails(step.id)}
+              />
+            );
           if (variant === 'compact')
             return (
               <ProcessCompactStep
                 key={step.id}
                 step={step}
+                identity={inlineIdentity ? identity : undefined}
                 expanded={isExpanded}
                 elapsed={elapsed}
                 onToggle={() => toggleDetails(step.id)}

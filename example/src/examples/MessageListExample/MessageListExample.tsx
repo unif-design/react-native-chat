@@ -45,7 +45,7 @@ export function MessageListExample() {
     setLastAction(`明确前插 ${EARLIER_MESSAGE_ITEMS.length} 条固定消息`);
   };
 
-  const appendMessage = () => {
+  const appendMessage = (anchor = false) => {
     const id = `appended-${nextMessageId.current++}`;
     setItems((current) => [
       ...current,
@@ -56,7 +56,8 @@ export function MessageListExample() {
         status: 'idle',
       },
     ]);
-    setLastAction(`追加末尾消息 ${id}`);
+    if (anchor) listRef.current?.anchorToItem(id, { topOffset: 8 });
+    setLastAction(anchor ? `追加并顶锚消息 ${id}` : `追加末尾消息 ${id}`);
   };
 
   const growStreamingMessage = () => {
@@ -101,7 +102,12 @@ export function MessageListExample() {
           disabled={!hasEarlier}
           onPress={requestEarlier}
         />
-        <Button label="追加消息" size="sm" onPress={appendMessage} />
+        <Button label="追加消息" size="sm" onPress={() => appendMessage()} />
+        <Button
+          label="追加并顶锚"
+          size="sm"
+          onPress={() => appendMessage(true)}
+        />
         <Button label="增长流式行" size="sm" onPress={growStreamingMessage} />
         <Button
           label={followOutput === 'never' ? '启用末尾跟随' : '切换为 never'}

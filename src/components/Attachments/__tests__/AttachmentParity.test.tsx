@@ -4,6 +4,36 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { ThemeProvider, Thumbnail, r } from '@unif/react-native-design';
 import { Attachments } from '..';
 
+it('compact移除保持在76格内且不触发整图预览', () => {
+  const onPreview = jest.fn();
+  const onRemove = jest.fn();
+  const item = {
+    id: 'compact',
+    name: '门店照片',
+    kind: 'image' as const,
+    status: 'ready' as const,
+    previewable: true,
+    removable: true,
+  };
+  render(
+    <Attachments
+      layout="compact"
+      items={[item]}
+      onPreview={onPreview}
+      onRemove={onRemove}
+    />,
+    { wrapper: ThemeProvider }
+  );
+  const remove = screen.getByRole('button', { name: '移除门店照片' });
+  const removeStyle = StyleSheet.flatten(remove.props.style);
+  expect(removeStyle.left + removeStyle.width).toBeLessThanOrEqual(r(76));
+  fireEvent.press(remove);
+  expect(onRemove).toHaveBeenCalledWith(item);
+  expect(onPreview).not.toHaveBeenCalled();
+  fireEvent.press(screen.getByRole('button', { name: '预览门店照片' }));
+  expect(onPreview).toHaveBeenCalledWith(item);
+});
+
 it('图片以76缩略图展示，预览点击原图，不额外生成文件名卡片', () => {
   const photo = {
     id: 'photo',

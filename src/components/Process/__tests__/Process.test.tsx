@@ -66,41 +66,47 @@ test('时长进位后不会显示六十秒余数', () => {
   expect(screen.queryByText(/60 秒/)).toBeNull();
 });
 
-test('局部展开只初始化一次，交付变化并在项目移除后收尾', () => {
-  const onExpandedChange = jest.fn();
-  const { rerender } = renderProcess(
-    <Process
-      steps={[completedStep]}
-      defaultExpandedIds={['done']}
-      onExpandedChange={onExpandedChange}
-    />
-  );
-
-  expect(screen.getByText('公开过程详情')).toBeOnTheScreen();
-  fireEvent.press(screen.getByTestId('process-step-done-toggle'));
-  expect(screen.queryByText('公开过程详情')).toBeNull();
-  expect(onExpandedChange).toHaveBeenLastCalledWith([]);
-
-  rerender(
-    <ThemeProvider>
+test.each(['card', 'timeline'] as const)(
+  '%s 局部展开只初始化一次，交付变化并在项目移除后收尾',
+  (variant) => {
+    const onExpandedChange = jest.fn();
+    const { rerender } = renderProcess(
       <Process
-        steps={[]}
-        defaultExpandedIds={['done']}
-        onExpandedChange={onExpandedChange}
-      />
-    </ThemeProvider>
-  );
-  rerender(
-    <ThemeProvider>
-      <Process
+        variant={variant}
         steps={[completedStep]}
         defaultExpandedIds={['done']}
         onExpandedChange={onExpandedChange}
       />
-    </ThemeProvider>
-  );
-  expect(screen.queryByText('公开过程详情')).toBeNull();
-});
+    );
+
+    expect(screen.getByText('公开过程详情')).toBeOnTheScreen();
+    fireEvent.press(screen.getByTestId('process-step-done-toggle'));
+    expect(screen.queryByText('公开过程详情')).toBeNull();
+    expect(onExpandedChange).toHaveBeenLastCalledWith([]);
+
+    rerender(
+      <ThemeProvider>
+        <Process
+          variant={variant}
+          steps={[]}
+          defaultExpandedIds={['done']}
+          onExpandedChange={onExpandedChange}
+        />
+      </ThemeProvider>
+    );
+    rerender(
+      <ThemeProvider>
+        <Process
+          variant={variant}
+          steps={[completedStep]}
+          defaultExpandedIds={['done']}
+          onExpandedChange={onExpandedChange}
+        />
+      </ThemeProvider>
+    );
+    expect(screen.queryByText('公开过程详情')).toBeNull();
+  }
+);
 
 test('受控展开只交付新集合并等待 props 更新', () => {
   const onExpandedChange = jest.fn();

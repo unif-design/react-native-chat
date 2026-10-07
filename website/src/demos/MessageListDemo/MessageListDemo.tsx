@@ -23,7 +23,7 @@ export function MessageListDemo() {
     setResult(`已前插 ${EARLIER_MESSAGES.length} 条更早消息`);
   };
 
-  const appendMessage = () => {
+  const appendMessage = (anchor = false) => {
     const sequence = nextId.current++;
     setItems((current) => [
       ...current,
@@ -33,7 +33,13 @@ export function MessageListDemo() {
         text: `这是刚刚追加的本地消息 ${sequence}。`,
       },
     ]);
-    setResult(`已在末尾追加消息 ${sequence}`);
+    if (anchor)
+      listRef.current?.anchorToItem(`new-${sequence}`, { topOffset: 8 });
+    setResult(
+      anchor
+        ? `新消息 ${sequence} 定位到顶部，拖动列表可结束定位`
+        : `已在末尾追加消息 ${sequence}`
+    );
   };
 
   return (
@@ -59,7 +65,12 @@ export function MessageListDemo() {
         />
       </View>
       <View style={styles.controls}>
-        <Button label="追加消息" size="sm" onPress={appendMessage} />
+        <Button label="追加消息" size="sm" onPress={() => appendMessage()} />
+        <Button
+          label="追加并顶锚"
+          size="sm"
+          onPress={() => appendMessage(true)}
+        />
         <Button
           label="回到最新"
           size="sm"

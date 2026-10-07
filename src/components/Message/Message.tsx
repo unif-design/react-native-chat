@@ -2,13 +2,13 @@ import { Pressable, Text, View } from 'react-native';
 import {
   Button,
   IconButton,
-  Spinner,
   useThemedStyles,
   useColors,
 } from '@unif/react-native-design';
 import { MarkdownContent } from './MarkdownContent/MarkdownContent';
 import { createStyles } from './styles';
 import { isNestedAction } from './isNestedAction';
+import { MessageWaiting } from './MessageWaiting';
 import type { MessageProps } from './types';
 
 export function Message(props: MessageProps) {
@@ -23,6 +23,7 @@ export function Message(props: MessageProps) {
     header,
     footer,
     actions = [],
+    failureAction,
     onPress,
     onLongPress,
     style,
@@ -39,6 +40,7 @@ export function Message(props: MessageProps) {
     (footer !== undefined && footer !== null && footer !== false);
   const waiting =
     (status === 'pending' || status === 'streaming') && !hasContent;
+  const failedAction = status === 'failed' ? failureAction : undefined;
   const contentStyle = [
     styles.content,
     fullWidth && styles.fullWidth,
@@ -48,6 +50,12 @@ export function Message(props: MessageProps) {
     ],
     surface === 'outlined' && styles.outlined,
     status === 'failed' && styles.failed,
+    waiting &&
+      surface === 'bubble' &&
+      placement === 'start' &&
+      styles.waitingBubble,
+    failedAction && styles.failureContent,
+    failedAction && fullWidth && styles.failureFullWidth,
   ];
   const content = (
     <>
@@ -76,16 +84,8 @@ export function Message(props: MessageProps) {
       ) : (
         props.children
       )}
-      {waiting ? (
-        <View
-          accessible
-          accessibilityLabel="正在等待回复"
-          accessibilityState={{ busy: true }}
-        >
-          <Spinner />
-        </View>
-      ) : null}
-      {statusText ? (
+      {waiting ? <MessageWaiting label={statusText} /> : null}
+      {statusText && !waiting ? (
         <Text style={[styles.status, status === 'failed' && styles.errorText]}>
           {statusText}
         </Text>
@@ -93,6 +93,31 @@ export function Message(props: MessageProps) {
       {footer}
     </>
   );
+  const bubble =
+    onPress || onLongPress ? (
+      <Pressable
+        style={contentStyle}
+        onPress={
+          onPress
+            ? (event) => {
+                if (!isNestedAction(event)) onPress();
+              }
+            : undefined
+        }
+        onLongPress={
+          onLongPress
+            ? (event) => {
+                if (!isNestedAction(event)) onLongPress();
+              }
+            : undefined
+        }
+        accessible={false}
+      >
+        {content}
+      </Pressable>
+    ) : (
+      <View style={contentStyle}>{content}</View>
+    );
   return (
     <View
       style={[styles.root, placement === 'end' && styles.end, style]}
@@ -107,29 +132,24 @@ export function Message(props: MessageProps) {
         ]}
       >
         {name ? <Text style={styles.name}>{name}</Text> : null}
-        {onPress || onLongPress ? (
-          <Pressable
-            style={contentStyle}
-            onPress={
-              onPress
-                ? (event) => {
-                    if (!isNestedAction(event)) onPress();
-                  }
-                : undefined
-            }
-            onLongPress={
-              onLongPress
-                ? (event) => {
-                    if (!isNestedAction(event)) onLongPress();
-                  }
-                : undefined
-            }
-            accessible={false}
-          >
-            {content}
-          </Pressable>
+        {failedAction ? (
+          <View style={[styles.failureRow, placement === 'end' && styles.end]}>
+            {bubble}
+            <IconButton
+              icon="alert"
+              size="sm"
+              variant="ghost"
+              color={colors.error}
+              style={styles.failureAction}
+              accessibilityLabel={failedAction.label}
+              accessibilityHint={failedAction.accessibilityHint}
+              disabled={failedAction.disabled}
+              loading={failedAction.loading}
+              onPress={failedAction.onPress}
+            />
+          </View>
         ) : (
-          <View style={contentStyle}>{content}</View>
+          bubble
         )}
         {actions.length ? (
           <View style={styles.actions}>

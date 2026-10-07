@@ -10,25 +10,32 @@ import {
 export const createStyles = (colors: ColorTokens) =>
   StyleSheet.create({
     root: {
-      gap: space[4],
       padding: space[5],
-      borderWidth: 1,
+      borderWidth: 2,
       borderColor: colors.outline,
-      borderRadius: radius.xl,
+      borderRadius: radius.lg,
       backgroundColor: colors.surface,
     },
+    heading: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[2],
+      marginBottom: space[3],
+    },
+    body: { marginBottom: space[4] },
+    cancelled: { color: colors.foregroundSubtle },
     title: {
+      flex: 1,
       color: colors.foreground,
-      fontSize: type.h3,
+      fontSize: type.xs,
       fontWeight: fw.semi,
     },
     status: {
       color: colors.foregroundMuted,
-      fontSize: type.sm,
+      fontSize: type.xxs,
     },
     actions: {
       flexDirection: 'row',
-      flexWrap: 'wrap',
       gap: space[3],
     },
     footer: {

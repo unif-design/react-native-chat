@@ -44,6 +44,21 @@ export function MessageDemo() {
           </View>
         </View>
       </Message>
+      <Message
+        status="pending"
+        statusText="正在提交输入"
+        avatar={<Avatar label="AI" size="sm" variant="brand" />}
+      />
+      <Message
+        placement="end"
+        text="尚未送出的输入"
+        status="failed"
+        failureAction={{
+          id: 'retry',
+          label: '继续原输入',
+          onPress: () => setResult('已交付继续原输入事件'),
+        }}
+      />
       <DemoResult>{result}</DemoResult>
     </View>
   );

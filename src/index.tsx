@@ -28,6 +28,7 @@ export type {
 } from './components/Message';
 export { MessageList } from './components/MessageList';
 export type {
+  MessageListAnchorOptions,
   MessageListHandle,
   MessageListProps,
   MessageListScrollOptions,
