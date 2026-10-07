@@ -13,6 +13,7 @@ import {
 import {
   ATTACHMENT_ICONS,
   ATTACHMENT_STATUS_OWNER_SIZE,
+  ATTACHMENT_REMOVE_OWNER_SIZE,
   ROW_IMAGE_SIZE,
   STATUS_LABELS,
 } from './constants';
@@ -226,16 +227,18 @@ export function AttachmentItem({
     );
   }
 
-  const removeLeft = compact
-    ? Math.max(0, imageSize - ATTACHMENT_STATUS_OWNER_SIZE)
+  // 预览和重试都须保留独立命中区域，不复制参考紧凑格的中心误删问题。
+  const removeInCell = compact && !(previewable && !separatePreview) && !retry;
+  const removeLeft = removeInCell
+    ? Math.max(0, imageSize - ATTACHMENT_REMOVE_OWNER_SIZE)
     : previewable && !separatePreview
       ? width!
       : (busy && !caption) || failed
         ? (imageSize - ATTACHMENT_STATUS_OWNER_SIZE) / 2 +
           ATTACHMENT_STATUS_OWNER_SIZE
-        : imageSize - ATTACHMENT_STATUS_OWNER_SIZE;
+        : imageSize - ATTACHMENT_REMOVE_OWNER_SIZE;
   const ownerWidth = removable
-    ? Math.max(width!, removeLeft + ATTACHMENT_STATUS_OWNER_SIZE)
+    ? Math.max(width!, removeLeft + ATTACHMENT_REMOVE_OWNER_SIZE)
     : width;
   const picture = (
     <>
@@ -281,8 +284,8 @@ export function AttachmentItem({
           style={[
             styles.removeOwner,
             { left: removeLeft },
-            (compact ||
-              removeLeft === imageSize - ATTACHMENT_STATUS_OWNER_SIZE) &&
+            (removeInCell ||
+              removeLeft === imageSize - ATTACHMENT_REMOVE_OWNER_SIZE) &&
               styles.removeInCell,
           ]}
           accessibilityRole="button"

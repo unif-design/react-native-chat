@@ -18,6 +18,7 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
     },
     accessory: { padding: space[3] },
     header: {
+      padding: space[2],
       borderBottomWidth: 0.5,
       borderBottomColor: colors.outlineVariant,
     },
