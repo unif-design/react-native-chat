@@ -35,4 +35,5 @@ export interface AttachmentItemProps extends Pick<
   width?: number;
   imageSize: number;
   row: boolean;
+  mixed?: boolean;
 }

@@ -1,8 +1,15 @@
+import { icon, r } from '@unif/react-native-design';
 import type { IconName } from '@unif/react-native-design';
 import type { ChatAttachmentItem } from './types';
 
-export const CARD_WIDTH = 144;
-export const ROW_IMAGE_SIZE = 56;
+export const CARD_WIDTH = r(76);
+export const ROW_IMAGE_SIZE = icon.xl;
+export const MIXED_IMAGE_SIZE = r(36);
+export const ATTACHMENT_STATUS_SIZE = r(40);
+export const ATTACHMENT_STATUS_OWNER_SIZE = Math.max(
+  44,
+  ATTACHMENT_STATUS_SIZE
+);
 export const ATTACHMENT_ICONS: Record<
   NonNullable<ChatAttachmentItem['kind']>,
   IconName
