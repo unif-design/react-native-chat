@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.2.2](https://github.com/unif-design/react-native-chat/compare/v3.2.1...v3.2.2) (2026-10-07)
+
+### Bug Fixes
+
+* **attachments:** preserve preview contracts and compact media layouts ([#13](https://github.com/unif-design/react-native-chat/issues/13)) ([c4d7dff](https://github.com/unif-design/react-native-chat/commit/c4d7dff3e12cf232f244167d614194c19a5be32d))
+
 ## [3.2.1](https://github.com/unif-design/react-native-chat/compare/v3.2.0...v3.2.1) (2026-10-06)
 
 ### Bug Fixes
