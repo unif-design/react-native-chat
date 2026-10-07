@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.3.1](https://github.com/unif-design/react-native-chat/compare/v3.3.0...v3.3.1) (2026-10-07)
+
+### Bug Fixes
+
+* separate attachment hit regions and align content spacing ([#17](https://github.com/unif-design/react-native-chat/issues/17)) ([aec4f0f](https://github.com/unif-design/react-native-chat/commit/aec4f0f1571fc3cb4a9e43e9df98c292dc33b2d7))
+
 # [3.3.0](https://github.com/unif-design/react-native-chat/compare/v3.2.4...v3.3.0) (2026-10-07)
 
 ### Features
