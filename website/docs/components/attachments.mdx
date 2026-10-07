@@ -33,6 +33,10 @@ import { AttachmentsDemo } from '@site/src/demos/AttachmentsDemo';
 
 `layout` 默认 `grid`，也支持 `mixed`、`carousel` 与 `list`。图片与进度复用 Design。`status` 默认 `idle`，`loadingVisual` 默认 `center`，也支持仅显示文字的 `caption`；`showProgressLabel` 默认关闭。
 
+图片使用 `r(76)` 的缩略图，不额外显示图片文件名；可预览时点击整图。`mixed` 中的文档使用 `r(64)` 的整行和 `r(36)` 的缩略图，保留名称与元信息，点击名称或缩略图交付同一个预览事件。移除目标独立于预览，中心上传/处理状态和失败重试也保留各自的命中范围。
+
+只有 `uploading` 且比例是 `[0, 1]` 内的有限数时显示进度，未知比例使用忙碌指示；`processing` 不沿用旧上传比例。图片加载失败仅显示缩略图占位，不会改写宿主附件的处理状态。
+
 进度、可移除状态与附件集合由应用提供。组件不读取本地文件、不上传、不保存文件，也不在点击移除后自行删项。
 
 ## API

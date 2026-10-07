@@ -68,7 +68,7 @@ describe('Attachments', () => {
         items: [{ id: 'a', status: 'uploading', progress }],
         showProgressLabel: true,
       });
-      expect(screen.getByText('正在上传')).toBeOnTheScreen();
+      expect(screen.getByLabelText('正在上传')).toBeOnTheScreen();
       expect(screen.queryByRole('progressbar')).toBeNull();
       expect(screen.queryByText(/%/)).toBeNull();
     }
@@ -99,7 +99,11 @@ describe('Attachments', () => {
       expect(
         screen.queryByText(/42%/, { includeHiddenElements: true })
       ).toBeNull();
-      expect(screen.getByText('正在处理')).toBeOnTheScreen();
+      expect(
+        loadingVisual === 'center'
+          ? screen.getByLabelText('正在处理')
+          : screen.getByText('正在处理')
+      ).toBeOnTheScreen();
       view.rerender(
         <Attachments items={[{ ...item, status: 'ready' }]} showProgressLabel />
       );
@@ -122,7 +126,11 @@ describe('Attachments', () => {
           { id: 'file', name: '文件', kind: 'file' },
         ],
       });
-      expect(screen.getByText('图片')).toBeOnTheScreen();
+      expect(
+        layout === 'list'
+          ? screen.getByText('图片')
+          : screen.getByLabelText('图片')
+      ).toBeOnTheScreen();
       expect(screen.getByText('文件')).toBeOnTheScreen();
     }
   );
@@ -166,6 +174,6 @@ test('根 padding 不参与内部网格宽度，真实 Thumbnail 消费实际尺
   expect(
     screen.UNSAFE_getAllByType(Icon).some((node) => node.props.name === 'image')
   ).toBe(true);
-  expect(screen.getByText('图片')).toBeOnTheScreen();
+  expect(screen.getByLabelText('图片')).toBeOnTheScreen();
   expect(screen.queryByText('处理失败')).toBeNull();
 });

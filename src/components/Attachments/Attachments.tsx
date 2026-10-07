@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { space, useThemedStyles } from '@unif/react-native-design';
-import { CARD_WIDTH, ROW_IMAGE_SIZE } from './constants';
+import { useThemedStyles } from '@unif/react-native-design';
+import { CARD_WIDTH, MIXED_IMAGE_SIZE, ROW_IMAGE_SIZE } from './constants';
 import { createStyles } from './styles';
 import { AttachmentItem } from './AttachmentItem';
 import type { AttachmentsProps } from './types';
@@ -16,15 +15,6 @@ export function Attachments({
   testID,
 }: AttachmentsProps) {
   const styles = useThemedStyles(createStyles);
-  const [availableWidth, setAvailableWidth] = useState(0);
-  const columns = Math.max(
-    1,
-    Math.floor((availableWidth + space[2]) / (CARD_WIDTH + space[2]))
-  );
-  const cardWidth =
-    layout === 'grid' && availableWidth > 0
-      ? (availableWidth - space[2] * (columns - 1)) / columns
-      : Math.min(CARD_WIDTH, availableWidth || CARD_WIDTH);
   const content = items.map((item) => {
     const row =
       layout === 'list' || (layout === 'mixed' && item.kind !== 'image');
@@ -33,9 +23,14 @@ export function Attachments({
         key={item.id}
         item={item}
         row={row}
-        width={cardWidth}
+        mixed={layout === 'mixed'}
+        width={CARD_WIDTH}
         imageSize={
-          row ? ROW_IMAGE_SIZE : Math.max(1, cardWidth - space[2] * 2 - 2)
+          row
+            ? layout === 'mixed'
+              ? MIXED_IMAGE_SIZE
+              : ROW_IMAGE_SIZE
+            : CARD_WIDTH
         }
         showProgressLabel={showProgressLabel}
         onPreview={onPreview}
@@ -49,10 +44,8 @@ export function Attachments({
         <ScrollView
           horizontal
           keyboardShouldPersistTaps="handled"
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.carousel}
-          onLayout={({ nativeEvent: { layout: measured } }) =>
-            setAvailableWidth(measured.width)
-          }
         >
           {content}
         </ScrollView>
@@ -60,9 +53,6 @@ export function Attachments({
         <View
           testID={testID ? `${testID}-content` : undefined}
           style={styles.collection}
-          onLayout={({ nativeEvent: { layout: measured } }) =>
-            setAvailableWidth(measured.width)
-          }
         >
           {content}
         </View>
