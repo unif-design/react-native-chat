@@ -25,25 +25,28 @@ const steps: readonly ProcessStep[] = [
   { id: 'cancelled', title: '生成草稿', status: 'cancelled' },
 ];
 
-test('按输入顺序展示全部状态、说明与外部时长', () => {
-  renderProcess(<Process title="处理进度" steps={steps} />);
+test.each(['card', 'compact'] as const)(
+  '%s 可见地展示全部真实状态、说明与外部时长',
+  (variant) => {
+    renderProcess(<Process variant={variant} title="处理进度" steps={steps} />);
 
-  const titles = screen.getAllByTestId(/process-step-title-/);
-  expect(titles.map((node) => node.props.children)).toEqual([
-    '等待材料',
-    '读取附件',
-    '整理结果',
-    '查询资料',
-    '生成草稿',
-  ]);
-  expect(screen.getByText('待处理')).toBeOnTheScreen();
-  expect(screen.getByText('处理中')).toBeOnTheScreen();
-  expect(screen.getByText('已完成')).toBeOnTheScreen();
-  expect(screen.getByText('失败')).toBeOnTheScreen();
-  expect(screen.getByText('已取消')).toBeOnTheScreen();
-  expect(screen.getByText('已整理公开字段')).toBeOnTheScreen();
-  expect(screen.getByText('1.3 秒')).toBeOnTheScreen();
-});
+    const titles = screen.getAllByTestId(/process-step-title-/);
+    expect(titles.map((node) => node.props.children)).toEqual([
+      '等待材料',
+      '读取附件',
+      '整理结果',
+      '查询资料',
+      '生成草稿',
+    ]);
+    expect(screen.getByText('待处理')).toBeOnTheScreen();
+    expect(screen.getByText('处理中')).toBeOnTheScreen();
+    expect(screen.getByText('已完成')).toBeOnTheScreen();
+    expect(screen.getByText('失败')).toBeOnTheScreen();
+    expect(screen.getByText('已取消')).toBeOnTheScreen();
+    expect(screen.getByText('已整理公开字段')).toBeOnTheScreen();
+    expect(screen.getByText('1.3 秒')).toBeOnTheScreen();
+  }
+);
 
 test('时长进位后不会显示六十秒余数', () => {
   renderProcess(
