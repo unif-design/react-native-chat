@@ -42,6 +42,10 @@ Markdown 图片使用原始资源地址，位图保持比例，SVG 沿 `react-na
 
 有 `icon` 的消息操作显示独立图标按钮，`label` 保留为中文可访问名称；没有图标的动作显示文字按钮。
 
+空的 `pending`／`streaming` 用三点显示等待，`statusText` 可提供真实阶段文案；正文、header、footer 或自定义内容到达后撤下等待。三点遵守减少动态效果，卸载停止动画；它不生成身份、推理内容或业务进度。
+
+`failed` 保留消息并以 0.7 透明度表达失败，不额外绘制红边。调用方提供 `failureAction` 时，气泡旁显示错误图标按钮（外发消息在左）；它沿用 `ChatAction` 的中文 label、disabled、loading 和 onPress。只有实际失败时才呈现该操作，未提供不生成重试。
+
 ## API
 
 <ApiReference name="Message" />

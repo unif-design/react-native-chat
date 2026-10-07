@@ -51,6 +51,16 @@ export function MessageExample() {
         status="failed"
         statusText="结果未完整取得"
       />
+      <Message
+        placement="end"
+        text="尚未送出的输入"
+        status="failed"
+        failureAction={{
+          id: 'retry',
+          label: '继续原输入',
+          onPress: () => setLastAction('已交付继续原输入事件'),
+        }}
+      />
       <View style={styles.controls}>
         <Button label="追加下一段" size="sm" onPress={appendNextChunk} />
         <Button

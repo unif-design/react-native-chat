@@ -16,6 +16,12 @@ const plainMessage: MessageProps = {
   text: '普通正文',
   numberOfLines: 2,
   placement: 'end',
+  status: 'failed',
+  failureAction: {
+    id: 'continue',
+    label: '继续原输入',
+    onPress: () => undefined,
+  },
 };
 const markdownMessage: MessageProps = {
   text: '[资料](https://example.invalid/reference)',

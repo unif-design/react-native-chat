@@ -15,6 +15,8 @@ export interface MessageBaseProps {
   header?: ReactNode;
   footer?: ReactNode;
   actions?: readonly ChatAction[];
+  /** 仅 failed 时在气泡旁显示的错误操作；不自动生成重试。 */
+  failureAction?: ChatAction;
   onPress?(): void;
   onLongPress?(): void;
   style?: StyleProp<ViewStyle>;
@@ -43,3 +45,7 @@ export interface MessageCustomContent {
 }
 export type MessageProps = MessageBaseProps &
   (MessagePlainContent | MessageMarkdownContent | MessageCustomContent);
+
+export interface MessageWaitingProps {
+  label?: string;
+}
