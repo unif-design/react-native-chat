@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.2.3](https://github.com/unif-design/react-native-chat/compare/v3.2.2...v3.2.3) (2026-10-07)
+
+### Bug Fixes
+
+* avoid native scroll anchors for empty message lists ([#14](https://github.com/unif-design/react-native-chat/issues/14)) ([b619992](https://github.com/unif-design/react-native-chat/commit/b6199929d504a94b9eb76ec1a165daed1ee37b64))
+
 ## [3.2.2](https://github.com/unif-design/react-native-chat/compare/v3.2.1...v3.2.2) (2026-10-07)
 
 ### Bug Fixes
