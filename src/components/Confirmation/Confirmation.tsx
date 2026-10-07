@@ -64,7 +64,6 @@ export function Confirmation({
         )}
         <Text
           style={[styles.title, status === 'cancelled' && styles.cancelled]}
-          numberOfLines={2}
         >
           {title}
         </Text>

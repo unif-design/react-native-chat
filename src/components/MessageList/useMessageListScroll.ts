@@ -78,6 +78,7 @@ export function useMessageListScroll<T>({
   const [atEnd, setAtEnd] = useState(true);
   const anchor = useRef<MessageListAnchorRequest | undefined>(undefined);
   const layouts = useRef(new Map<string, MessageListItemLayout>());
+  const layoutRevision = useRef(0);
   const footerHeight = useRef(0);
   if (!hasFooter) footerHeight.current = 0;
   const layoutChanged = useRef<() => void>(() => {});
@@ -134,8 +135,8 @@ export function useMessageListScroll<T>({
     if (!position?.cell || position.itemY === undefined) {
       // An offscreen row first needs to enter FlatList's render window. This
       // estimate only reveals it; success still requires its actual layouts.
-      if (request.locatedAt !== layouts.current.size) {
-        request.locatedAt = layouts.current.size;
+      if (request.locatedAt !== layoutRevision.current) {
+        request.locatedAt = layoutRevision.current;
         listRef.current?.scrollToIndex({
           index,
           animated: false,
@@ -176,7 +177,16 @@ export function useMessageListScroll<T>({
         !Number.isFinite(cell.height)
       )
         return;
-      layouts.current.set(key, { ...layouts.current.get(key), index, cell });
+      const previous = layouts.current.get(key);
+      if (
+        previous?.index !== index ||
+        previous.cell?.x !== cell.x ||
+        previous.cell.y !== cell.y ||
+        previous.cell.width !== cell.width ||
+        previous.cell.height !== cell.height
+      )
+        layoutRevision.current++;
+      layouts.current.set(key, { ...previous, index, cell });
       layoutChanged.current();
     },
     []
@@ -184,13 +194,19 @@ export function useMessageListScroll<T>({
   const onItemLayout = useCallback(
     (key: string, index: number, itemY: number) => {
       if (currentKeys.current[index] !== key || !Number.isFinite(itemY)) return;
-      layouts.current.set(key, { ...layouts.current.get(key), index, itemY });
+      const previous = layouts.current.get(key);
+      if (previous?.index !== index || previous.itemY !== itemY)
+        layoutRevision.current++;
+      layouts.current.set(key, { ...previous, index, itemY });
       layoutChanged.current();
     },
     []
   );
   const onCellUnmount = useCallback((key: string, index: number) => {
-    if (layouts.current.get(key)?.index === index) layouts.current.delete(key);
+    if (layouts.current.get(key)?.index === index) {
+      layouts.current.delete(key);
+      layoutRevision.current++;
+    }
   }, []);
   const onFooterLayout = useCallback((event: LayoutChangeEvent) => {
     footerHeight.current = event.nativeEvent.layout.height;
@@ -228,6 +244,7 @@ export function useMessageListScroll<T>({
       keys.length !== previous.length ||
       keys.some((key, index) => key !== previous[index]);
     if (changed) {
+      layoutRevision.current++;
       prependPending.current = onlyPrepended;
       const indices = new Map(keys.map((key, index) => [key, index]));
       for (const [key, layout] of layouts.current) {

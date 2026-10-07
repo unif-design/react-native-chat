@@ -1,10 +1,19 @@
 import { createRef } from 'react';
+import type { RefObject } from 'react';
 import { FlatList, StyleSheet, Text } from 'react-native';
+import type { LayoutChangeEvent } from 'react-native';
 import { ThemeProvider } from '@unif/react-native-design';
-import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from '@testing-library/react-native';
 import { afterEach, expect, jest, test } from '@jest/globals';
 import { MessageList } from '../../../index';
 import type { MessageListHandle } from '../../../index';
+import { useMessageListScroll } from '../useMessageListScroll';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -69,6 +78,48 @@ function fixture(initialItems = ['a', 'b']) {
   };
   return { page, element, ref, anchor, scrolling, locate };
 }
+
+test('虚拟单元回收后已测量数量不变，仍按新测量重试屏外定位', () => {
+  const locate = jest.fn();
+  const listRef = {
+    current: { scrollToIndex: locate, scrollToOffset: jest.fn() },
+  } as unknown as RefObject<FlatList<string> | null>;
+  const keys = ['a', 'b', 'c'];
+  const preservingPrependRef = { current: false };
+  const cancelPrependPreservation = jest.fn();
+  const { result } = renderHook(() =>
+    useMessageListScroll({
+      listRef,
+      keys,
+      initialPosition: 'start',
+      followOutput: 'never',
+      preservingPrependRef,
+      cancelPrependPreservation,
+    })
+  );
+  act(() => {
+    result.current.onLayout(layout(0, 400) as LayoutChangeEvent);
+    result.current.onContentSizeChange(320, 1000);
+    result.current.onCellLayout('a', 0, layout(0, 80).nativeEvent.layout);
+    result.current.onItemLayout('a', 0, 0);
+    result.current.anchorToItem('c');
+  });
+  locate.mockClear();
+  act(() => {
+    result.current.onCellUnmount('a', 0);
+    result.current.onCellLayout('b', 1, layout(80, 100).nativeEvent.layout);
+  });
+  expect(locate).toHaveBeenCalledWith({
+    index: 2,
+    animated: false,
+    viewPosition: 0,
+  });
+  locate.mockClear();
+  act(() =>
+    result.current.onCellLayout('b', 1, layout(80, 100).nativeEvent.layout)
+  );
+  expect(locate).not.toHaveBeenCalled();
+});
 
 test.each(['布局先到', '尺寸先到'])(
   '%s：真实行与日期偏移测量、底部撑开完成后才把正文放在顶端8',
