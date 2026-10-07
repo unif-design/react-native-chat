@@ -29,6 +29,7 @@ const processStep: ProcessStep = {
   id: 'read',
   title: '读取附件',
   status: 'completed',
+  statusText: '资料已读取',
 };
 const progress: ProcessingProgressProps = { progress: '正在读取资料 · 附件一' };
 
@@ -39,6 +40,13 @@ export const auxiliaryConsumption = (
       <Text>客户甲</Text>
     </Confirmation>
     <Process steps={[processStep]} defaultExpandedIds={[]} />
+    <Process variant="timeline" steps={[processStep]} />
+    <Process
+      variant="compact"
+      identity={<Text>助手</Text>}
+      identityPlacement="inline"
+      steps={[processStep]}
+    />
     <ProcessingProgress {...progress} />
     <Process
       steps={[processStep]}

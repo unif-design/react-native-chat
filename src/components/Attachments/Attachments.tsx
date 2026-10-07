@@ -24,6 +24,7 @@ export function Attachments({
         item={item}
         row={row}
         mixed={layout === 'mixed'}
+        compact={layout === 'compact'}
         width={CARD_WIDTH}
         imageSize={
           row

@@ -40,6 +40,27 @@ export function ProcessExample() {
           },
         ]}
       />
+      <Process
+        variant="compact"
+        identity={<Text style={styles.details}>助手</Text>}
+        identityPlacement="inline"
+        steps={[
+          {
+            id: 'public-progress',
+            title: '助手',
+            status: 'running',
+            statusText: '读取资料',
+            details: <Text style={styles.details}>公开的资料读取进度。</Text>,
+          },
+        ]}
+      />
+      <Process
+        variant="timeline"
+        steps={[
+          { id: 'received', title: '接收资料', status: 'completed' },
+          { id: 'review', title: '核对资料', status: 'pending' },
+        ]}
+      />
       <Text style={styles.result}>{lastAction}</Text>
     </View>
   );

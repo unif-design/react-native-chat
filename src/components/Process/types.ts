@@ -9,6 +9,8 @@ export interface ProcessStep {
   id: string;
   title: string;
   status: ProcessStepStatus;
+  /** 调用者提供的状态显示文案；不改变 status 的语义。 */
+  statusText?: string;
   description?: string;
   elapsedMs?: number;
   details?: ReactNode;
@@ -16,16 +18,19 @@ export interface ProcessStep {
 }
 
 export interface ProcessBaseProps {
-  /** card 为完整步骤面板；compact 为可整行展开、有界详情的轻量过程展示。 */
-  variant?: 'card' | 'compact';
+  /** card 为状态面板；compact 为单行过程；timeline 为带状态节点的连续步骤。 */
+  variant?: 'card' | 'compact' | 'timeline';
   steps: readonly ProcessStep[];
   title?: string;
   identity?: ReactNode;
+  /** inline 仅用于 compact 单项，让身份与状态处于同一行。 */
+  identityPlacement?: 'heading' | 'inline';
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }
 
 export interface ProcessCompactStepProps {
+  identity?: ReactNode;
   step: ProcessStep;
   expanded: boolean;
   elapsed?: string;

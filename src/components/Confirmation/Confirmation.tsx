@@ -1,5 +1,11 @@
 import { Text, View } from 'react-native';
-import { Button, useThemedStyles } from '@unif/react-native-design';
+import {
+  Button,
+  Icon,
+  Spinner,
+  useColors,
+  useThemedStyles,
+} from '@unif/react-native-design';
 import {
   CONFIRMATION_STATUS_TEXT,
   DEFAULT_CANCEL_LABEL,
@@ -24,35 +30,66 @@ export function Confirmation({
   testID,
 }: ConfirmationProps): React.JSX.Element {
   const styles = useThemedStyles(createStyles);
+  const colors = useColors();
+  const tint =
+    status === 'confirmed'
+      ? colors.success
+      : status === 'cancelled'
+        ? colors.foregroundSubtle
+        : colors.primary;
+  const borderColor =
+    status === 'cancelled' ? colors.surfaceContainerHighest : tint;
   const resolvedStatusText =
     status === 'pending'
       ? statusText
       : (statusText ?? CONFIRMATION_STATUS_TEXT[status]);
 
   return (
-    <View style={[styles.root, style]} testID={testID}>
-      <Text style={styles.title}>{title}</Text>
-      <View>{children}</View>
+    <View style={[styles.root, { borderColor }, style]} testID={testID}>
+      <View style={styles.heading}>
+        {status === 'processing' ? (
+          <Spinner size={14} color={tint} />
+        ) : (
+          <Icon
+            name={
+              status === 'confirmed'
+                ? 'check'
+                : status === 'cancelled'
+                  ? 'close'
+                  : 'warning'
+            }
+            size={14}
+            color={tint}
+          />
+        )}
+        <Text
+          style={[styles.title, status === 'cancelled' && styles.cancelled]}
+          numberOfLines={2}
+        >
+          {title}
+        </Text>
+      </View>
+      <View style={styles.body}>{children}</View>
       {resolvedStatusText ? (
         <Text style={styles.status}>{resolvedStatusText}</Text>
       ) : null}
       {status === 'pending' && (onConfirm || onCancel) ? (
         <View style={styles.actions}>
-          {onConfirm ? (
-            <Button
-              label={confirmLabel}
-              onPress={onConfirm}
-              disabled={confirmDisabled}
-              size="sm"
-            />
-          ) : null}
           {onCancel ? (
             <Button
               label={cancelLabel}
               onPress={onCancel}
               disabled={cancelDisabled}
-              size="sm"
-              variant="outline"
+              block
+              variant="secondary"
+            />
+          ) : null}
+          {onConfirm ? (
+            <Button
+              label={confirmLabel}
+              onPress={onConfirm}
+              disabled={confirmDisabled}
+              block
             />
           ) : null}
         </View>

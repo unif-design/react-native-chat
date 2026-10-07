@@ -1,29 +1,29 @@
 import { memo } from 'react';
 import { View } from 'react-native';
-import type { MessageListProps } from './types';
-
-interface MessageListRowProps<T> extends Pick<
-  MessageListProps<T>,
-  'renderItem' | 'renderSeparator' | 'extraData'
-> {
-  item: T;
-  previous: T | undefined;
-  index: number;
-  nativeID: string;
-}
+import type { MessageListRowProps } from './types';
 
 function MessageListRowContent<T>({
   item,
   previous,
   index,
   nativeID,
+  itemKey,
+  testID,
+  onItemLayout,
   renderItem,
   renderSeparator,
 }: MessageListRowProps<T>) {
   return (
     <View nativeID={nativeID}>
       {index > 0 && renderSeparator ? renderSeparator(previous!, item) : null}
-      {renderItem(item, index)}
+      <View
+        testID={testID}
+        onLayout={(event) =>
+          onItemLayout(itemKey, index, event.nativeEvent.layout.y)
+        }
+      >
+        {renderItem(item, index)}
+      </View>
     </View>
   );
 }

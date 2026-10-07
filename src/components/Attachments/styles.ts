@@ -116,6 +116,7 @@ export const createStyles = (colors: ColorTokens) =>
       alignItems: 'center',
       justifyContent: 'center',
     },
+    removeInCell: { alignItems: 'flex-end', paddingRight: space[1] },
     removeFailed: { backgroundColor: colors.error },
     caption: {
       flexDirection: 'row',

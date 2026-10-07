@@ -44,6 +44,22 @@ import { MessageListDemo } from '@site/src/demos/MessageListDemo';
 
 历史入口需要同时提供 `hasEarlier` 与 `onRequestEarlier`；加载状态由 `loadingEarlier` 控制。滚动不会自动发起历史请求。ref 的 `scrollToEnd()` 可显式回到末尾。切换会话时用 React `key` 重建实例。
 
+## 发送后的顶锚
+
+`ref.anchorToItem(key, { topOffset: 8, animated: true })` 以稳定的 item key 指定正文起点。`topOffset` 默认 0，`animated` 默认 true。组件先取得真实 cell 与正文相对位置（包含外部 header、内容留白，避开 `renderSeparator`），必要时撑开列表底部，等原生内容尺寸确认可达后再定位。
+
+```tsx
+const id = createLocalMessageId();
+setMessages((current) => [...current, { id, text }]);
+listRef.current?.anchorToItem(id, { topOffset: 8 });
+```
+
+请求可以先于本次受控 `items` 提交。后续同项正文增长不会追到尾部，视口或目标前方布局变化则保持其顶端位置。屏外项先通过 FlatList 公开定位入口进入渲染窗口，最终位置仍以真实测量为准。Jest 的布局事件测试不代替设备长列表与键盘验证。
+
+顶锚期间暂停前插位置补偿，避免两个滚动机制重复调整；用户拖动、调用 `scrollToEnd()`、目标出现后又被移除，都会结束本请求并撤下撑高。删除后再加入同 key 不会复活旧请求；需要新定位时再次调用。回到末尾等待撑高撤除后的真实内容尺寸，不落到之前制造的空白。`followOutput` 继续单独决定没有显式顶锚时的末尾跟随。
+
+定位点是 `renderItem` 返回内容的起点。一个 item 包含多个子消息时，调用方应选中确实以目标消息开头的 item；组件不猜测业务卡片或组内哪一段是最新用户输入，也不生成消息身份。
+
 ## API
 
 <ApiReference name="MessageList" />

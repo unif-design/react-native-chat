@@ -11,6 +11,7 @@ export const ATTACHMENT_LAYOUTS: readonly {
   label: string;
 }[] = [
   { value: 'grid', label: '网格' },
+  { value: 'compact', label: '紧凑' },
   { value: 'mixed', label: '混合' },
   { value: 'carousel', label: '横向' },
   { value: 'list', label: '列表' },

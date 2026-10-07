@@ -4,6 +4,32 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { ThemeProvider, r } from '@unif/react-native-design';
 import { Process } from '@unif/react-native-chat';
 
+test('紧凑身份与当前状态同一行，状态文案由调用者表达且不改变折叠事件', () => {
+  const page = render(
+    <ThemeProvider>
+      <Process
+        variant="compact"
+        identityPlacement="inline"
+        identity={<Text testID="identity">智能小U</Text>}
+        steps={[
+          {
+            id: 'reasoning',
+            title: '智能小U',
+            status: 'completed',
+            statusText: '已思考',
+            details: <Text>公开说明</Text>,
+          },
+        ]}
+      />
+    </ThemeProvider>
+  );
+  expect(page.getAllByText('智能小U')).toHaveLength(1);
+  expect(page.getByRole('button', { name: '智能小U，已思考' })).toBeTruthy();
+  expect(page.queryByText('已完成')).toBeNull();
+  fireEvent.press(page.getByRole('button', { name: '智能小U，已思考' }));
+  expect(page.getByText('公开说明')).toBeTruthy();
+});
+
 test('紧凑过程用整行展开真实详情，流式更新与终态不丢失展开选择', () => {
   const content = (message: string, completed = false) => (
     <ThemeProvider>

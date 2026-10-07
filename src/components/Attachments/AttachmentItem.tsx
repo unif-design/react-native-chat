@@ -25,6 +25,7 @@ export function AttachmentItem({
   imageSize,
   row,
   mixed = false,
+  compact = false,
   showProgressLabel = false,
   onPreview,
   onRemove,
@@ -225,8 +226,9 @@ export function AttachmentItem({
     );
   }
 
-  const removeLeft =
-    previewable && !separatePreview
+  const removeLeft = compact
+    ? Math.max(0, imageSize - ATTACHMENT_STATUS_OWNER_SIZE)
+    : previewable && !separatePreview
       ? width!
       : (busy && !caption) || failed
         ? (imageSize - ATTACHMENT_STATUS_OWNER_SIZE) / 2 +
@@ -276,7 +278,13 @@ export function AttachmentItem({
       {statusOwner}
       {removable ? (
         <Pressable
-          style={[styles.removeOwner, { left: removeLeft }]}
+          style={[
+            styles.removeOwner,
+            { left: removeLeft },
+            (compact ||
+              removeLeft === imageSize - ATTACHMENT_STATUS_OWNER_SIZE) &&
+              styles.removeInCell,
+          ]}
           accessibilityRole="button"
           accessibilityLabel={`移除${name}`}
           disabled={item.removeDisabled}

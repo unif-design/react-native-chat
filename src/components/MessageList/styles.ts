@@ -14,6 +14,12 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
       justifyContent: 'center',
     },
     returnProgress: StyleSheet.absoluteFill,
+    returnVisual: {
+      width: 44,
+      height: 44,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     returnButton: {
       alignSelf: 'center',
       borderRadius: 18,
