@@ -43,6 +43,7 @@ export const createStyles = (colors: ColorTokens) =>
       gap: space[2],
     },
     failureContent: { flexShrink: 1 },
+    failureAction: { alignSelf: 'center' },
     failureFullWidth: { flex: 1 },
     waitingBubble: { width: r(240), borderTopLeftRadius: 0 },
     waitingRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },

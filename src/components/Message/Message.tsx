@@ -140,6 +140,7 @@ export function Message(props: MessageProps) {
               size="sm"
               variant="ghost"
               color={colors.error}
+              style={styles.failureAction}
               accessibilityLabel={failedAction.label}
               accessibilityHint={failedAction.accessibilityHint}
               disabled={failedAction.disabled}
