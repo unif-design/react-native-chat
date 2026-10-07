@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.2.4](https://github.com/unif-design/react-native-chat/compare/v3.2.3...v3.2.4) (2026-10-07)
+
+### Bug Fixes
+
+* show visible status labels in compact processes ([#15](https://github.com/unif-design/react-native-chat/issues/15)) ([076acec](https://github.com/unif-design/react-native-chat/commit/076acecb8f2e7b50f374613d6305c76531e28f2d))
+
 ## [3.2.3](https://github.com/unif-design/react-native-chat/compare/v3.2.2...v3.2.3) (2026-10-07)
 
 ### Bug Fixes
