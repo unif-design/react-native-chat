@@ -164,6 +164,31 @@ describe('MessageList', () => {
   });
 });
 
+test('空列表的动态头部不登记消息锚点，消息到达后恢复原生位置保持', () => {
+  const view = render(
+    <MessageList {...props} items={[]} header={<Text>正在准备</Text>} />,
+    { wrapper: ThemeProvider }
+  );
+  expect(
+    screen.UNSAFE_getByType(FlatList).props.maintainVisibleContentPosition
+  ).toBeUndefined();
+  view.rerender(
+    <MessageList {...props} items={[]} header={<Text>计划已取得</Text>} />
+  );
+  expect(screen.getByText('计划已取得')).toBeOnTheScreen();
+  expect(
+    screen.UNSAFE_getByType(FlatList).props.maintainVisibleContentPosition
+  ).toBeUndefined();
+  view.rerender(<MessageList {...props} header={<Text>计划已取得</Text>} />);
+  expect(
+    screen.UNSAFE_getByType(FlatList).props.maintainVisibleContentPosition
+  ).toEqual({ minIndexForVisible: 0 });
+  view.rerender(<MessageList {...props} items={[]} />);
+  expect(
+    screen.UNSAFE_getByType(FlatList).props.maintainVisibleContentPosition
+  ).toBeUndefined();
+});
+
 test('start 的空列表在首批数据到达后保持开头，历史 header 不跳过首条锚点', () => {
   const scrollToEnd = jest
     .spyOn(FlatList.prototype, 'scrollToOffset')

@@ -40,6 +40,8 @@ import { MessageListDemo } from '@site/src/demos/MessageListDemo';
 
 默认从 `initialPosition="end"` 开始，`followOutput="whenAtEnd"` 仅在用户位于末尾时跟随新增内容；阅读历史时不会强行跳到最新。纯前插保持当前可见内容的位置。
 
+空列表中的动态 header 和 empty 不参与消息锚点保持，避免加载占位切换时产生原生滚动偏移；消息到达后恢复位置保持。
+
 历史入口需要同时提供 `hasEarlier` 与 `onRequestEarlier`；加载状态由 `loadingEarlier` 控制。滚动不会自动发起历史请求。ref 的 `scrollToEnd()` 可显式回到末尾。切换会话时用 React `key` 重建实例。
 
 ## API
