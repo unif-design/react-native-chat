@@ -5,7 +5,7 @@ import {
   isValidElement,
   useMemo,
 } from 'react';
-import { Pressable, Text } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { Renderer, useMarkdown } from 'react-native-marked';
 import { useTheme, useThemedStyles } from '@unif/react-native-design';
 import { createStyles, createOutgoingStyles } from './styles';
@@ -95,5 +95,6 @@ export function MarkdownContent({
     colorScheme: scheme,
     styles: markdown.styles,
   });
-  return <>{Children.toArray(nodes)}</>;
+  const content = Children.toArray(nodes);
+  return content.length ? <View>{content}</View> : null;
 }
