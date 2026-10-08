@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextInput } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { describe, expect, jest, test } from '@jest/globals';
 import {
+  ActionMenuContent,
   Textarea,
   ThemeProvider,
   space,
@@ -77,7 +78,7 @@ describe('Composer', () => {
     expect(screen.getByDisplayValue('保留')).toBeOnTheScreen();
   });
 
-  test('更多菜单按操作状态交付一次并关闭，焦点变化也收起', () => {
+  test('公共浮菜单按操作状态交付一次并关闭，焦点变化也收起', () => {
     const onPress = jest.fn();
     const onFocusChange = jest.fn();
     renderComposer({
@@ -86,12 +87,24 @@ describe('Composer', () => {
       primaryAction: { kind: 'busy' },
       onFocusChange,
       actions: [
-        { id: 'pick', label: '选择文件', icon: 'file', onPress },
+        {
+          id: 'pick',
+          label: '选择文件',
+          icon: 'file',
+          accessibilityHint: '从设备选择文件',
+          onPress,
+        },
         { id: 'busy', label: '准备文件', loading: true, onPress },
+        { id: 'disabled', label: '不可用文件', disabled: true, onPress },
         { id: 'unnamed', label: ' ', icon: 'file', onPress },
       ],
     });
+    const input = screen.UNSAFE_getByType(TextInput).instance;
     fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
+    expect(screen.UNSAFE_getByType(ActionMenuContent).props.presentation).toBe(
+      'popover'
+    );
+    expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
     expect(
       StyleSheet.flatten(screen.getByTestId('composer-menu').props.style)
     ).toMatchObject({
@@ -99,32 +112,25 @@ describe('Composer', () => {
       bottom: '100%',
       left: space[6],
     });
-    expect(
-      StyleSheet.flatten(
-        screen.getByTestId('composer-menu-content').props.style
-      ).overflow
-    ).toBe('hidden');
-    expect(
-      StyleSheet.flatten(
-        screen.getByTestId('composer-menu-icon-pick', {
-          includeHiddenElements: true,
-        }).props.style
-      )
-    ).toMatchObject({ width: 40, height: 40, borderRadius: 20 });
+    expect(screen.getByRole('button', { name: '选择文件' })).toHaveProp(
+      'accessibilityHint',
+      '从设备选择文件'
+    );
+    expect(screen.queryByRole('button', { name: '取消' })).toBeNull();
     expect(
       screen.getByRole('button', { name: '准备文件' }).props.accessibilityState
     ).toMatchObject({ disabled: true, busy: true });
+    expect(screen.getByRole('button', { name: '不可用文件' })).toBeDisabled();
     fireEvent.press(screen.getByRole('button', { name: '准备文件' }));
-    fireEvent.press(
-      screen.getByTestId('composer-menu-icon-unnamed', {
-        includeHiddenElements: true,
-      })
-    );
+    fireEvent.press(screen.getByRole('button', { name: '不可用文件' }));
+    fireEvent.press(screen.getByText(' ', { normalizer: (text) => text }));
     expect(screen.queryByRole('button', { name: ' ' })).toBeNull();
     expect(onPress).not.toHaveBeenCalled();
     fireEvent.press(screen.getByRole('button', { name: '选择文件' }));
     expect(onPress).toHaveBeenCalledTimes(1);
+    expect(onPress).toHaveBeenCalledWith();
     expect(screen.queryByRole('button', { name: '选择文件' })).toBeNull();
+    expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
     fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
     fireEvent(screen.getByLabelText('消息输入框'), 'focus', {
       nativeEvent: {},
@@ -134,6 +140,30 @@ describe('Composer', () => {
     fireEvent(screen.getByLabelText('消息输入框'), 'blur', { nativeEvent: {} });
     expect(onFocusChange).toHaveBeenLastCalledWith(false);
   });
+
+  test.each(['更多操作', '收起更多操作', '消息输入框'])(
+    '%s 收起浮菜单并保留输入和草稿',
+    (label) => {
+      const onPress = jest.fn();
+      const onChangeText = jest.fn();
+      renderComposer({
+        value: '保留草稿',
+        onChangeText,
+        primaryAction: { kind: 'busy' },
+        actions: [{ id: 'file', label: '选择文件', onPress }],
+      });
+      const input = screen.UNSAFE_getByType(TextInput).instance;
+      fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
+      if (label === '消息输入框')
+        fireEvent(screen.getByLabelText(label), 'pressIn');
+      else fireEvent.press(screen.getByRole('button', { name: label }));
+      expect(screen.queryByTestId('composer-menu')).toBeNull();
+      expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
+      expect(screen.getByDisplayValue('保留草稿')).toBeOnTheScreen();
+      expect(onPress).not.toHaveBeenCalled();
+      expect(onChangeText).not.toHaveBeenCalled();
+    }
+  );
 
   test('发送和开始语音先收起菜单，事件不清空文字', () => {
     const onSend = jest.fn();

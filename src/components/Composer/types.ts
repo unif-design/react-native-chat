@@ -73,9 +73,3 @@ export interface ComposerIconActionProps {
   expanded?: boolean;
   visual?: 'icon' | 'primary' | 'cancel';
 }
-
-export interface ComposerMenuItemProps {
-  action: ChatAction;
-  disabled: boolean;
-  onPress(): void;
-}
