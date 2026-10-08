@@ -37,6 +37,11 @@ describe('Message', () => {
     view.rerender(<Message status="pending" header={<Text>卡片</Text>} />);
     expect(screen.queryByLabelText('正在等待回复')).toBeNull();
     expect(screen.getByText('卡片')).toBeOnTheScreen();
+    view.rerender(
+      <Message status="streaming" footer={<Text>附加卡片</Text>} />
+    );
+    expect(screen.queryByLabelText('正在等待回复')).toBeNull();
+    expect(screen.getByText('附加卡片')).toBeOnTheScreen();
   });
 
   test('内嵌操作和消息操作各自交付，忙碌动作不可用', async () => {

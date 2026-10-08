@@ -1,10 +1,11 @@
 import { createRef } from 'react';
 import { Text, View } from 'react-native';
-import { Message, MessageList } from '@unif/react-native-chat';
+import { Message, MessageList, MessageWaiting } from '@unif/react-native-chat';
 import type {
   MessageListHandle,
   MessageListProps,
   MessageProps,
+  MessageWaitingProps,
 } from '@unif/react-native-chat';
 
 interface ExampleMessage {
@@ -33,6 +34,14 @@ const customMessage: MessageProps = {
   surface: 'plain',
 };
 
+const waitingProps: MessageWaitingProps = { label: '等待正文' };
+const waitingMessage: MessageProps = {
+  header: <Text>已取得的公开说明</Text>,
+  children: <MessageWaiting {...waitingProps} />,
+  status: 'streaming',
+  fullWidth: true,
+};
+
 const listRef = createRef<MessageListHandle>();
 const messages: readonly ExampleMessage[] = [
   { id: 'one', text: '第一条' },
@@ -57,6 +66,7 @@ export const messageConsumption = (
     <Message {...plainMessage} />
     <Message {...markdownMessage} />
     <Message {...customMessage} />
+    <Message {...waitingMessage} />
     <MessageList ref={listRef} {...listProps} />
   </View>
 );

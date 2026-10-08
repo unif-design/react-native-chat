@@ -12,6 +12,7 @@ test('API documents include actual public declarations and exclude private layou
   assert.match(api.Attachments, /interface AttachmentsProps/);
   assert.doesNotMatch(api.Attachments, /interface AttachmentItemProps/);
   assert.doesNotMatch(api.MessageList, /interface ListMeasurements/);
+  assert.match(api.Message, /interface MessageWaitingProps/);
   assert.match(api.ProcessingProgress, /interface ProcessingProgressProps/);
   assert.doesNotMatch(api.ProcessingProgress, /ProcessingProgressPrefixProps/);
   assert.equal(Object.keys(api).length, 13);

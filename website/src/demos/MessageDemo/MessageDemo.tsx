@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Avatar, Button, useThemedStyles } from '@unif/react-native-design';
-import { Message } from '@unif/react-native-chat';
+import { Message, MessageWaiting, Process } from '@unif/react-native-chat';
 import { MARKDOWN_MESSAGE } from './constants';
 import { DemoResult } from '../DemoResult';
 import { createStyles } from './styles';
 
 export function MessageDemo() {
+  const [replyReady, setReplyReady] = useState(false);
   const [result, setResult] = useState('试试链接、复制回答或卡片操作');
   const styles = useThemedStyles(createStyles);
 
@@ -58,6 +59,39 @@ export function MessageDemo() {
           label: '继续原输入',
           onPress: () => setResult('已交付继续原输入事件'),
         }}
+      />
+      <Message
+        fullWidth
+        status={replyReady ? 'idle' : 'streaming'}
+        header={
+          <Process
+            variant="compact"
+            steps={[
+              {
+                id: 'reply',
+                title: '回复过程',
+                status: replyReady ? 'completed' : 'running',
+                details: (
+                  <Text style={styles.cardText}>
+                    这里保留已收到的公开说明。
+                  </Text>
+                ),
+              },
+            ]}
+          />
+        }
+        {...(replyReady
+          ? {
+              text: '**正文已到达**，过程详情仍保留原来的展开状态。',
+              format: 'markdown' as const,
+            }
+          : { children: <MessageWaiting /> })}
+      />
+      <Button
+        label={replyReady ? '重新等待' : '显示正文'}
+        size="sm"
+        variant="secondary"
+        onPress={() => setReplyReady((current) => !current)}
       />
       <DemoResult>{result}</DemoResult>
     </View>

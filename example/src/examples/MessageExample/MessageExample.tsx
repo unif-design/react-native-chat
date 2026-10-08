@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { Button, useThemedStyles } from '@unif/react-native-design';
-import { Message } from '@unif/react-native-chat';
+import { Message, MessageWaiting, Process } from '@unif/react-native-chat';
 import {
   LONG_PLAIN_MESSAGE,
   MARKDOWN_DEMO_TEXT,
@@ -10,6 +10,7 @@ import {
 import { createStyles } from './styles';
 
 export function MessageExample() {
+  const [replyReady, setReplyReady] = useState(false);
   const [streamText, setStreamText] = useState('累计正文：');
   const [nextChunkIndex, setNextChunkIndex] = useState(0);
   const [lastAction, setLastAction] = useState('等待消息操作');
@@ -102,6 +103,40 @@ export function MessageExample() {
         </View>
       </Message>
 
+      <Text style={styles.sectionTitle}>已有公开过程，正文继续等待</Text>
+      <Message
+        fullWidth
+        status={replyReady ? 'idle' : 'streaming'}
+        header={
+          <Process
+            variant="compact"
+            steps={[
+              {
+                id: 'reply',
+                title: '回复过程',
+                status: replyReady ? 'completed' : 'running',
+                details: (
+                  <Text style={styles.customText}>
+                    这里保留已收到的公开说明。
+                  </Text>
+                ),
+              },
+            ]}
+          />
+        }
+        {...(replyReady
+          ? {
+              text: '**正文已到达**，过程详情仍保留原来的展开状态。',
+              format: 'markdown' as const,
+            }
+          : { children: <MessageWaiting /> })}
+      />
+      <Button
+        label={replyReady ? '重新等待' : '显示正文'}
+        size="sm"
+        variant="secondary"
+        onPress={() => setReplyReady((current) => !current)}
+      />
       <Text style={styles.result}>{lastAction}</Text>
     </ScrollView>
   );
