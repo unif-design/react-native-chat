@@ -47,5 +47,6 @@ export type MessageProps = MessageBaseProps &
   (MessagePlainContent | MessageMarkdownContent | MessageCustomContent);
 
 export interface MessageWaitingProps {
+  /** 可选等待说明；省略时只显示三点，读屏使用“正在等待回复”。 */
   label?: string;
 }

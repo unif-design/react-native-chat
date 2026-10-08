@@ -16,7 +16,7 @@ export type {
   ChatAttachmentItem,
   ChatAttachmentStatus,
 } from './components/Attachments';
-export { Message } from './components/Message';
+export { Message, MessageWaiting } from './components/Message';
 export type {
   MessageBaseProps,
   MessageCustomContent,
@@ -25,6 +25,7 @@ export type {
   MessagePlacement,
   MessageProps,
   MessageStatus,
+  MessageWaitingProps,
 } from './components/Message';
 export { MessageList } from './components/MessageList';
 export type {
