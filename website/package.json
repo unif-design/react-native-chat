@@ -15,7 +15,7 @@
     "@docusaurus/preset-classic": "3.10.1",
     "@mdx-js/react": "^3.0.0",
     "@unif/react-native-chat": "workspace:*",
-    "@unif/react-native-design": "0.36.0",
+    "@unif/react-native-design": "0.39.0",
     "prism-react-renderer": "^2.3.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",

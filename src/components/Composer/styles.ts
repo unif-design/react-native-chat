@@ -1,10 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { fixed, r, radius, space, type } from '@unif/react-native-design';
 import type { ColorTokens, ShadowTokens } from '@unif/react-native-design';
-import {
-  COMPOSER_ACTION_VISUAL_SIZE,
-  COMPOSER_MENU_ICON_CONTAINER_SIZE,
-} from './constants';
+import { COMPOSER_ACTION_VISUAL_SIZE } from './constants';
 
 export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
   StyleSheet.create({
@@ -88,43 +85,8 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
       position: 'absolute',
       bottom: '100%',
       left: space[6],
-      width: r(200),
-      maxWidth: '100%',
       marginBottom: space[2],
-      borderRadius: r(20),
-      borderWidth: 0.5,
-      borderColor: colors.outline,
-      backgroundColor: colors.surface,
       zIndex: 2,
-      ...shadows.card,
-    },
-    menuClip: {
-      borderRadius: r(20),
-      overflow: 'hidden',
-      paddingVertical: space[2],
-    },
-    menuRow: {
-      minHeight: fixed.hitTarget,
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: space[5],
-      paddingVertical: space[3],
-      paddingHorizontal: space[6],
-    },
-    menuRowPressed: { backgroundColor: colors.surfaceContainer },
-    menuIcon: {
-      width: COMPOSER_MENU_ICON_CONTAINER_SIZE,
-      height: COMPOSER_MENU_ICON_CONTAINER_SIZE,
-      borderRadius: COMPOSER_MENU_ICON_CONTAINER_SIZE / 2,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: colors.surfaceContainer,
-    },
-    menuLabel: {
-      flex: 1,
-      minWidth: 0,
-      fontSize: type.body,
-      color: colors.foreground,
     },
     voice: {
       flexDirection: 'row',

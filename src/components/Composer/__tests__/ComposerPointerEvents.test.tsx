@@ -108,10 +108,12 @@ test('菜单行的鼠标按压底色在松开后恢复，菜单操作仍可交�
   );
   fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
   const item = screen.getByRole('button', { name: '选择照片' });
+  const preventDefault = jest.fn();
   fireEvent(item, 'pointerDown', {
     nativeEvent: { pointerType: 'mouse', button: 0 },
-    preventDefault: jest.fn(),
+    preventDefault,
   });
+  expect(preventDefault).toHaveBeenCalledTimes(1);
   expect(StyleSheet.flatten(item.props.style).backgroundColor).toBeDefined();
   fireEvent(item, 'pointerUp', {
     nativeEvent: { pointerType: 'mouse', button: 0 },

@@ -19,8 +19,6 @@ export const COMPOSER_VOICE_WAVE_PATTERN = Array.from(
   (_, index) =>
     COMPOSER_VOICE_WAVE_GROUPS[index % COMPOSER_VOICE_WAVE_GROUPS.length]!
 );
-export const COMPOSER_MENU_ICON_CONTAINER_SIZE = 40;
-export const COMPOSER_MENU_ICON_SIZE = 20;
 export const PRIMARY_LABELS = {
   send: '发送',
   stop: '停止回复',

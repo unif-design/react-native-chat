@@ -13,6 +13,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import {
+  ActionMenuContent,
   fixed,
   Textarea,
   useTheme,
@@ -28,7 +29,6 @@ import {
   VOICE_LABELS,
 } from './constants';
 import { ComposerIconAction } from './ComposerIconAction';
-import { ComposerMenuItem } from './ComposerMenuItem';
 import { ComposerVoiceWave } from './ComposerVoiceWave';
 import { createStyles } from './styles';
 import type { ComposerHandle, ComposerProps } from './types';
@@ -148,22 +148,20 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
               accessibilityLabel="收起更多操作"
               onPress={() => setMenuOpen(false)}
             />
-            <View style={styles.menu} testID="composer-menu">
-              <View style={styles.menuClip} testID="composer-menu-content">
-                {actions.map((action) => (
-                  <ComposerMenuItem
-                    key={action.id}
-                    action={action}
-                    disabled={disabled}
-                    onPress={() => {
-                      if (disabled || action.disabled || action.loading) return;
-                      setMenuOpen(false);
-                      action.onPress();
-                    }}
-                  />
-                ))}
-              </View>
-            </View>
+            <ActionMenuContent
+              presentation="popover"
+              style={styles.menu}
+              testID="composer-menu"
+              onClose={() => setMenuOpen(false)}
+              actions={actions.map((action) => ({
+                ...action,
+                onPress: () => {
+                  if (disabled || action.disabled || action.loading) return;
+                  setMenuOpen(false);
+                  action.onPress();
+                },
+              }))}
+            />
           </>
         ) : null}
         <View

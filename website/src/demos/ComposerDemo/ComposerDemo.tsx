@@ -13,6 +13,8 @@ export function ComposerDemo() {
   const [value, setValue] = useState(INITIAL_COMPOSER_VALUE);
   const [mode, setMode] = useState<ComposerDemoMode>('send');
   const [listening, setListening] = useState(false);
+  const [fileDisabled, setFileDisabled] = useState(false);
+  const [fileLoading, setFileLoading] = useState(false);
   const [result, setResult] = useState(
     '聚焦后展开；输入文字后可发送，发送事件保留原文'
   );
@@ -62,11 +64,25 @@ export function ComposerDemo() {
             id: 'file',
             label: '选择文件',
             icon: 'paperclip',
+            disabled: fileDisabled,
+            loading: fileLoading,
             onPress: () => setResult('已收到选择文件入口事件'),
           },
         ]}
       />
       <View style={styles.controls}>
+        <Button
+          label={fileDisabled ? '恢复文件操作' : '禁用文件操作'}
+          size="sm"
+          variant="text"
+          onPress={() => setFileDisabled((current) => !current)}
+        />
+        <Button
+          label={fileLoading ? '结束文件忙碌' : '文件设为忙碌'}
+          size="sm"
+          variant="text"
+          onPress={() => setFileLoading((current) => !current)}
+        />
         <Button
           label="清空文字"
           size="sm"
@@ -82,7 +98,9 @@ export function ComposerDemo() {
           }
         />
       </View>
-      <Text style={styles.note}>语音按钮演示外部状态，不录音。</Text>
+      <Text style={styles.note}>
+        点击加号查看操作，选择后收起菜单。语音按钮演示外部状态，不录音。
+      </Text>
       <DemoResult>{result}</DemoResult>
     </View>
   );

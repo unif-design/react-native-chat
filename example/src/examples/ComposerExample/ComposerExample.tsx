@@ -15,6 +15,8 @@ export function ComposerExample() {
   const composerRef = useRef<ComposerHandle>(null);
   const [value, setValue] = useState('');
   const [allowEmpty, setAllowEmpty] = useState(false);
+  const [fileDisabled, setFileDisabled] = useState(false);
+  const [fileLoading, setFileLoading] = useState(false);
   const [primaryMode, setPrimaryMode] = useState<ComposerPrimaryMode>('send');
   const [voiceStatus, setVoiceStatus] =
     useState<ComposerExampleVoiceStatus>('idle');
@@ -130,6 +132,27 @@ export function ComposerExample() {
         </Text>
       </View>
 
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>更多菜单</Text>
+        <Text style={styles.note}>
+          点击加号查看操作；选择后收起菜单并记录事件。
+        </Text>
+        <View style={styles.controls}>
+          <Button
+            label={fileDisabled ? '恢复文件操作' : '禁用文件操作'}
+            size="sm"
+            variant="secondary"
+            onPress={() => setFileDisabled((current) => !current)}
+          />
+          <Button
+            label={fileLoading ? '结束文件忙碌' : '文件设为忙碌'}
+            size="sm"
+            variant="secondary"
+            onPress={() => setFileLoading((current) => !current)}
+          />
+        </View>
+      </View>
+
       <Composer
         ref={composerRef}
         value={value}
@@ -139,14 +162,16 @@ export function ComposerExample() {
         actions={[
           {
             id: 'capture',
-            label: '记录拍照请求',
+            label: '拍摄照片',
             icon: 'camera',
             onPress: () => setLastAction('收到拍照入口事件'),
           },
           {
             id: 'pick-file',
-            label: '记录选文件请求',
+            label: '选择文件',
             icon: 'paperclip',
+            disabled: fileDisabled,
+            loading: fileLoading,
             onPress: () => setLastAction('收到选择文件入口事件'),
           },
         ]}
