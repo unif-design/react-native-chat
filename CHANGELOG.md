@@ -1,5 +1,11 @@
 # Changelog
 
+# [3.4.0](https://github.com/unif-design/react-native-chat/compare/v3.3.1...v3.4.0) (2026-10-08)
+
+### Features
+
+* share composer actions through Design popover ([#18](https://github.com/unif-design/react-native-chat/issues/18)) ([a29b1c4](https://github.com/unif-design/react-native-chat/commit/a29b1c45d10f50f5ac26b358b78e136f674dcfc5))
+
 ## [3.3.1](https://github.com/unif-design/react-native-chat/compare/v3.3.0...v3.3.1) (2026-10-07)
 
 ### Bug Fixes
