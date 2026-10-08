@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.5.1](https://github.com/unif-design/react-native-chat/compare/v3.5.0...v3.5.1) (2026-10-08)
+
+### Bug Fixes
+
+* **message:** contain markdown block spacing within body ([#20](https://github.com/unif-design/react-native-chat/issues/20)) ([ef36636](https://github.com/unif-design/react-native-chat/commit/ef36636d00e0c9e3b67f75ee56c114720e7002d7))
+
 # [3.5.0](https://github.com/unif-design/react-native-chat/compare/v3.4.0...v3.5.0) (2026-10-08)
 
 ### Features
