@@ -1,5 +1,11 @@
 # Changelog
 
+# [3.5.0](https://github.com/unif-design/react-native-chat/compare/v3.4.0...v3.5.0) (2026-10-08)
+
+### Features
+
+* **message:** expose composable waiting content ([#19](https://github.com/unif-design/react-native-chat/issues/19)) ([22f45fd](https://github.com/unif-design/react-native-chat/commit/22f45fd2e85797ad33a808bea8d3dba0880c990f))
+
 # [3.4.0](https://github.com/unif-design/react-native-chat/compare/v3.3.1...v3.4.0) (2026-10-08)
 
 ### Features
