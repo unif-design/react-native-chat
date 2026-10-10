@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.6.1](https://github.com/unif-design/react-native-chat/compare/v3.6.0...v3.6.1) (2026-10-10)
+
+### Bug Fixes
+
+* **composer:** reduce plain compact vertical spacing ([#23](https://github.com/unif-design/react-native-chat/issues/23)) ([e8e593b](https://github.com/unif-design/react-native-chat/commit/e8e593b2eb78cff75c7ba25d4d43f7cfd75982f7))
+
 # [3.6.0](https://github.com/unif-design/react-native-chat/compare/v3.5.1...v3.6.0) (2026-10-10)
 
 ### Features
