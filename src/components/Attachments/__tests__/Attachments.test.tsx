@@ -1,9 +1,19 @@
-import { Image, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { describe, expect, jest, test } from '@jest/globals';
 import { Icon, Thumbnail, ThemeProvider } from '@unif/react-native-design';
 import { Attachments } from '..';
 import type { ChatAttachmentItem, AttachmentsProps } from '..';
+
+jest.mock('react-native/Libraries/Utilities/Dimensions', () => {
+  const actual = jest.requireActual<{
+    default: typeof import('react-native').Dimensions;
+  }>('react-native/Libraries/Utilities/Dimensions');
+  jest
+    .spyOn(actual.default, 'get')
+    .mockReturnValue({ width: 390, height: 844, scale: 3, fontScale: 1 });
+  return actual;
+});
 
 const renderAttachments = (props: AttachmentsProps) =>
   render(<Attachments {...props} />, { wrapper: ThemeProvider });
@@ -111,7 +121,7 @@ describe('Attachments', () => {
     }
   );
 
-  test.each(['grid', 'mixed', 'carousel', 'list'] as const)(
+  test.each(['grid', 'mixed', 'carousel', 'list', 'preview'] as const)(
     '%s 保持输入顺序与明确的图片失败占位',
     (layout) => {
       renderAttachments({
@@ -176,4 +186,67 @@ test('根 padding 不参与内部网格宽度，真实 Thumbnail 消费实际尺
   ).toBe(true);
   expect(screen.getByLabelText('图片')).toBeOnTheScreen();
   expect(screen.queryByText('处理失败')).toBeNull();
+});
+
+test('输入预览布局保留大图中心与右上移除的独立操作', () => {
+  const item: ChatAttachmentItem = {
+    id: 'photo',
+    name: '清单',
+    kind: 'image',
+    previewable: true,
+    removable: true,
+  };
+  const onPreview = jest.fn();
+  const onRemove = jest.fn();
+  renderAttachments({ items: [item], layout: 'preview', onPreview, onRemove });
+  const tile = screen.getByLabelText('预览清单');
+  const remove = screen.getByLabelText('移除清单');
+  const tileStyle = StyleSheet.flatten(tile.props.style);
+  const removeStyle = StyleSheet.flatten(remove.props.style);
+  expect(screen.UNSAFE_getByType(ScrollView).props.horizontal).toBe(true);
+  expect(removeStyle.left).toBeGreaterThan(tileStyle.width / 2);
+  expect(removeStyle.left + removeStyle.width).toBeLessThanOrEqual(
+    tileStyle.width
+  );
+  expect(removeStyle.width).toBeGreaterThanOrEqual(44);
+  fireEvent.press(tile);
+  expect(onPreview).toHaveBeenCalledWith(item);
+  expect(onRemove).not.toHaveBeenCalled();
+  fireEvent.press(screen.getByLabelText('移除清单'));
+  expect(onRemove).toHaveBeenCalledWith(item);
+  expect(onPreview).toHaveBeenCalledTimes(1);
+});
+
+test('预览布局的重试与移除命中区域不重叠，且保留原动作', () => {
+  const onRetry = jest.fn();
+  const onRemove = jest.fn();
+  const onPreview = jest.fn();
+  renderAttachments({
+    layout: 'preview',
+    items: [
+      {
+        id: 'failed-photo',
+        name: '清单',
+        kind: 'image',
+        status: 'failed',
+        removable: true,
+        previewable: true,
+        actions: [{ id: 'retry', label: '重新上传', onPress: onRetry }],
+      },
+    ],
+    onRemove,
+    onPreview,
+  });
+  const retry = screen.getByLabelText('重新上传');
+  const remove = screen.getByLabelText('移除清单');
+  const retryStyle = StyleSheet.flatten(retry.props.style);
+  const removeStyle = StyleSheet.flatten(remove.props.style);
+  expect(retryStyle.left + retryStyle.width).toBeLessThanOrEqual(
+    removeStyle.left
+  );
+  expect(retryStyle.width).toBeGreaterThanOrEqual(44);
+  fireEvent.press(retry);
+  expect(onRetry).toHaveBeenCalledTimes(1);
+  expect(onRemove).not.toHaveBeenCalled();
+  expect(onPreview).not.toHaveBeenCalled();
 });

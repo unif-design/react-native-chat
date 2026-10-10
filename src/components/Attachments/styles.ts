@@ -118,6 +118,7 @@ export const createStyles = (colors: ColorTokens) =>
       alignItems: 'center',
       justifyContent: 'center',
     },
+    previewRemoveVisual: { width: r(22), height: r(22) },
     removeInCell: { alignItems: 'flex-end', paddingRight: space[1] },
     removeFailed: { backgroundColor: colors.error },
     caption: {

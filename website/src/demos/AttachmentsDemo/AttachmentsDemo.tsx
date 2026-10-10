@@ -33,7 +33,7 @@ export function AttachmentsDemo() {
     <View style={styles.root}>
       <Attachments
         items={visibleItems}
-        layout="mixed"
+        layout="preview"
         showProgressLabel
         onPreview={(item) => setResult(`预览原项：${item.name ?? item.id}`)}
         onRemove={(item) => {

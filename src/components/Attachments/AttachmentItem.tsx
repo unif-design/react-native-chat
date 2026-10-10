@@ -12,6 +12,7 @@ import {
 } from '@unif/react-native-design';
 import {
   ATTACHMENT_ICONS,
+  PREVIEW_IMAGE_RADIUS,
   ATTACHMENT_STATUS_OWNER_SIZE,
   ATTACHMENT_REMOVE_OWNER_SIZE,
   ROW_IMAGE_SIZE,
@@ -27,6 +28,7 @@ export function AttachmentItem({
   row,
   mixed = false,
   compact = false,
+  preview = false,
   showProgressLabel = false,
   onPreview,
   onRemove,
@@ -60,13 +62,27 @@ export function AttachmentItem({
       singleAction.icon === 'refresh')
       ? singleAction
       : undefined;
+  const statusLeft = (imageSize - ATTACHMENT_STATUS_OWNER_SIZE) / 2;
+  const retryLeft =
+    preview && removable
+      ? Math.min(
+          statusLeft,
+          imageSize -
+            ATTACHMENT_REMOVE_OWNER_SIZE -
+            ATTACHMENT_STATUS_OWNER_SIZE
+        )
+      : statusLeft;
   const icon = (
     <Icon name={ATTACHMENT_ICONS[item.kind ?? 'file']} size={ROW_IMAGE_SIZE} />
   );
   const thumbnail = item.thumbnail ? (
     <Thumbnail
       source={item.thumbnail}
-      size={{ width: imageSize, height: imageSize, borderRadius: radius.sm }}
+      size={{
+        width: imageSize,
+        height: imageSize,
+        borderRadius: preview ? PREVIEW_IMAGE_RADIUS : radius.sm,
+      }}
       fallback={icon}
     />
   ) : (
@@ -104,7 +120,7 @@ export function AttachmentItem({
             styles.statusOwner,
             {
               top: (imageSize - ATTACHMENT_STATUS_OWNER_SIZE) / 2,
-              left: (imageSize - ATTACHMENT_STATUS_OWNER_SIZE) / 2,
+              left: retryLeft,
             },
             styles.retryOwner,
           ]}
@@ -126,7 +142,7 @@ export function AttachmentItem({
             styles.statusOwner,
             {
               top: (imageSize - ATTACHMENT_STATUS_OWNER_SIZE) / 2,
-              left: (imageSize - ATTACHMENT_STATUS_OWNER_SIZE) / 2,
+              left: statusLeft,
             },
           ]}
           accessible
@@ -227,16 +243,17 @@ export function AttachmentItem({
     );
   }
 
-  // 预览和重试都须保留独立命中区域，不复制参考紧凑格的中心误删问题。
+  // 大图的移除入口收在右上角；紧凑格为预览／重试保留独立操作槽。
   const removeInCell = compact && !(previewable && !separatePreview) && !retry;
-  const removeLeft = removeInCell
-    ? Math.max(0, imageSize - ATTACHMENT_REMOVE_OWNER_SIZE)
-    : previewable && !separatePreview
-      ? width!
-      : (busy && !caption) || failed
-        ? (imageSize - ATTACHMENT_STATUS_OWNER_SIZE) / 2 +
-          ATTACHMENT_STATUS_OWNER_SIZE
-        : imageSize - ATTACHMENT_REMOVE_OWNER_SIZE;
+  const removeLeft =
+    preview || removeInCell
+      ? Math.max(0, imageSize - ATTACHMENT_REMOVE_OWNER_SIZE)
+      : previewable && !separatePreview
+        ? width!
+        : (busy && !caption) || failed
+          ? (imageSize - ATTACHMENT_STATUS_OWNER_SIZE) / 2 +
+            ATTACHMENT_STATUS_OWNER_SIZE
+          : imageSize - ATTACHMENT_REMOVE_OWNER_SIZE;
   const ownerWidth = removable
     ? Math.max(width!, removeLeft + ATTACHMENT_REMOVE_OWNER_SIZE)
     : width;
@@ -256,7 +273,11 @@ export function AttachmentItem({
         <Pressable
           style={[
             styles.tile,
-            { width, height: imageSize },
+            {
+              width,
+              height: imageSize,
+              ...(preview ? { borderRadius: PREVIEW_IMAGE_RADIUS } : {}),
+            },
             failed && styles.tileFailed,
           ]}
           accessibilityRole="button"
@@ -269,7 +290,11 @@ export function AttachmentItem({
         <View
           style={[
             styles.tile,
-            { width, height: imageSize },
+            {
+              width,
+              height: imageSize,
+              ...(preview ? { borderRadius: PREVIEW_IMAGE_RADIUS } : {}),
+            },
             failed && styles.tileFailed,
           ]}
           accessible={!statusOwner}
@@ -294,10 +319,16 @@ export function AttachmentItem({
           accessibilityState={{ disabled: !!item.removeDisabled }}
           onPress={() => onRemove?.(item)}
         >
-          <View style={[styles.removeVisual, failed && styles.removeFailed]}>
+          <View
+            style={[
+              styles.removeVisual,
+              preview && styles.previewRemoveVisual,
+              failed && styles.removeFailed,
+            ]}
+          >
             <Icon
               name="close"
-              size={10}
+              size={preview ? 12 : 10}
               color={colors.onPrimary}
               strokeWidth={2.5}
             />
@@ -305,7 +336,10 @@ export function AttachmentItem({
         </Pressable>
       ) : null}
       {caption && (busy || failed) ? (
-        <View style={styles.caption} accessibilityLiveRegion="polite">
+        <View
+          style={[styles.caption, { width: imageSize }]}
+          accessibilityLiveRegion="polite"
+        >
           {status === 'processing' ? <Spinner size={10} /> : null}
           <Text
             style={[styles.captionText, failed && styles.failed]}
@@ -321,7 +355,7 @@ export function AttachmentItem({
         </View>
       ) : null}
       {separatePreview ? (
-        <View style={styles.previewAction}>
+        <View style={[styles.previewAction, { width: imageSize }]}>
           <IconButton
             icon="eye"
             size="sm"
