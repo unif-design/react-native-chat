@@ -32,6 +32,7 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
       paddingVertical: space[1],
       paddingHorizontal: space[2],
     },
+    plainCompact: { paddingVertical: 0 },
     expanded: { flexDirection: 'column', alignItems: 'stretch', gap: 0 },
     hidden: { display: 'none' },
     input: {

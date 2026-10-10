@@ -176,6 +176,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
           testID="composer-regular"
           style={[
             styles.regular,
+            surface === 'plain' && !expanded && styles.plainCompact,
             expanded && styles.expanded,
             voiceActive && styles.hidden,
           ]}
