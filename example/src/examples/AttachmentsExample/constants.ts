@@ -10,6 +10,7 @@ export const ATTACHMENT_LAYOUTS: readonly {
   value: AttachmentsExampleLayout;
   label: string;
 }[] = [
+  { value: 'preview', label: '图片预览' },
   { value: 'grid', label: '网格' },
   { value: 'compact', label: '紧凑' },
   { value: 'mixed', label: '混合' },

@@ -1,6 +1,11 @@
 import { ScrollView, View } from 'react-native';
 import { useThemedStyles } from '@unif/react-native-design';
-import { CARD_WIDTH, MIXED_IMAGE_SIZE, ROW_IMAGE_SIZE } from './constants';
+import {
+  CARD_WIDTH,
+  MIXED_IMAGE_SIZE,
+  ROW_IMAGE_SIZE,
+  PREVIEW_IMAGE_SIZE,
+} from './constants';
 import { createStyles } from './styles';
 import { AttachmentItem } from './AttachmentItem';
 import type { AttachmentsProps } from './types';
@@ -16,6 +21,8 @@ export function Attachments({
 }: AttachmentsProps) {
   const styles = useThemedStyles(createStyles);
   const content = items.map((item) => {
+    const preview = layout === 'preview';
+    const size = preview ? PREVIEW_IMAGE_SIZE : CARD_WIDTH;
     const row =
       layout === 'list' || (layout === 'mixed' && item.kind !== 'image');
     return (
@@ -24,14 +31,11 @@ export function Attachments({
         item={item}
         row={row}
         mixed={layout === 'mixed'}
-        compact={layout === 'compact'}
-        width={CARD_WIDTH}
+        compact={layout === 'compact' || preview}
+        preview={preview}
+        width={size}
         imageSize={
-          row
-            ? layout === 'mixed'
-              ? MIXED_IMAGE_SIZE
-              : ROW_IMAGE_SIZE
-            : CARD_WIDTH
+          row ? (layout === 'mixed' ? MIXED_IMAGE_SIZE : ROW_IMAGE_SIZE) : size
         }
         showProgressLabel={showProgressLabel}
         onPreview={onPreview}
@@ -41,7 +45,7 @@ export function Attachments({
   });
   return (
     <View style={[styles.root, style]} testID={testID}>
-      {layout === 'carousel' ? (
+      {layout === 'carousel' || layout === 'preview' ? (
         <ScrollView
           horizontal
           keyboardShouldPersistTaps="handled"

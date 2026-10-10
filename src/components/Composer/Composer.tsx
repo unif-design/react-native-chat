@@ -138,7 +138,15 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
         }}
       >
         {header != null ? (
-          <View style={[styles.accessory, styles.header]}>{header}</View>
+          <View
+            style={[
+              styles.accessory,
+              styles.header,
+              surface === 'plain' && styles.plainHeader,
+            ]}
+          >
+            {header}
+          </View>
         ) : null}
         {menuOpen && !moreDisabled && actions.length > 0 ? (
           <>

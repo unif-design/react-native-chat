@@ -3,6 +3,8 @@ import type { IconName } from '@unif/react-native-design';
 import type { ChatAttachmentItem } from './types';
 
 export const CARD_WIDTH = r(76);
+export const PREVIEW_IMAGE_SIZE = r(120);
+export const PREVIEW_IMAGE_RADIUS = r(20);
 export const ROW_IMAGE_SIZE = icon.xl;
 export const MIXED_IMAGE_SIZE = r(36);
 export const ATTACHMENT_STATUS_SIZE = r(40);

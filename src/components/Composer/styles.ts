@@ -19,6 +19,12 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
       borderBottomWidth: 0.5,
       borderBottomColor: colors.outlineVariant,
     },
+    plainHeader: {
+      borderBottomWidth: 0,
+      paddingHorizontal: r(8),
+      paddingTop: r(8),
+      paddingBottom: r(4),
+    },
     regular: {
       flexDirection: 'row',
       alignItems: 'flex-end',
