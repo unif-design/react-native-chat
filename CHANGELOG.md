@@ -1,5 +1,11 @@
 # Changelog
 
+# [3.7.0](https://github.com/unif-design/react-native-chat/compare/v3.6.1...v3.7.0) (2026-10-11)
+
+### Features
+
+* adopt system glass across chat controls ([#25](https://github.com/unif-design/react-native-chat/issues/25)) ([01cc77e](https://github.com/unif-design/react-native-chat/commit/01cc77e06308786fcaf075a70a11eef69348b1e2))
+
 ## [3.6.1](https://github.com/unif-design/react-native-chat/compare/v3.6.0...v3.6.1) (2026-10-10)
 
 ### Bug Fixes
