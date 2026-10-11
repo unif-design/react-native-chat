@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { fw, radius, space, type } from '@unif/react-native-design';
+import { fw, r, radius, space, type } from '@unif/react-native-design';
 import type { ColorTokens } from '@unif/react-native-design';
 
 export const createStyles = (colors: ColorTokens) =>
@@ -12,6 +12,10 @@ export const createStyles = (colors: ColorTokens) =>
       color: colors.foreground,
       fontSize: type.h2,
       fontWeight: fw.semi,
+    },
+    plainHost: {
+      borderRadius: r(20),
+      backgroundColor: colors.surfaceContainer,
     },
     section: {
       gap: space[3],

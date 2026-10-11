@@ -1,7 +1,13 @@
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { describe, expect, jest, test } from '@jest/globals';
-import { Icon, Thumbnail, ThemeProvider } from '@unif/react-native-design';
+import {
+  GlassLayer,
+  Icon,
+  Thumbnail,
+  ThemeProvider,
+  lightColors,
+} from '@unif/react-native-design';
 import { Attachments } from '..';
 import type { ChatAttachmentItem, AttachmentsProps } from '..';
 
@@ -100,6 +106,17 @@ describe('Attachments', () => {
       expect(
         screen.getByText(/42%/, { includeHiddenElements: true })
       ).toBeOnTheScreen();
+      const layers = screen.UNSAFE_queryAllByType(GlassLayer);
+      expect(layers).toHaveLength(loadingVisual === 'center' ? 1 : 0);
+      if (loadingVisual === 'center') {
+        expect(layers[0]!.props.colorScheme).toBe('dark');
+        const visualStyle = StyleSheet.flatten(layers[0]!.parent!.props.style);
+        expect(visualStyle.backgroundColor).toBeUndefined();
+        expect(visualStyle.overflow).not.toBe('hidden');
+        expect(
+          screen.getByText(/42%/, { includeHiddenElements: true })
+        ).toHaveStyle({ color: lightColors.onPrimary });
+      }
       view.rerender(
         <Attachments
           items={[{ ...item, status: 'processing' }]}
@@ -114,10 +131,14 @@ describe('Attachments', () => {
           ? screen.getByLabelText('正在处理')
           : screen.getByText('正在处理')
       ).toBeOnTheScreen();
+      expect(screen.UNSAFE_queryAllByType(GlassLayer)).toHaveLength(
+        loadingVisual === 'center' ? 1 : 0
+      );
       view.rerender(
         <Attachments items={[{ ...item, status: 'ready' }]} showProgressLabel />
       );
       expect(screen.queryByText(/42%|正在处理|正在上传/)).toBeNull();
+      expect(screen.UNSAFE_queryAllByType(GlassLayer)).toHaveLength(0);
     }
   );
 
@@ -209,6 +230,12 @@ test('输入预览布局保留大图中心与右上移除的独立操作', () =>
     tileStyle.width
   );
   expect(removeStyle.width).toBeGreaterThanOrEqual(44);
+  expect(removeStyle.overflow).not.toBe('hidden');
+  expect(screen.UNSAFE_getByType(GlassLayer).props.colorScheme).toBe('dark');
+  expect(
+    StyleSheet.flatten(screen.UNSAFE_getByType(GlassLayer).parent!.props.style)
+      .overflow
+  ).toBe('hidden');
   fireEvent.press(tile);
   expect(onPreview).toHaveBeenCalledWith(item);
   expect(onRemove).not.toHaveBeenCalled();
@@ -239,6 +266,20 @@ test('预览布局的重试与移除命中区域不重叠，且保留原动作',
   });
   const retry = screen.getByLabelText('重新上传');
   const remove = screen.getByLabelText('移除清单');
+  expect(screen.UNSAFE_getByType(GlassLayer).props.colorScheme).toBe('dark');
+  expect(
+    StyleSheet.flatten(screen.UNSAFE_getByType(GlassLayer).parent!.props.style)
+      .overflow
+  ).not.toBe('hidden');
+  expect(
+    remove
+      .findAllByType(View)
+      .some(
+        (node) =>
+          StyleSheet.flatten(node.props.style)?.backgroundColor ===
+          lightColors.error
+      )
+  ).toBe(true);
   const retryStyle = StyleSheet.flatten(retry.props.style);
   const removeStyle = StyleSheet.flatten(remove.props.style);
   expect(retryStyle.left + retryStyle.width).toBeLessThanOrEqual(

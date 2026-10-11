@@ -9,10 +9,11 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
     card: {
       borderRadius: r(20),
       borderWidth: 0.5,
-      borderColor: colors.outline,
-      backgroundColor: colors.surface,
+      borderColor: colors.glassBorder,
       ...shadows.card,
     },
+    // 仅材质层定义圆角，根容器保留浮菜单的溢出空间。
+    glass: { borderRadius: r(20) },
     accessory: { padding: space[3] },
     header: {
       padding: space[2],

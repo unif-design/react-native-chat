@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react-native';
 import { expect, jest, test } from '@jest/globals';
 import {
   Chip,
+  GlassLayer,
   ThemeProvider,
   darkColors,
   lightColors,
@@ -39,6 +40,7 @@ test('重复文案按原项身份交付，忙碌和禁用项不交付事件', ()
   renderSuggestions(
     <Suggestions items={[first, second, busy, disabled]} onSelect={onSelect} />
   );
+  expect(screen.UNSAFE_getAllByType(GlassLayer)).toHaveLength(4);
 
   const selectedSuggestion = screen.getByRole('button', {
     name: '查询客户',
@@ -67,6 +69,7 @@ test('没有选择回调时静态显示', () => {
   );
   expect(screen.getByText('仅展示')).toBeOnTheScreen();
   expect(screen.queryByRole('button')).toBeNull();
+  expect(screen.UNSAFE_queryAllByType(GlassLayer)).toHaveLength(0);
 });
 
 test.each([
