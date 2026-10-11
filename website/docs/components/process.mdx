@@ -39,7 +39,7 @@ import { ProcessDemo } from '@site/src/demos/ProcessDemo';
 
 单项紧凑过程可传 `identityPlacement="inline"`，把已有 `identity` 内容放在状态同行左侧。`step.statusText` 可提供适合当前公开业务状态的显示文案；它不改变 `status`，也不会让组件生成新的状态或时长。多项或非 compact 仍使用独立身份标题。
 
-compact 的 `step.icon` 可指定动作图标（如 `file`、`image`），设为 `null` 时不显示图标；省略时保持原状态图标。`statusText: ''` 隐藏重复状态文字，标题仍须明确说明当前动作。公开文字与各批 Process 由调用方按顺序组合，整轮内容无需套在一个折叠入口内。
+compact 的 `step.icon` 接收 `@unif/react-native-icons` 的组件引用（如 `FileOutlined`、`ImageOutlined`），设为 `null` 时不显示图标；省略时保持原状态图标。`statusText: ''` 隐藏重复状态文字，标题仍须明确说明当前动作。公开文字与各批 Process 由调用方按顺序组合，整轮内容无需套在一个折叠入口内。
 
 ## API
 
