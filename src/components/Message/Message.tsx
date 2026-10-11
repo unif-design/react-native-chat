@@ -1,3 +1,4 @@
+import { AlertOutlined } from '@unif/react-native-icons';
 import { Pressable, Text, View } from 'react-native';
 import {
   Button,
@@ -49,7 +50,6 @@ export function Message(props: MessageProps) {
       placement === 'end' && styles.outgoing,
     ],
     surface === 'outlined' && styles.outlined,
-    status === 'failed' && styles.failed,
     waiting &&
       surface === 'bubble' &&
       placement === 'start' &&
@@ -66,6 +66,7 @@ export function Message(props: MessageProps) {
             text={props.text}
             onLinkPress={props.onLinkPress}
             outgoing={surface === 'bubble' && placement === 'end'}
+            style={status === 'failed' ? styles.failed : undefined}
           />
         ) : (
           <Text
@@ -75,6 +76,7 @@ export function Message(props: MessageProps) {
               surface === 'bubble' &&
                 placement === 'end' &&
                 styles.outgoingText,
+              status === 'failed' && styles.failed,
             ]}
             numberOfLines={props.numberOfLines}
           >
@@ -86,7 +88,12 @@ export function Message(props: MessageProps) {
       )}
       {waiting ? <MessageWaiting label={statusText} /> : null}
       {statusText && !waiting ? (
-        <Text style={[styles.status, status === 'failed' && styles.errorText]}>
+        <Text
+          style={[
+            styles.status,
+            status === 'failed' && [styles.errorText, styles.failed],
+          ]}
+        >
           {statusText}
         </Text>
       ) : null}
@@ -136,7 +143,7 @@ export function Message(props: MessageProps) {
           <View style={[styles.failureRow, placement === 'end' && styles.end]}>
             {bubble}
             <IconButton
-              icon="alert"
+              icon={AlertOutlined}
               size="sm"
               variant="ghost"
               color={colors.error}

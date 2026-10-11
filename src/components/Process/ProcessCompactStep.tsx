@@ -1,7 +1,11 @@
+import {
+  ChevronDownOutlined,
+  ChevronUpOutlined,
+  SparkOutlined,
+} from '@unif/react-native-icons';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import {
   Button,
-  Icon,
   Pulse,
   Reveal,
   motion,
@@ -32,19 +36,19 @@ export function ProcessCompactStep({
       : step.status === 'failed'
         ? colors.error
         : colors.foregroundMuted;
+  const Glyph =
+    step.icon ??
+    (running || step.status === 'completed'
+      ? SparkOutlined
+      : PROCESS_STATUS_ICONS[step.status]);
   const icon =
     step.icon === null ? null : (
-      <Icon
-        name={
-          step.icon ??
-          (running || step.status === 'completed'
-            ? 'spark'
-            : PROCESS_STATUS_ICONS[step.status])
-        }
+      <Glyph
         size={14}
         color={step.icon === undefined ? color : colors.foregroundMuted}
       />
     );
+  const Glyph2 = expanded ? ChevronUpOutlined : ChevronDownOutlined;
   return (
     <View>
       <Pressable
@@ -90,11 +94,7 @@ export function ProcessCompactStep({
         ) : null}
         {elapsed ? <Text style={styles.elapsed}>{elapsed}</Text> : null}
         {hasDetails ? (
-          <Icon
-            name={expanded ? 'chevron-up' : 'chevron-down'}
-            size={14}
-            color={colors.foregroundSubtle}
-          />
+          <Glyph2 size={14} color={colors.foregroundSubtle} />
         ) : null}
       </Pressable>
       {step.description ? (

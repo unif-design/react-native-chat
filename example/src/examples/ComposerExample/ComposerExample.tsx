@@ -1,3 +1,4 @@
+import { CameraOutlined, PaperclipOutlined } from '@unif/react-native-icons';
 import { useRef, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { Button, useThemedStyles } from '@unif/react-native-design';
@@ -14,6 +15,7 @@ import type { ComposerExampleVoiceStatus, ComposerPrimaryMode } from './types';
 export function ComposerExample() {
   const composerRef = useRef<ComposerHandle>(null);
   const [value, setValue] = useState('');
+  const [plain, setPlain] = useState(false);
   const [allowEmpty, setAllowEmpty] = useState(false);
   const [fileDisabled, setFileDisabled] = useState(false);
   const [fileLoading, setFileLoading] = useState(false);
@@ -153,35 +155,44 @@ export function ComposerExample() {
         </View>
       </View>
 
-      <Composer
-        ref={composerRef}
-        value={value}
-        onChangeText={setValue}
-        primaryAction={primaryAction}
-        voice={voice}
-        actions={[
-          {
-            id: 'capture',
-            label: '拍摄照片',
-            icon: 'camera',
-            onPress: () => setLastAction('收到拍照入口事件'),
-          },
-          {
-            id: 'pick-file',
-            label: '选择文件',
-            icon: 'paperclip',
-            disabled: fileDisabled,
-            loading: fileLoading,
-            onPress: () => setLastAction('收到选择文件入口事件'),
-          },
-        ]}
-        onFocusChange={setFocused}
-        onHeightChange={setHeight}
-      />
+      <View style={plain ? styles.plainHost : undefined}>
+        <Composer
+          ref={composerRef}
+          value={value}
+          onChangeText={setValue}
+          primaryAction={primaryAction}
+          surface={plain ? 'plain' : 'card'}
+          voice={voice}
+          actions={[
+            {
+              id: 'capture',
+              label: '拍摄照片',
+              icon: CameraOutlined,
+              onPress: () => setLastAction('收到拍照入口事件'),
+            },
+            {
+              id: 'pick-file',
+              label: '选择文件',
+              icon: PaperclipOutlined,
+              disabled: fileDisabled,
+              loading: fileLoading,
+              onPress: () => setLastAction('收到选择文件入口事件'),
+            },
+          ]}
+          onFocusChange={setFocused}
+          onHeightChange={setHeight}
+        />
+      </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>ref、焦点与测量记录</Text>
         <View style={styles.controls}>
+          <Button
+            label={plain ? '使用玻璃卡片' : '使用外层表面'}
+            size="sm"
+            variant="secondary"
+            onPress={() => setPlain((current) => !current)}
+          />
           <Button
             label="聚焦输入"
             size="sm"

@@ -1,9 +1,11 @@
+import { FileOutlined, ImageOutlined } from '@unif/react-native-icons';
 import { createRef } from 'react';
 import { StyleSheet, Text, TextInput } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { describe, expect, jest, test } from '@jest/globals';
 import {
   ActionMenuContent,
+  GlassLayer,
   Textarea,
   ThemeProvider,
   space,
@@ -90,13 +92,13 @@ describe('Composer', () => {
         {
           id: 'pick',
           label: '选择文件',
-          icon: 'file',
+          icon: FileOutlined,
           accessibilityHint: '从设备选择文件',
           onPress,
         },
         { id: 'busy', label: '准备文件', loading: true, onPress },
         { id: 'disabled', label: '不可用文件', disabled: true, onPress },
-        { id: 'unnamed', label: ' ', icon: 'file', onPress },
+        { id: 'unnamed', label: ' ', icon: FileOutlined, onPress },
       ],
     });
     const input = screen.UNSAFE_getByType(TextInput).instance;
@@ -267,7 +269,12 @@ test('空白时同一行，聚焦或有文字后展开且不重新挂载 Textare
     onChangeText: jest.fn(),
     primaryAction: { kind: 'send', onPress: jest.fn() },
     actions: [
-      { id: 'photo', label: '选择照片', icon: 'image', onPress: jest.fn() },
+      {
+        id: 'photo',
+        label: '选择照片',
+        icon: ImageOutlined,
+        onPress: jest.fn(),
+      },
     ],
     voice: {
       status: 'idle',
@@ -307,7 +314,7 @@ test('空白时同一行，聚焦或有文字后展开且不重新挂载 Textare
   expect(screen.UNSAFE_getByType(TextInput).instance).toBe(nativeInput);
 });
 
-test('统一卡片可交给外层，两个表面均使用无独立表面的 Textarea', () => {
+test('玻璃卡片不裁切浮菜单，切为 plain 保留输入并交由外层提供表面', () => {
   const props: ComposerProps = {
     value: '',
     onChangeText: jest.fn(),
@@ -315,14 +322,19 @@ test('统一卡片可交给外层，两个表面均使用无独立表面的 Text
     testID: 'composer',
   };
   const view = renderComposer(props);
-  expect(
-    StyleSheet.flatten(screen.getByTestId('composer').props.style)
-  ).toMatchObject({ borderWidth: 0.5 });
+  const input = screen.UNSAFE_getByType(TextInput).instance;
+  const card = StyleSheet.flatten(screen.getByTestId('composer').props.style);
+  expect(card).toMatchObject({ borderWidth: 0.5 });
+  expect(card.backgroundColor).toBeUndefined();
+  expect(card.overflow).not.toBe('hidden');
+  expect(screen.UNSAFE_getByType(GlassLayer)).toBeDefined();
   expect(screen.UNSAFE_getByType(Textarea).props.surface).toBe('plain');
   view.rerender(<Composer {...props} surface="plain" />);
   const root = StyleSheet.flatten(screen.getByTestId('composer').props.style);
   expect(root.borderWidth).toBeUndefined();
   expect(root.backgroundColor).toBeUndefined();
+  expect(screen.UNSAFE_queryAllByType(GlassLayer)).toHaveLength(0);
+  expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
   expect(screen.UNSAFE_getByType(Textarea).props.surface).toBe('plain');
 });
 

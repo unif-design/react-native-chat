@@ -1,4 +1,11 @@
 import {
+  CloseOutlined,
+  MicOutlined,
+  PlusOutlined,
+  SendOutlined,
+  StopFilled,
+} from '@unif/react-native-icons';
+import {
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -14,6 +21,7 @@ import {
 } from 'react-native';
 import {
   ActionMenuContent,
+  GlassLayer,
   fixed,
   Textarea,
   useTheme,
@@ -118,7 +126,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
     const moreAction =
       actions.length > 0 ? (
         <ComposerIconAction
-          icon="plus"
+          icon={PlusOutlined}
           label="更多操作"
           expanded={menuOpen}
           disabled={moreDisabled}
@@ -137,6 +145,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
           }
         }}
       >
+        {surface === 'card' ? <GlassLayer style={styles.glass} /> : null}
         {header != null ? (
           <View
             style={[
@@ -241,7 +250,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
               <View style={styles.trailingActions}>
                 {voice ? (
                   <ComposerIconAction
-                    icon="mic"
+                    icon={MicOutlined}
                     label="开始语音输入"
                     disabled={disabled || voice.disabled}
                     onPress={() => {
@@ -252,7 +261,9 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
                 ) : null}
                 {showPrimary ? (
                   <ComposerIconAction
-                    icon={primaryAction.kind === 'send' ? 'send' : 'stop'}
+                    icon={
+                      primaryAction.kind === 'send' ? SendOutlined : StopFilled
+                    }
                     label={primaryLabel}
                     visual="primary"
                     disabled={primaryDisabled}
@@ -274,7 +285,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
         {voice && voice.status !== 'idle' ? (
           <View style={styles.voice}>
             <ComposerIconAction
-              icon="close"
+              icon={CloseOutlined}
               visual="cancel"
               label="取消语音输入"
               disabled={disabled || voice.disabled}
@@ -298,7 +309,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
             </View>
             {voice.status === 'listening' || voice.status === 'finishing' ? (
               <ComposerIconAction
-                icon="stop"
+                icon={StopFilled}
                 visual="primary"
                 label="停止语音输入"
                 disabled={

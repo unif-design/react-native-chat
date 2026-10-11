@@ -1,5 +1,5 @@
 import { ActivityIndicator, Pressable, View } from 'react-native';
-import { Icon, useColors, useThemedStyles } from '@unif/react-native-design';
+import { useColors, useThemedStyles } from '@unif/react-native-design';
 import {
   COMPOSER_ACTION_ICON_SIZE,
   COMPOSER_PRIMARY_ICON_SIZE,
@@ -28,6 +28,7 @@ export function ComposerIconAction({
       ? colors.foregroundSubtle
       : colors.onPrimary
     : colors.foregroundMuted;
+  const Glyph = icon;
   return (
     <Pressable
       accessibilityRole="button"
@@ -54,8 +55,7 @@ export function ComposerIconAction({
           {busy ? (
             <ActivityIndicator size="small" color={color} />
           ) : (
-            <Icon
-              name={icon}
+            <Glyph
               size={
                 primary
                   ? COMPOSER_PRIMARY_ICON_SIZE

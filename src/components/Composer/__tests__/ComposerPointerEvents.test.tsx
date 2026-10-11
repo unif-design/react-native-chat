@@ -1,3 +1,4 @@
+import { ImageOutlined, PlusOutlined } from '@unif/react-native-icons';
 import { Platform, StyleSheet } from 'react-native';
 import type { PressableProps } from 'react-native';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
@@ -32,7 +33,11 @@ test.each([
     const onPress = jest.fn();
     const preventDefault = jest.fn();
     render(
-      <ComposerIconAction icon="plus" label="更多操作" onPress={onPress} />,
+      <ComposerIconAction
+        icon={PlusOutlined}
+        label="更多操作"
+        onPress={onPress}
+      />,
       { wrapper: ThemeProvider }
     );
     const action = screen.getByRole('button', { name: '更多操作' });
@@ -54,7 +59,11 @@ test.each(['pointerUp', 'pointerCancel', 'pointerLeave'])(
     jest.replaceProperty(Platform, 'OS', 'web');
     const onPress = jest.fn();
     render(
-      <ComposerIconAction icon="plus" label="更多操作" onPress={onPress} />,
+      <ComposerIconAction
+        icon={PlusOutlined}
+        label="更多操作"
+        onPress={onPress}
+      />,
       { wrapper: ThemeProvider }
     );
     const action = screen.getByRole('button', { name: '更多操作' });
@@ -74,7 +83,7 @@ test.each(['pointerUp', 'pointerCancel', 'pointerLeave'])(
 test('禁用及恢复不留下鼠标按压反馈', () => {
   jest.replaceProperty(Platform, 'OS', 'web');
   const props = {
-    icon: 'plus' as const,
+    icon: PlusOutlined,
     label: '更多操作',
     onPress: jest.fn(),
   };
@@ -101,7 +110,12 @@ test('菜单行的鼠标按压底色在松开后恢复，菜单操作仍可交�
       onChangeText={jest.fn()}
       primaryAction={{ kind: 'send', onPress: jest.fn() }}
       actions={[
-        { id: 'photo', label: '选择照片', icon: 'image', onPress: onSelect },
+        {
+          id: 'photo',
+          label: '选择照片',
+          icon: ImageOutlined,
+          onPress: onSelect,
+        },
       ]}
     />,
     { wrapper: ThemeProvider }
@@ -159,7 +173,12 @@ test('取消 pointerdown 后，真实 RNW click 仍交付菜单、语音和发�
       onChangeText={onChangeText}
       primaryAction={{ kind: 'send', onPress: onSend }}
       actions={[
-        { id: 'photo', label: '选择照片', icon: 'image', onPress: onSelect },
+        {
+          id: 'photo',
+          label: '选择照片',
+          icon: ImageOutlined,
+          onPress: onSelect,
+        },
       ]}
       voice={{
         status: 'idle',

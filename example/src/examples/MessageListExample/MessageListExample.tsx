@@ -31,6 +31,7 @@ export function MessageListExample() {
   const [instanceKey, setInstanceKey] = useState(0);
   const [streamChunkIndex, setStreamChunkIndex] = useState(0);
   const [atEnd, setAtEnd] = useState(true);
+  const [scrollToEndBusy, setScrollToEndBusy] = useState(false);
   const [historyError, setHistoryError] = useState<string>();
   const [lastAction, setLastAction] = useState('等待列表操作');
   const styles = useThemedStyles(createStyles);
@@ -138,6 +139,12 @@ export function MessageListExample() {
           onPress={() => listRef.current?.scrollToEnd()}
         />
         <Button
+          label={scrollToEndBusy ? '结束生成状态' : '显示生成状态'}
+          size="sm"
+          variant="outline"
+          onPress={() => setScrollToEndBusy((current) => !current)}
+        />
+        <Button
           label={historyError ? '清除历史错误' : '显示历史错误'}
           size="sm"
           variant="outline"
@@ -176,6 +183,7 @@ export function MessageListExample() {
           initialPosition={initialPosition}
           followOutput={followOutput}
           onAtEndChange={setAtEnd}
+          scrollToEndBusy={scrollToEndBusy}
           hasEarlier={hasEarlier}
           onRequestEarlier={requestEarlier}
           header={

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { expect, jest, test } from '@jest/globals';
 import { Text } from 'react-native';
-import { ThemeProvider } from '@unif/react-native-design';
+import { GlassLayer, ThemeProvider } from '@unif/react-native-design';
 import { Confirmation } from '..';
 
 const renderConfirmation = (node: React.ReactNode) =>
@@ -22,6 +22,7 @@ test('待确认状态只交付调用方提供的操作', () => {
     </Confirmation>
   );
 
+  expect(screen.UNSAFE_getAllByType(GlassLayer)).toHaveLength(1);
   fireEvent.press(screen.getByRole('button', { name: '确认' }));
   fireEvent.press(screen.getByRole('button', { name: '取消' }));
   expect(onConfirm).toHaveBeenCalledTimes(1);

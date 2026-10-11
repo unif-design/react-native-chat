@@ -1,11 +1,13 @@
-import type { IconName } from '@unif/react-native-design';
+import type { ComponentType } from 'react';
+import type { IconProps } from '@unif/react-native-icons';
+
 import type { StyleProp, ViewStyle } from 'react-native';
 
 export interface SuggestionItem {
   id: string;
   label: string;
   /** 14 布局单位的主题主色图标，普通与选中状态保持相同图标样式。 */
-  icon?: IconName;
+  icon?: ComponentType<IconProps>;
   selected?: boolean;
   loading?: boolean;
   disabled?: boolean;

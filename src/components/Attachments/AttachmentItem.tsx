@@ -1,8 +1,13 @@
+import {
+  CloseOutlined,
+  EyeOutlined,
+  RefreshOutlined,
+} from '@unif/react-native-icons';
 import { Pressable, Text, View } from 'react-native';
 import {
   Button,
   CircularProgress,
-  Icon,
+  GlassLayer,
   IconButton,
   radius,
   Spinner,
@@ -54,12 +59,7 @@ export function AttachmentItem({
   const removable = item.removable && onRemove;
   const singleAction = item.actions?.length === 1 ? item.actions[0] : undefined;
   const retry =
-    failed &&
-    !caption &&
-    singleAction &&
-    (singleAction.id === 'retry' ||
-      singleAction.icon === 'retry' ||
-      singleAction.icon === 'refresh')
+    failed && !caption && singleAction?.id === 'retry'
       ? singleAction
       : undefined;
   const statusLeft = (imageSize - ATTACHMENT_STATUS_OWNER_SIZE) / 2;
@@ -72,9 +72,8 @@ export function AttachmentItem({
             ATTACHMENT_STATUS_OWNER_SIZE
         )
       : statusLeft;
-  const icon = (
-    <Icon name={ATTACHMENT_ICONS[item.kind ?? 'file']} size={ROW_IMAGE_SIZE} />
-  );
+  const Glyph = ATTACHMENT_ICONS[item.kind ?? 'file'];
+  const icon = <Glyph size={ROW_IMAGE_SIZE} color={colors.foregroundMuted} />;
   const thumbnail = item.thumbnail ? (
     <Thumbnail
       source={item.thumbnail}
@@ -90,21 +89,20 @@ export function AttachmentItem({
       {icon}
     </View>
   );
+  const Glyph2 = retry?.icon ?? RefreshOutlined;
   const statusVisual =
     busy || failed ? (
       <View style={styles.statusVisual}>
+        <GlassLayer colorScheme="dark" style={styles.circleGlass} />
         {failed ? (
-          <Icon
-            name={retry?.icon ?? 'refresh'}
-            size={16}
-            color={colors.onPrimary}
-          />
+          <Glyph2 size={16} color={colors.onPrimary} />
         ) : progress !== undefined ? (
           <CircularProgress
             value={progress}
             size={36}
             showLabel={showProgressLabel}
             color={colors.onPrimary}
+            labelColor={colors.onPrimary}
             accessibilityLabel={`${name}上传进度`}
           />
         ) : (
@@ -222,7 +220,7 @@ export function AttachmentItem({
         <View style={styles.actions}>
           {previewable && retry ? (
             <IconButton
-              icon="eye"
+              icon={EyeOutlined}
               size="sm"
               accessibilityLabel={`预览${name}`}
               onPress={() => onPreview?.(item)}
@@ -230,7 +228,7 @@ export function AttachmentItem({
           ) : null}
           {removable ? (
             <IconButton
-              icon="close"
+              icon={CloseOutlined}
               size="sm"
               accessibilityLabel={`移除${name}`}
               disabled={item.removeDisabled}
@@ -326,8 +324,10 @@ export function AttachmentItem({
               failed && styles.removeFailed,
             ]}
           >
-            <Icon
-              name="close"
+            {!failed ? (
+              <GlassLayer colorScheme="dark" style={styles.circleGlass} />
+            ) : null}
+            <CloseOutlined
               size={preview ? 12 : 10}
               color={colors.onPrimary}
               strokeWidth={2.5}
@@ -357,7 +357,7 @@ export function AttachmentItem({
       {separatePreview ? (
         <View style={[styles.previewAction, { width: imageSize }]}>
           <IconButton
-            icon="eye"
+            icon={EyeOutlined}
             size="sm"
             accessibilityLabel={`预览${name}`}
             onPress={() => onPreview?.(item)}

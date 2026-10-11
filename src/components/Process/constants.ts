@@ -1,4 +1,13 @@
-import type { IconName } from '@unif/react-native-design';
+import {
+  CircleMinusOutlined,
+  CloseOutlined,
+  ErrorOutlined,
+  SuccessOutlined,
+  ThinkingOutlined,
+} from '@unif/react-native-icons';
+import type { ComponentType } from 'react';
+import type { IconProps } from '@unif/react-native-icons';
+
 import type { ProcessStepStatus } from './types';
 
 export const PROCESS_STATUS_LABELS: Readonly<
@@ -12,11 +21,11 @@ export const PROCESS_STATUS_LABELS: Readonly<
 };
 
 export const PROCESS_STATUS_ICONS: Readonly<
-  Record<ProcessStepStatus, IconName>
+  Record<ProcessStepStatus, ComponentType<IconProps>>
 > = {
-  pending: 'circle-minus',
-  running: 'thinking',
-  completed: 'success',
-  failed: 'error',
-  cancelled: 'close',
+  pending: CircleMinusOutlined,
+  running: ThinkingOutlined,
+  completed: SuccessOutlined,
+  failed: ErrorOutlined,
+  cancelled: CloseOutlined,
 };

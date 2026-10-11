@@ -1,3 +1,4 @@
+import { SearchOutlined } from '@unif/react-native-icons';
 import { Text, View } from 'react-native';
 import {
   Citation,
@@ -20,7 +21,7 @@ import type {
 const suggestion: SuggestionItem = {
   id: 'customer-search',
   label: '查询客户',
-  icon: 'search',
+  icon: SearchOutlined,
 };
 const confirmationStatus: ConfirmationStatus = 'pending';
 const feedbackTone: FeedbackTone = 'warning';

@@ -1,6 +1,8 @@
+import type { ComponentType } from 'react';
+import type { IconProps } from '@unif/react-native-icons';
 import type { ReactNode } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import type { IconName, TextFieldHandle } from '@unif/react-native-design';
+import type { TextFieldHandle } from '@unif/react-native-design';
 import type { ChatAction } from '../../actions';
 
 export interface ComposerSendAction {
@@ -50,7 +52,7 @@ export interface ComposerProps {
   voice?: ComposerVoiceControl;
   header?: ReactNode;
   footer?: ReactNode;
-  /** card 提供统一表面；plain 由外层提供表面，内部 Textarea 均不单独绘制表面。 */
+  /** card 提供统一玻璃表面；plain 由外层提供表面，内部 Textarea 均不单独绘制表面。 */
   surface?: 'card' | 'plain';
   /** Textarea 整体最小高度（含内间距），默认 44，不低于最小触达高度。 */
   minInputHeight?: number;
@@ -65,7 +67,7 @@ export interface ComposerProps {
 export type ComposerHandle = TextFieldHandle;
 
 export interface ComposerIconActionProps {
-  icon: IconName;
+  icon: ComponentType<IconProps>;
   label: string;
   onPress?(): void;
   disabled?: boolean;

@@ -1,3 +1,4 @@
+import { CameraOutlined, PaperclipOutlined } from '@unif/react-native-icons';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Button, useThemedStyles } from '@unif/react-native-design';
@@ -9,6 +10,7 @@ import { createStyles } from './styles';
 import type { ComposerDemoMode } from './types';
 
 export function ComposerDemo() {
+  const [plain, setPlain] = useState(false);
   const styles = useThemedStyles(createStyles);
   const [value, setValue] = useState(INITIAL_COMPOSER_VALUE);
   const [mode, setMode] = useState<ComposerDemoMode>('send');
@@ -33,44 +35,53 @@ export function ComposerDemo() {
 
   return (
     <View style={styles.root}>
-      <Composer
-        value={value}
-        onChangeText={setValue}
-        primaryAction={primaryAction}
-        voice={{
-          status: listening ? 'listening' : 'idle',
-          transcript: listening ? '调用方提供的识别文字' : undefined,
-          onStart: () => {
-            setListening(true);
-            setResult('展示聆听状态；示例未启动麦克风');
-          },
-          onStop: () => {
-            setListening(false);
-            setResult('收到停止语音事件，草稿保持原文');
-          },
-          onCancel: () => {
-            setListening(false);
-            setResult('收到取消语音事件，草稿保持原文');
-          },
-        }}
-        actions={[
-          {
-            id: 'photo',
-            label: '选择照片',
-            icon: 'camera',
-            onPress: () => setResult('已收到选择照片入口事件'),
-          },
-          {
-            id: 'file',
-            label: '选择文件',
-            icon: 'paperclip',
-            disabled: fileDisabled,
-            loading: fileLoading,
-            onPress: () => setResult('已收到选择文件入口事件'),
-          },
-        ]}
-      />
+      <View style={plain ? styles.plainHost : undefined}>
+        <Composer
+          value={value}
+          onChangeText={setValue}
+          primaryAction={primaryAction}
+          surface={plain ? 'plain' : 'card'}
+          voice={{
+            status: listening ? 'listening' : 'idle',
+            transcript: listening ? '调用方提供的识别文字' : undefined,
+            onStart: () => {
+              setListening(true);
+              setResult('展示聆听状态；示例未启动麦克风');
+            },
+            onStop: () => {
+              setListening(false);
+              setResult('收到停止语音事件，草稿保持原文');
+            },
+            onCancel: () => {
+              setListening(false);
+              setResult('收到取消语音事件，草稿保持原文');
+            },
+          }}
+          actions={[
+            {
+              id: 'photo',
+              label: '选择照片',
+              icon: CameraOutlined,
+              onPress: () => setResult('已收到选择照片入口事件'),
+            },
+            {
+              id: 'file',
+              label: '选择文件',
+              icon: PaperclipOutlined,
+              disabled: fileDisabled,
+              loading: fileLoading,
+              onPress: () => setResult('已收到选择文件入口事件'),
+            },
+          ]}
+        />
+      </View>
       <View style={styles.controls}>
+        <Button
+          label={plain ? '使用玻璃卡片' : '使用外层表面'}
+          size="sm"
+          variant="text"
+          onPress={() => setPlain((current) => !current)}
+        />
         <Button
           label={fileDisabled ? '恢复文件操作' : '禁用文件操作'}
           size="sm"

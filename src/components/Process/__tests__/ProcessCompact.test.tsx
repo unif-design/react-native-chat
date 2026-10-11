@@ -1,7 +1,9 @@
+import Svg from 'react-native-svg';
+import { FileOutlined, ChevronDownOutlined } from '@unif/react-native-icons';
 import { expect, jest, test } from '@jest/globals';
 import { Text } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
-import { ThemeProvider, Icon, r } from '@unif/react-native-design';
+import { ThemeProvider, r } from '@unif/react-native-design';
 import { Process } from '@unif/react-native-chat';
 
 test('紧凑身份与当前状态同一行，状态文案由调用者表达且不改变折叠事件', () => {
@@ -129,7 +131,7 @@ test('公开活动使用动作图标，空状态文案不产生标点或状态�
             title: '已阅读文件',
             status: 'completed',
             statusText: '',
-            icon: 'file',
+            icon: FileOutlined,
             details: <Text>门店规范.pdf</Text>,
           },
         ]}
@@ -137,9 +139,8 @@ test('公开活动使用动作图标，空状态文案不产生标点或状态�
     </ThemeProvider>
   );
   expect(page.getByRole('button', { name: '已阅读文件' })).toBeTruthy();
-  expect(page.UNSAFE_getAllByType(Icon).map((node) => node.props.name)).toEqual(
-    ['file', 'chevron-down']
-  );
+  expect(page.UNSAFE_getAllByType(FileOutlined)).toHaveLength(1);
+  expect(page.UNSAFE_getAllByType(ChevronDownOutlined)).toHaveLength(1);
   fireEvent.press(page.getByRole('button', { name: '已阅读文件' }));
   expect(page.getByText('门店规范.pdf')).toBeTruthy();
 });
@@ -161,6 +162,6 @@ test('显式无图标的紧凑行不补减号', () => {
       />
     </ThemeProvider>
   );
-  expect(page.UNSAFE_queryAllByType(Icon)).toHaveLength(0);
+  expect(page.UNSAFE_queryAllByType(Svg)).toHaveLength(0);
   expect(page.queryByRole('button')).toBeNull();
 });

@@ -11,9 +11,10 @@
 ## 工程接线
 
 - create-react-native-library 0.63.1，library/js 模板；库源码 TS/TSX，Bob 生成 ESM 和声明。Community CLI 原生 example 与 Docusaurus Web 文档站分别验证原生和浏览器消费。
-- 库名 @unif/react-native-chat，示例工作区 @unif/react-native-chat-example；React 19.2.3、RN 0.86.3、Design 0.39.0、Yarn 4.11.0。
-- Design 从包根消费，Thumbnail 尺寸对象/fallback、Textarea（含 plain 表面）/TextFieldHandle、CircularProgress、ActionMenuContent（含 popover 展示）按 0.39.0 实际接口使用。Composer 的菜单开关与定位留在 Chat，菜单卡和菜单行由 Design 提供。详细接线见[组合验证](../../unif-platform-architecture/libraries/react-native-chat/composition.md#6-design-依赖与接入验证)。
-- Chat 3.4 起的 Design peer 为 `>=0.39.0`；根库、example 与 Website 使用 `@callstack/liquid-glass` 0.8.2 满足 Design 的玻璃材质依赖。Jest 继续复用 Design preset，Web 通过 Design 的 Web 入口消费。
+- 库名 @unif/react-native-chat，示例工作区 @unif/react-native-chat-example；React 19.2.3、RN 0.86.3、Design 1.0.0、Yarn 4.11.0。
+- Design 从包根消费，Thumbnail 尺寸对象/fallback、Textarea（含 plain 表面）/TextFieldHandle、CircularProgress、ActionMenuContent（含 popover 展示）按 1.0.0 实际接口使用。Composer 的菜单开关与定位留在 Chat，菜单卡和菜单行由 Design 提供。详细接线见[组合验证](../../unif-platform-architecture/libraries/react-native-chat/composition.md#6-design-依赖与接入验证)。
+- Composer card、图片普通移除圆圈和中央状态／重试圆层复用 GlassLayer，plain 继续由外层提供表面；返回末尾操作复用 IconButton 的 glass 变体。交互 Suggestions、附件继续操作和 Confirmation 取消分别消费 Chip／secondary Button 的共享默认玻璃表面。材质、减少透明度和平台降级由 Design 处理，Chat 保留输入层级、浮菜单定位、附件独立触达区及滚动行为。失败附件仍使用错误色，消息正文与内容内轻量操作保留原层次。
+- 本版本的 Design peer 为 `>=1.0.0`；根库、example 与 Website 使用 `@callstack/liquid-glass` 0.8.2 满足 Design 的玻璃材质依赖。Jest 继续复用 Design preset，Web 通过 Design 的 Web 入口消费。
 - Markdown 使用 react-native-marked 8.2.0，归所属消息单元，不建立解析器、模型 SDK 或组件注册中心。
 - Yarn 默认提升相同版本依赖，根库和 example 共用 React/原生模块实例；测试复用 Design 公开 preset。
 - src/index.tsx 只导出真实实现；type-tests 验证依赖公开类型，example 验证公开消费。Git 忽略安装、构建和本地资料；npm files 只发布源码、构建产物及标准包说明。
@@ -27,6 +28,28 @@
 按本次组件读取实现、类型及对应 example。输入、附件、消息列表和交互反馈分别验证；Chat 组合现有组件，应用负责会话与业务流程。
 
 组件实现位于 `src/components/<组件名>/`，包根为 `src/index.tsx`；文件细则通过 AGENTS.md 指定的开发技能取得。
+
+### 材质覆盖
+
+按公开导出及其内部交互入口核查；共享控件的表面由 Design 维护，Chat 不重复包装，也不通过新增材质参数改变业务状态。
+
+| 公开组件           | 控制表面与内容边界                                                                                                                                                                                                |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Composer           | card 使用装饰 GlassLayer，plain 不绘制表面；浮菜单由 ActionMenuContent 提供。卡内 more／mic 保留透明操作，send／stop 保留主动作色，聆听区保留状态色。根容器允许浮菜单溢出。                                       |
+| Attachments        | 普通移除和中央进度／处理／重试使用暗色 GlassLayer，继续操作使用 secondary Button；失败红色移除和描边保留。图片、文件行、名称、占位及行内预览／移除保持内容层次。中央圆层不裁切大字号百分比，点击 owner 保持独立。 |
+| Message            | bubble／outlined／plain 与失败语义保留；失败只淡化自有纯文字／Markdown／状态说明，外部内容的材质祖先保持不透明。正文下操作继续使用 ghost／text，错误入口保留错误色。                                              |
+| MessageWaiting     | 三点和等待说明，无控制表面。                                                                                                                                                                                      |
+| MessageList        | 悬浮返回末尾按钮使用 glass IconButton，外层动画只缩放，不淡化材质祖先；列表内“查看更早消息”保留 text。                                                                                                            |
+| Chat               | 只组合布局，无独立表面。                                                                                                                                                                                          |
+| Suggestions        | 有 onSelect 时使用共享交互 Chip 的玻璃表面，无回调时保留静态标签。selected／loading／disabled 与原项事件保持受控。                                                                                                |
+| Confirmation       | 取消使用共享 secondary Button 玻璃表面，确认保留 primary；内联确认内容卡与四种状态保留。                                                                                                                          |
+| Process            | card／compact／timeline 的内容、展开入口、步骤动作和状态保持原契约。                                                                                                                                              |
+| ProcessingProgress | 只显示行内状态文字，无控制表面。                                                                                                                                                                                  |
+| Feedback           | tone 背景承载信息／成功／警告／错误语义，内容内操作保留 outline。                                                                                                                                                 |
+| Sources            | 来源行承载可读内容，保留内容表面和原项点击。                                                                                                                                                                      |
+| Citation           | 保持可嵌入正文的 Text 根节点和 link 语义。                                                                                                                                                                        |
+
+每个单元的 `__tests__` 验证自身事件和状态；example 与 Web demo 消费真实公开组件。共享控件的原生材质、减少透明度和不支持平台由 Design 独立验证，Chat 的 Jest 结果不代替设备视觉验收。
 
 ## 文档站
 

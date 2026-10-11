@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 import {
   Button,
-  Icon,
+  r,
   useColors,
   useThemedStyles,
 } from '@unif/react-native-design';
@@ -48,6 +48,7 @@ export function Feedback({
   const toneLabel = FEEDBACK_TONE_LABELS[tone];
   const accessibilityLabel = `${toneLabel}：${title ? `${title}。` : ''}${message}`;
 
+  const Glyph = FEEDBACK_TONE_ICONS[tone];
   return (
     <View
       style={[
@@ -57,7 +58,7 @@ export function Feedback({
       ]}
       testID={testID}
     >
-      <Icon name={FEEDBACK_TONE_ICONS[tone]} color={toneColors.iconColor} />
+      <Glyph size={r(18)} color={toneColors.iconColor} />
       <View style={styles.content}>
         <View accessible accessibilityLabel={accessibilityLabel}>
           {title ? (
