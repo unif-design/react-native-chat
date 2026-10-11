@@ -32,24 +32,28 @@ export function ProcessCompactStep({
       : step.status === 'failed'
         ? colors.error
         : colors.foregroundMuted;
-  const icon = (
-    <Icon
-      name={
-        running || step.status === 'completed'
-          ? 'spark'
-          : PROCESS_STATUS_ICONS[step.status]
-      }
-      size={14}
-      color={color}
-    />
-  );
+  const icon =
+    step.icon === null ? null : (
+      <Icon
+        name={
+          step.icon ??
+          (running || step.status === 'completed'
+            ? 'spark'
+            : PROCESS_STATUS_ICONS[step.status])
+        }
+        size={14}
+        color={step.icon === undefined ? color : colors.foregroundMuted}
+      />
+    );
   return (
     <View>
       <Pressable
         testID={`process-step-${step.id}-toggle`}
         accessible
         accessibilityRole={hasDetails ? 'button' : undefined}
-        accessibilityLabel={`${step.title}，${statusText}${elapsed ? `，${elapsed}` : ''}`}
+        accessibilityLabel={[step.title, statusText, elapsed]
+          .filter(Boolean)
+          .join('，')}
         accessibilityState={hasDetails ? { expanded } : undefined}
         disabled={!hasDetails}
         hitSlop={10}
@@ -65,7 +69,7 @@ export function ProcessCompactStep({
             <View style={styles.spacer} />
           </>
         ) : null}
-        {running ? (
+        {running && icon ? (
           <Pulse from={0.4} duration={motion.pulse / 2}>
             {icon}
           </Pulse>
@@ -81,7 +85,9 @@ export function ProcessCompactStep({
             {step.title}
           </Text>
         ) : null}
-        <Text style={styles.compactStatus}>{statusText}</Text>
+        {statusText ? (
+          <Text style={styles.compactStatus}>{statusText}</Text>
+        ) : null}
         {elapsed ? <Text style={styles.elapsed}>{elapsed}</Text> : null}
         {hasDetails ? (
           <Icon
