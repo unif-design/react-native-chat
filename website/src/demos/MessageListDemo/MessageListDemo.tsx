@@ -14,6 +14,7 @@ export function MessageListDemo() {
   const [items, setItems] =
     useState<readonly DemoListMessage[]>(INITIAL_MESSAGES);
   const [hasEarlier, setHasEarlier] = useState(true);
+  const [scrollToEndBusy, setScrollToEndBusy] = useState(false);
   const [result, setResult] = useState('列表初始定位在最新消息');
   const styles = useThemedStyles(createStyles);
 
@@ -61,6 +62,7 @@ export function MessageListDemo() {
           onRequestEarlier={requestEarlier}
           initialPosition="end"
           followOutput="whenAtEnd"
+          scrollToEndBusy={scrollToEndBusy}
           style={styles.list}
         />
       </View>
@@ -81,6 +83,12 @@ export function MessageListDemo() {
           }}
         />
         <Text style={styles.count}>{items.length} 条消息</Text>
+        <Button
+          label={scrollToEndBusy ? '结束生成状态' : '显示生成状态'}
+          size="sm"
+          variant="secondary"
+          onPress={() => setScrollToEndBusy((current) => !current)}
+        />
       </View>
       <DemoResult>{result}</DemoResult>
     </View>

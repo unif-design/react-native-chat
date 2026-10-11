@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Avatar, Button, useThemedStyles } from '@unif/react-native-design';
-import { Message, MessageWaiting, Process } from '@unif/react-native-chat';
+import {
+  Attachments,
+  Message,
+  MessageWaiting,
+  Process,
+} from '@unif/react-native-chat';
 import { MARKDOWN_MESSAGE } from './constants';
 import { DemoResult } from '../DemoResult';
 import { createStyles } from './styles';
@@ -54,6 +59,19 @@ export function MessageDemo() {
         placement="end"
         text="尚未送出的输入"
         status="failed"
+        footer={
+          <Attachments
+            items={[
+              {
+                id: 'unsent-photo',
+                name: '未发送图片',
+                kind: 'image',
+                removable: true,
+              },
+            ]}
+            onRemove={() => setResult('已收到移除未发送图片事件')}
+          />
+        }
         failureAction={{
           id: 'retry',
           label: '继续原输入',

@@ -1,6 +1,6 @@
 import { createRef } from 'react';
-import { FlatList, Platform, Text } from 'react-native';
-import { ThemeProvider } from '@unif/react-native-design';
+import { FlatList, Platform, StyleSheet, Text } from 'react-native';
+import { IconButton, Spinner, ThemeProvider } from '@unif/react-native-design';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { afterEach, describe, expect, jest, test } from '@jest/globals';
 import { MessageList } from '..';
@@ -37,6 +37,39 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 describe('MessageList', () => {
+  test.each([false, true])(
+    '玻璃返回按钮忙碌=%s 时仍滚动，外环不代替操作',
+    (busy) => {
+      const scrollToOffset = jest
+        .spyOn(FlatList.prototype, 'scrollToOffset')
+        .mockImplementation(() => {});
+      render(<MessageList {...props} scrollToEndBusy={busy} />, {
+        wrapper: ThemeProvider,
+      });
+      measure();
+      scroll(100);
+      scrollToOffset.mockClear();
+      const button = screen.getByRole('button', {
+        name: busy ? '回到最新消息，正在处理' : '回到最新消息',
+      });
+      const iconButton = screen.UNSAFE_getByType(IconButton);
+      expect(iconButton.props.variant).toBe('glass');
+      expect(iconButton.props.surfaceSize).toBe(36);
+      expect(
+        StyleSheet.flatten(iconButton.props.style).backgroundColor
+      ).toBeUndefined();
+      expect(button).not.toBeDisabled();
+      if (busy) expect(screen.UNSAFE_getByType(Spinner).props.size).toBe(44);
+      else expect(screen.UNSAFE_queryAllByType(Spinner)).toHaveLength(0);
+      fireEvent.press(button);
+      expect(scrollToOffset).toHaveBeenCalledTimes(1);
+      expect(scrollToOffset).toHaveBeenLastCalledWith({
+        offset: 600,
+        animated: true,
+      });
+    }
+  );
+
   test('保持集合顺序，历史只由明确按钮请求且加载时不可用', () => {
     const earlier = jest.fn();
     const view = render(

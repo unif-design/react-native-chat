@@ -16,6 +16,7 @@ export function MarkdownContent({
   text,
   onLinkPress,
   outgoing = false,
+  style,
 }: MarkdownContentProps) {
   const { scheme } = useTheme();
   const styles = useThemedStyles(
@@ -96,5 +97,5 @@ export function MarkdownContent({
     styles: markdown.styles,
   });
   const content = Children.toArray(nodes);
-  return content.length ? <View>{content}</View> : null;
+  return content.length ? <View style={style}>{content}</View> : null;
 }

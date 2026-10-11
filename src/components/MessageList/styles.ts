@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 import type { ColorTokens, ShadowTokens } from '@unif/react-native-design';
-export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
+export const createStyles = (_colors: ColorTokens, shadows: ShadowTokens) =>
   StyleSheet.create({
     root: { flex: 1, minHeight: 0, minWidth: 0 },
     list: { flex: 1 },
@@ -23,7 +23,6 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
     returnButton: {
       alignSelf: 'center',
       borderRadius: 18,
-      backgroundColor: colors.surface,
       ...shadows.card,
     },
   });

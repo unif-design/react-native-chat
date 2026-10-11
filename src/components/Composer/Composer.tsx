@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import {
   ActionMenuContent,
+  GlassLayer,
   fixed,
   Textarea,
   useTheme,
@@ -137,6 +138,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
           }
         }}
       >
+        {surface === 'card' ? <GlassLayer style={styles.glass} /> : null}
         {header != null ? (
           <View
             style={[

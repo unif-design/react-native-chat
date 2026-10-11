@@ -6,6 +6,10 @@ export const createStyles = (colors: ColorTokens) =>
   StyleSheet.create({
     // 为输入框上方的操作菜单保留示例空间。
     root: { gap: space[3], paddingTop: r(200) },
+    plainHost: {
+      borderRadius: r(20),
+      backgroundColor: colors.surfaceContainer,
+    },
     controls: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
     note: { color: colors.foregroundMuted, fontSize: type.xs },
   });

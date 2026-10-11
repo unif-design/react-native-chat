@@ -18,6 +18,15 @@ export const INITIAL_ATTACHMENTS: readonly ChatAttachmentItem[] = [
     removable: true,
   },
   {
+    id: 'uploading-photo',
+    name: '正在上传的图片.svg',
+    kind: 'image',
+    thumbnail: { uri: DEMO_IMAGE_URI },
+    status: 'uploading',
+    progress: 0.42,
+    removable: true,
+  },
+  {
     id: 'notes',
     name: '访谈笔记.md',
     kind: 'file',
@@ -26,6 +35,16 @@ export const INITIAL_ATTACHMENTS: readonly ChatAttachmentItem[] = [
     statusText: '正在准备',
     progress: 0.62,
     loadingVisual: 'caption',
+    removable: true,
+  },
+  {
+    id: 'failed-photo',
+    name: '待重新处理的图片.svg',
+    kind: 'image',
+    thumbnail: { uri: DEMO_IMAGE_URI },
+    status: 'failed',
+    statusText: '样例处理失败',
+    previewable: true,
     removable: true,
   },
   {

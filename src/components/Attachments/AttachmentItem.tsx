@@ -2,6 +2,7 @@ import { Pressable, Text, View } from 'react-native';
 import {
   Button,
   CircularProgress,
+  GlassLayer,
   Icon,
   IconButton,
   radius,
@@ -93,6 +94,7 @@ export function AttachmentItem({
   const statusVisual =
     busy || failed ? (
       <View style={styles.statusVisual}>
+        <GlassLayer colorScheme="dark" style={styles.circleGlass} />
         {failed ? (
           <Icon
             name={retry?.icon ?? 'refresh'}
@@ -105,6 +107,7 @@ export function AttachmentItem({
             size={36}
             showLabel={showProgressLabel}
             color={colors.onPrimary}
+            labelColor={colors.onPrimary}
             accessibilityLabel={`${name}上传进度`}
           />
         ) : (
@@ -326,6 +329,9 @@ export function AttachmentItem({
               failed && styles.removeFailed,
             ]}
           >
+            {!failed ? (
+              <GlassLayer colorScheme="dark" style={styles.circleGlass} />
+            ) : null}
             <Icon
               name="close"
               size={preview ? 12 : 10}

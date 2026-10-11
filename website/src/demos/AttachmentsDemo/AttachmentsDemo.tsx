@@ -26,7 +26,18 @@ export function AttachmentsDemo() {
             },
           ],
         }
-      : item
+      : item.id === 'failed-photo'
+        ? {
+            ...item,
+            actions: [
+              {
+                id: 'retry',
+                label: '重新处理',
+                onPress: () => setResult(`已记录重试原项：${item.name}`),
+              },
+            ],
+          }
+        : item
   );
 
   return (
