@@ -1,5 +1,17 @@
 # Changelog
 
+# [4.0.0](https://github.com/unif-design/react-native-chat/compare/v3.7.0...v4.0.0) (2026-10-11)
+
+### Features
+
+* **icons:** consume named icon components ([fe27e0e](https://github.com/unif-design/react-native-chat/commit/fe27e0e2aaa4d0020efbdc566452f806a9d779a0))
+
+### BREAKING CHANGES
+
+* **icons:** 公共 icon 输入改为组件引用；宿主必须安装 `@unif/react-native-design >=1.0.0` 和 `@unif/react-native-icons >=0.1.0`，旧字符串图标不再受支持。
+
+  验证：正式 npm 依赖安装后，类型检查、Lint、25 suites / 182 tests、example 类型、Bob 产物、文档生成器测试、Website 类型与构建均通过。原生与设备验收单独记录；本次未运行手机验收。
+
 # [3.7.0](https://github.com/unif-design/react-native-chat/compare/v3.6.1...v3.7.0) (2026-10-11)
 
 ### Features
