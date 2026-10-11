@@ -1,10 +1,12 @@
+import { ImageOutlined } from '@unif/react-native-icons';
 import { useEffect, useState } from 'react';
 import { Image, View } from 'react-native';
-import { Icon, Thumbnail } from '@unif/react-native-design';
+import { Thumbnail, r, useColors } from '@unif/react-native-design';
 import { styles } from './styles';
 import type { ImageRatio, MarkdownImageProps } from './types';
 
 export function MarkdownImage({ uri, label }: MarkdownImageProps) {
+  const colors = useColors();
   const [width, setWidth] = useState(1);
   const [ratio, setRatio] = useState<ImageRatio | undefined>(undefined);
   useEffect(() => {
@@ -44,7 +46,7 @@ export function MarkdownImage({ uri, label }: MarkdownImageProps) {
           borderRadius: 0,
         }}
         resizeMode="contain"
-        fallback={<Icon name="image" />}
+        fallback={<ImageOutlined size={r(18)} color={colors.foregroundMuted} />}
         accessibilityLabel={label || '图片'}
       />
     </View>

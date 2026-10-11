@@ -1,6 +1,8 @@
+import type { ComponentType } from 'react';
+import type { IconProps } from '@unif/react-native-icons';
 import type { ReactNode } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-import type { IconName, TextFieldHandle } from '@unif/react-native-design';
+import type { TextFieldHandle } from '@unif/react-native-design';
 import type { ChatAction } from '../../actions';
 
 export interface ComposerSendAction {
@@ -65,7 +67,7 @@ export interface ComposerProps {
 export type ComposerHandle = TextFieldHandle;
 
 export interface ComposerIconActionProps {
-  icon: IconName;
+  icon: ComponentType<IconProps>;
   label: string;
   onPress?(): void;
   disabled?: boolean;

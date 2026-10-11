@@ -1,3 +1,4 @@
+import { AlertOutlined } from '@unif/react-native-icons';
 import { Pressable, Text, View } from 'react-native';
 import {
   Button,
@@ -142,7 +143,7 @@ export function Message(props: MessageProps) {
           <View style={[styles.failureRow, placement === 'end' && styles.end]}>
             {bubble}
             <IconButton
-              icon="alert"
+              icon={AlertOutlined}
               size="sm"
               variant="ghost"
               color={colors.error}

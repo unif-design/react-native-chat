@@ -1,3 +1,4 @@
+import { FileOutlined } from '@unif/react-native-icons';
 import { useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import {
@@ -46,7 +47,7 @@ export function MainChatExample() {
               {
                 id: 'sample',
                 label: '添加样例附件',
-                icon: 'file',
+                icon: FileOutlined,
                 onPress: () =>
                   setAttachments((current) => [
                     ...current,

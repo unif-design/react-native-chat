@@ -1,7 +1,7 @@
+import { CloseOutlined } from '@unif/react-native-icons';
 import { Text, View } from 'react-native';
 import {
   Button,
-  Icon,
   StatusDot,
   icon,
   useColors,
@@ -35,7 +35,7 @@ export function ProcessTimelineStep({
     >
       <View style={styles.timelineGutter}>
         {step.status === 'cancelled' ? (
-          <Icon name="close" size={icon.xs} color={colors.foregroundSubtle} />
+          <CloseOutlined size={icon.xs} color={colors.foregroundSubtle} />
         ) : (
           <StatusDot
             status={status}

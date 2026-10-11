@@ -1,3 +1,4 @@
+import { CheckOutlined, SparkOutlined } from '@unif/react-native-icons';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { expect, jest, test } from '@jest/globals';
 import {
@@ -82,11 +83,11 @@ test.each([
       <ThemeProvider forceScheme={scheme} fontScale={1.35}>
         <Suggestions
           items={[
-            { id: 'plain', label: '普通建议', icon: 'spark' },
+            { id: 'plain', label: '普通建议', icon: SparkOutlined },
             {
               id: 'selected',
               label: '已选建议',
-              icon: 'check',
+              icon: CheckOutlined,
               selected: true,
             },
             { id: 'text', label: '文字建议' },
@@ -95,13 +96,13 @@ test.each([
       </ThemeProvider>
     );
     const chips = screen.UNSAFE_getAllByType(Chip);
+    expect(chips[0]!.props.leading.type).toBe(SparkOutlined);
     expect(chips[0]!.props.leading.props).toMatchObject({
-      name: 'spark',
       size: 14,
       color: primary,
     });
+    expect(chips[1]!.props.leading.type).toBe(CheckOutlined);
     expect(chips[1]!.props.leading.props).toMatchObject({
-      name: 'check',
       size: 14,
       color: primary,
     });

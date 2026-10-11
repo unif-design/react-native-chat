@@ -1,3 +1,4 @@
+import { PaperclipOutlined } from '@unif/react-native-icons';
 import { createRef } from 'react';
 import { Text, View } from 'react-native';
 import { Attachments, Composer } from '@unif/react-native-chat';
@@ -30,7 +31,7 @@ const composerProps: ComposerProps = {
     {
       id: 'pick-file',
       label: '选择文件',
-      icon: 'paperclip',
+      icon: PaperclipOutlined,
       onPress: () => undefined,
     },
   ],

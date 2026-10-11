@@ -1,5 +1,13 @@
+import {
+  FileOutlined,
+  ImageOutlined,
+  PlayOutlined,
+  SoundOutlined,
+} from '@unif/react-native-icons';
+import type { ComponentType } from 'react';
+import type { IconProps } from '@unif/react-native-icons';
 import { icon, r } from '@unif/react-native-design';
-import type { IconName } from '@unif/react-native-design';
+
 import type { ChatAttachmentItem } from './types';
 
 export const CARD_WIDTH = r(76);
@@ -15,12 +23,12 @@ export const ATTACHMENT_STATUS_OWNER_SIZE = Math.max(
 export const ATTACHMENT_REMOVE_OWNER_SIZE = 44;
 export const ATTACHMENT_ICONS: Record<
   NonNullable<ChatAttachmentItem['kind']>,
-  IconName
+  ComponentType<IconProps>
 > = {
-  image: 'image',
-  file: 'file',
-  audio: 'sound',
-  video: 'play',
+  image: ImageOutlined,
+  file: FileOutlined,
+  audio: SoundOutlined,
+  video: PlayOutlined,
 };
 export const STATUS_LABELS = {
   idle: '',

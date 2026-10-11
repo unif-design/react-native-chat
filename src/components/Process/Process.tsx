@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import {
   Button,
-  Icon,
+  r,
   useColors,
   useThemedStyles,
 } from '@unif/react-native-design';
@@ -130,6 +130,7 @@ export function Process(props: ProcessProps): React.JSX.Element {
                 onToggle={() => toggleDetails(step.id)}
               />
             );
+          const Glyph = PROCESS_STATUS_ICONS[step.status];
           return (
             <View
               key={step.id}
@@ -150,8 +151,8 @@ export function Process(props: ProcessProps): React.JSX.Element {
                   accessible
                   accessibilityLabel={`${step.title}，${statusLabel}`}
                 >
-                  <Icon
-                    name={PROCESS_STATUS_ICONS[step.status]}
+                  <Glyph
+                    size={r(18)}
                     color={
                       step.status === 'failed'
                         ? colors.error

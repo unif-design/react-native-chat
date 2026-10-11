@@ -1,3 +1,4 @@
+import { CameraOutlined, PaperclipOutlined } from '@unif/react-native-icons';
 import { useRef, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { Button, useThemedStyles } from '@unif/react-native-design';
@@ -166,13 +167,13 @@ export function ComposerExample() {
             {
               id: 'capture',
               label: '拍摄照片',
-              icon: 'camera',
+              icon: CameraOutlined,
               onPress: () => setLastAction('收到拍照入口事件'),
             },
             {
               id: 'pick-file',
               label: '选择文件',
-              icon: 'paperclip',
+              icon: PaperclipOutlined,
               disabled: fileDisabled,
               loading: fileLoading,
               onPress: () => setLastAction('收到选择文件入口事件'),

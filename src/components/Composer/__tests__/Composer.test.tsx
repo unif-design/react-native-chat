@@ -1,3 +1,4 @@
+import { FileOutlined, ImageOutlined } from '@unif/react-native-icons';
 import { createRef } from 'react';
 import { StyleSheet, Text, TextInput } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
@@ -91,13 +92,13 @@ describe('Composer', () => {
         {
           id: 'pick',
           label: '选择文件',
-          icon: 'file',
+          icon: FileOutlined,
           accessibilityHint: '从设备选择文件',
           onPress,
         },
         { id: 'busy', label: '准备文件', loading: true, onPress },
         { id: 'disabled', label: '不可用文件', disabled: true, onPress },
-        { id: 'unnamed', label: ' ', icon: 'file', onPress },
+        { id: 'unnamed', label: ' ', icon: FileOutlined, onPress },
       ],
     });
     const input = screen.UNSAFE_getByType(TextInput).instance;
@@ -268,7 +269,12 @@ test('空白时同一行，聚焦或有文字后展开且不重新挂载 Textare
     onChangeText: jest.fn(),
     primaryAction: { kind: 'send', onPress: jest.fn() },
     actions: [
-      { id: 'photo', label: '选择照片', icon: 'image', onPress: jest.fn() },
+      {
+        id: 'photo',
+        label: '选择照片',
+        icon: ImageOutlined,
+        onPress: jest.fn(),
+      },
     ],
     voice: {
       status: 'idle',

@@ -1,3 +1,4 @@
+import { ArrowDownOutlined } from '@unif/react-native-icons';
 import { useEffect, useRef } from 'react';
 import { Animated, View } from 'react-native';
 import {
@@ -39,7 +40,7 @@ export function MessageListEndButton({
           </View>
         ) : null}
         <IconButton
-          icon="arrow-down"
+          icon={ArrowDownOutlined}
           accessibilityLabel={busy ? '回到最新消息，正在处理' : '回到最新消息'}
           variant="glass"
           size="md"

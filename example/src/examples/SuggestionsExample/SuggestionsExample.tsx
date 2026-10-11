@@ -1,3 +1,4 @@
+import { ListOutlined, SparkOutlined } from '@unif/react-native-icons';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Button, useThemedStyles } from '@unif/react-native-design';
@@ -12,13 +13,13 @@ export function SuggestionsExample() {
     {
       id: 'customer',
       label: '查询客户',
-      icon: 'spark',
+      icon: SparkOutlined,
       selected: selectedId === 'customer',
     },
     {
       id: 'order',
       label: '查看订单',
-      icon: 'list',
+      icon: ListOutlined,
       selected: selectedId === 'order',
     },
     { id: 'busy', label: '同步中', loading: true },

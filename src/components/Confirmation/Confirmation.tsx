@@ -1,7 +1,11 @@
+import {
+  CheckOutlined,
+  CloseOutlined,
+  WarningOutlined,
+} from '@unif/react-native-icons';
 import { Text, View } from 'react-native';
 import {
   Button,
-  Icon,
   Spinner,
   useColors,
   useThemedStyles,
@@ -44,23 +48,19 @@ export function Confirmation({
       ? statusText
       : (statusText ?? CONFIRMATION_STATUS_TEXT[status]);
 
+  const Glyph =
+    status === 'confirmed'
+      ? CheckOutlined
+      : status === 'cancelled'
+        ? CloseOutlined
+        : WarningOutlined;
   return (
     <View style={[styles.root, { borderColor }, style]} testID={testID}>
       <View style={styles.heading}>
         {status === 'processing' ? (
           <Spinner size={14} color={tint} />
         ) : (
-          <Icon
-            name={
-              status === 'confirmed'
-                ? 'check'
-                : status === 'cancelled'
-                  ? 'close'
-                  : 'warning'
-            }
-            size={14}
-            color={tint}
-          />
+          <Glyph size={14} color={tint} />
         )}
         <Text
           style={[styles.title, status === 'cancelled' && styles.cancelled]}

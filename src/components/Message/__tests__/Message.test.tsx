@@ -1,3 +1,4 @@
+import { CopyOutlined } from '@unif/react-native-icons';
 import { Image, Linking, Text } from 'react-native';
 import {
   ThemeProvider,
@@ -124,7 +125,9 @@ test('图标消息操作只显示图标，保留中文名称、禁用与原操�
   const view = render(
     <Message
       text="回复正文"
-      actions={[{ id: 'copy', label: '复制', icon: 'copy', onPress: copy }]}
+      actions={[
+        { id: 'copy', label: '复制', icon: CopyOutlined, onPress: copy },
+      ]}
     />,
     { wrapper: ThemeProvider }
   );
@@ -138,7 +141,7 @@ test('图标消息操作只显示图标，保留中文名称、禁用与原操�
         {
           id: 'copy',
           label: '复制',
-          icon: 'copy',
+          icon: CopyOutlined,
           onPress: copy,
           disabled: true,
         },

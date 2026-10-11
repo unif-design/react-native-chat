@@ -1,9 +1,9 @@
+import { ImageOutlined } from '@unif/react-native-icons';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { describe, expect, jest, test } from '@jest/globals';
 import {
   GlassLayer,
-  Icon,
   Thumbnail,
   ThemeProvider,
   lightColors,
@@ -202,9 +202,7 @@ test('根 padding 不参与内部网格宽度，真实 Thumbnail 消费实际尺
   fireEvent(screen.UNSAFE_getByType(Image), 'error', {
     nativeEvent: { error: 'image failure' },
   });
-  expect(
-    screen.UNSAFE_getAllByType(Icon).some((node) => node.props.name === 'image')
-  ).toBe(true);
+  expect(screen.UNSAFE_queryAllByType(ImageOutlined).length > 0).toBe(true);
   expect(screen.getByLabelText('图片')).toBeOnTheScreen();
   expect(screen.queryByText('处理失败')).toBeNull();
 });

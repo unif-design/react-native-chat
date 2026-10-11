@@ -1,4 +1,12 @@
-import type { IconName } from '@unif/react-native-design';
+import {
+  ErrorOutlined,
+  InfoOutlined,
+  SuccessOutlined,
+  WarningOutlined,
+} from '@unif/react-native-icons';
+import type { ComponentType } from 'react';
+import type { IconProps } from '@unif/react-native-icons';
+
 import type { FeedbackTone } from './types';
 
 export const FEEDBACK_TONE_LABELS: Readonly<Record<FeedbackTone, string>> = {
@@ -8,9 +16,11 @@ export const FEEDBACK_TONE_LABELS: Readonly<Record<FeedbackTone, string>> = {
   error: '错误',
 };
 
-export const FEEDBACK_TONE_ICONS: Readonly<Record<FeedbackTone, IconName>> = {
-  info: 'info',
-  success: 'success',
-  warning: 'warning',
-  error: 'error',
+export const FEEDBACK_TONE_ICONS: Readonly<
+  Record<FeedbackTone, ComponentType<IconProps>>
+> = {
+  info: InfoOutlined,
+  success: SuccessOutlined,
+  warning: WarningOutlined,
+  error: ErrorOutlined,
 };

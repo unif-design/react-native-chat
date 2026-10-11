@@ -1,5 +1,6 @@
+import { ChevronRightOutlined } from '@unif/react-native-icons';
 import { Pressable, Text, View } from 'react-native';
-import { Icon, useThemedStyles } from '@unif/react-native-design';
+import { r, useColors, useThemedStyles } from '@unif/react-native-design';
 import { DEFAULT_SOURCES_TITLE } from './constants';
 import { createStyles } from './styles';
 import type { SourceItem, SourcesProps } from './types';
@@ -12,6 +13,7 @@ export function Sources({
   testID,
 }: SourcesProps): React.JSX.Element | null {
   const styles = useThemedStyles(createStyles);
+  const colors = useColors();
 
   if (items.length === 0) return null;
 
@@ -26,7 +28,9 @@ export function Sources({
           <Text style={styles.description}>{item.description}</Text>
         ) : null}
       </View>
-      {showChevron ? <Icon name="chevron-right" /> : null}
+      {showChevron ? (
+        <ChevronRightOutlined size={r(18)} color={colors.foregroundMuted} />
+      ) : null}
     </>
   );
 

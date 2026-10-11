@@ -1,3 +1,4 @@
+import { RetryOutlined } from '@unif/react-native-icons';
 import { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { Button, useThemedStyles } from '@unif/react-native-design';
@@ -24,7 +25,7 @@ export function AttachmentsExample() {
             {
               id: 'retry',
               label: '记录继续处理',
-              icon: 'retry' as const,
+              icon: RetryOutlined,
               onPress: () => setLastAction(`继续处理原项：${item.id}`),
             },
           ],

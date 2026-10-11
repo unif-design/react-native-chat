@@ -39,6 +39,8 @@ import { AttachmentsDemo } from '@site/src/demos/AttachmentsDemo';
 
 只有 `uploading` 且比例是 `[0, 1]` 内的有限数时显示进度，未知比例使用忙碌指示；`processing` 不沿用旧上传比例。图片加载失败仅显示缩略图占位，不会改写宿主附件的处理状态。
 
+失败附件的单一 `id: 'retry'` 动作显示在图片中心；`icon` 只控制图形，不参与动作类型判断。
+
 进度、可移除状态与附件集合由应用提供。组件不读取本地文件、不上传、不保存文件，也不在点击移除后自行删项。
 
 ## API

@@ -1,7 +1,11 @@
+import {
+  ChevronDownOutlined,
+  ChevronUpOutlined,
+  SparkOutlined,
+} from '@unif/react-native-icons';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import {
   Button,
-  Icon,
   Pulse,
   Reveal,
   motion,
@@ -32,24 +36,28 @@ export function ProcessCompactStep({
       : step.status === 'failed'
         ? colors.error
         : colors.foregroundMuted;
-  const icon = (
-    <Icon
-      name={
-        running || step.status === 'completed'
-          ? 'spark'
-          : PROCESS_STATUS_ICONS[step.status]
-      }
-      size={14}
-      color={color}
-    />
-  );
+  const Glyph =
+    step.icon ??
+    (running || step.status === 'completed'
+      ? SparkOutlined
+      : PROCESS_STATUS_ICONS[step.status]);
+  const icon =
+    step.icon === null ? null : (
+      <Glyph
+        size={14}
+        color={step.icon === undefined ? color : colors.foregroundMuted}
+      />
+    );
+  const Glyph2 = expanded ? ChevronUpOutlined : ChevronDownOutlined;
   return (
     <View>
       <Pressable
         testID={`process-step-${step.id}-toggle`}
         accessible
         accessibilityRole={hasDetails ? 'button' : undefined}
-        accessibilityLabel={`${step.title}，${statusText}${elapsed ? `，${elapsed}` : ''}`}
+        accessibilityLabel={[step.title, statusText, elapsed]
+          .filter(Boolean)
+          .join('，')}
         accessibilityState={hasDetails ? { expanded } : undefined}
         disabled={!hasDetails}
         hitSlop={10}
@@ -65,7 +73,7 @@ export function ProcessCompactStep({
             <View style={styles.spacer} />
           </>
         ) : null}
-        {running ? (
+        {running && icon ? (
           <Pulse from={0.4} duration={motion.pulse / 2}>
             {icon}
           </Pulse>
@@ -81,14 +89,12 @@ export function ProcessCompactStep({
             {step.title}
           </Text>
         ) : null}
-        <Text style={styles.compactStatus}>{statusText}</Text>
+        {statusText ? (
+          <Text style={styles.compactStatus}>{statusText}</Text>
+        ) : null}
         {elapsed ? <Text style={styles.elapsed}>{elapsed}</Text> : null}
         {hasDetails ? (
-          <Icon
-            name={expanded ? 'chevron-up' : 'chevron-down'}
-            size={14}
-            color={colors.foregroundSubtle}
-          />
+          <Glyph2 size={14} color={colors.foregroundSubtle} />
         ) : null}
       </Pressable>
       {step.description ? (

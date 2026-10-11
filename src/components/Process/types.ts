@@ -1,4 +1,7 @@
+import type { ComponentType } from 'react';
+import type { IconProps } from '@unif/react-native-icons';
 import type { ReactNode } from 'react';
+
 import type { StyleProp, ViewStyle } from 'react-native';
 import type { ChatAction } from '../../actions';
 
@@ -9,6 +12,8 @@ export interface ProcessStep {
   id: string;
   title: string;
   status: ProcessStepStatus;
+  /** compact 的活动图标；null 不显示，省略时沿状态呈现。 */
+  icon?: ComponentType<IconProps> | null;
   /** 调用者提供的状态显示文案；不改变 status 的语义。 */
   statusText?: string;
   description?: string;

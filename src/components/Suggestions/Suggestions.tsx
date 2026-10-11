@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { Chip, Icon, useColors } from '@unif/react-native-design';
+import { Chip, useColors } from '@unif/react-native-design';
 import { SUGGESTION_ICON_SIZE } from './constants';
 import { styles } from './styles';
 import type { SuggestionsProps } from './types';
@@ -29,11 +29,7 @@ export function Suggestions({
           disabled={item.disabled}
           leading={
             item.icon ? (
-              <Icon
-                name={item.icon}
-                size={SUGGESTION_ICON_SIZE}
-                color={colors.primary}
-              />
+              <item.icon size={SUGGESTION_ICON_SIZE} color={colors.primary} />
             ) : undefined
           }
           onPress={onSelect ? () => onSelect(item) : undefined}

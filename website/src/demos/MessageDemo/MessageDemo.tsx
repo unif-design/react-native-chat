@@ -1,3 +1,4 @@
+import { CopyOutlined } from '@unif/react-native-icons';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Avatar, Button, useThemedStyles } from '@unif/react-native-design';
@@ -28,7 +29,7 @@ export function MessageDemo() {
           {
             id: 'copy',
             label: '复制回答',
-            icon: 'copy',
+            icon: CopyOutlined,
             onPress: () => setResult('已收到复制回答事件'),
           },
         ]}

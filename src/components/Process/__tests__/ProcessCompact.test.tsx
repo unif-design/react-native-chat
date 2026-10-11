@@ -1,3 +1,5 @@
+import Svg from 'react-native-svg';
+import { FileOutlined, ChevronDownOutlined } from '@unif/react-native-icons';
 import { expect, jest, test } from '@jest/globals';
 import { Text } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
@@ -116,4 +118,50 @@ test('紧凑停止动作有独立44触达，点击只交动作不切换过程详
   expect(stop).toHaveBeenCalledTimes(1);
   expect(changed).not.toHaveBeenCalled();
   expect(page.queryByText('公开说明')).toBeNull();
+});
+
+test('公开活动使用动作图标，空状态文案不产生标点或状态徽标', () => {
+  const page = render(
+    <ThemeProvider>
+      <Process
+        variant="compact"
+        steps={[
+          {
+            id: 'files',
+            title: '已阅读文件',
+            status: 'completed',
+            statusText: '',
+            icon: FileOutlined,
+            details: <Text>门店规范.pdf</Text>,
+          },
+        ]}
+      />
+    </ThemeProvider>
+  );
+  expect(page.getByRole('button', { name: '已阅读文件' })).toBeTruthy();
+  expect(page.UNSAFE_getAllByType(FileOutlined)).toHaveLength(1);
+  expect(page.UNSAFE_getAllByType(ChevronDownOutlined)).toHaveLength(1);
+  fireEvent.press(page.getByRole('button', { name: '已阅读文件' }));
+  expect(page.getByText('门店规范.pdf')).toBeTruthy();
+});
+
+test('显式无图标的紧凑行不补减号', () => {
+  const page = render(
+    <ThemeProvider>
+      <Process
+        variant="compact"
+        steps={[
+          {
+            id: 'plain',
+            title: '公开记录',
+            status: 'pending',
+            statusText: '',
+            icon: null,
+          },
+        ]}
+      />
+    </ThemeProvider>
+  );
+  expect(page.UNSAFE_queryAllByType(Svg)).toHaveLength(0);
+  expect(page.queryByRole('button')).toBeNull();
 });

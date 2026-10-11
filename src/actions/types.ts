@@ -1,9 +1,10 @@
-import type { IconName } from '@unif/react-native-design';
+import type { ComponentType } from 'react';
+import type { IconProps } from '@unif/react-native-icons';
 
 export interface ChatAction {
   id: string;
   label: string;
-  icon?: IconName;
+  icon?: ComponentType<IconProps>;
   disabled?: boolean;
   loading?: boolean;
   accessibilityHint?: string;
