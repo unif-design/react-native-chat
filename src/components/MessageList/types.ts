@@ -34,6 +34,8 @@ export interface MessageListProps<T> {
   showScrollToEnd?: boolean;
   /** 外部仍在生成内容时显示返回入口的进度外环，不影响滚动操作。 */
   scrollToEndBusy?: boolean;
+  /** 悬浮输入区占据的高度；仅调整返回入口位置，正文留白由 contentContainerStyle 提供。 */
+  scrollToEndBottomInset?: number;
   onAtEndChange?(atEnd: boolean): void;
   hasEarlier?: boolean;
   loadingEarlier?: boolean;
@@ -86,5 +88,6 @@ export interface MessageListPendingScroll extends MessageListScrollOptions {
 }
 export interface MessageListEndButtonProps {
   busy: boolean;
+  bottomInset: number;
   onPress(): void;
 }

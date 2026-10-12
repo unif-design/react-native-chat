@@ -12,6 +12,7 @@ import type { MessageListEndButtonProps } from './types';
 
 export function MessageListEndButton({
   busy,
+  bottomInset,
   onPress,
 }: MessageListEndButtonProps) {
   const styles = useThemedStyles(createStyles);
@@ -32,7 +33,10 @@ export function MessageListEndButton({
     return () => animation.stop();
   }, [reducedMotion, scale]);
   return (
-    <View style={styles.returnToEnd} pointerEvents="box-none">
+    <View
+      style={[styles.returnToEnd, { bottom: bottomInset }]}
+      pointerEvents="box-none"
+    >
       <Animated.View style={[styles.returnVisual, { transform: [{ scale }] }]}>
         {busy ? (
           <View style={styles.returnProgress} pointerEvents="none">

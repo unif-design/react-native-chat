@@ -65,3 +65,5 @@ listRef.current?.anchorToItem(id, { topOffset: 8 });
 <ApiReference name="MessageList" />
 
 `scrollToEndBusy` 默认 false，外部正在生成内容时可显示 44 的进度外环并提供中文状态名称；按钮仍可滚动，不将生成状态变成禁用。空内容不增加阻断弹性布局的包层，欢迎页和加载占位分别由场景决定居中或从顶部排列。
+
+输入区悬浮在列表上方时，将其实际占用高度传给 `scrollToEndBottomInset`，返回最新消息的按钮随之上移。内容末尾留白仍通过 `contentContainerStyle.paddingBottom` 由页面设置；本属性不改变滚动、顶锚或跟随输出规则。负数和非有限值按 0 处理。

@@ -37,6 +37,7 @@ export function MessageList<T>({
   endThreshold = DEFAULT_END_THRESHOLD,
   showScrollToEnd = true,
   scrollToEndBusy = false,
+  scrollToEndBottomInset = 0,
   onAtEndChange,
   hasEarlier = false,
   loadingEarlier = false,
@@ -226,6 +227,11 @@ export function MessageList<T>({
       {showScrollToEnd && items.length > 0 && !atEnd ? (
         <MessageListEndButton
           busy={scrollToEndBusy}
+          bottomInset={
+            Number.isFinite(scrollToEndBottomInset)
+              ? Math.max(0, scrollToEndBottomInset)
+              : 0
+          }
           onPress={() => scrollToEnd()}
         />
       ) : null}
