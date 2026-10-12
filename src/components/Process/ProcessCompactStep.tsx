@@ -20,6 +20,7 @@ import type { ProcessCompactStepProps } from './types';
 export function ProcessCompactStep({
   step,
   identity,
+  dense = false,
   expanded,
   elapsed,
   onToggle,
@@ -59,11 +60,15 @@ export function ProcessCompactStep({
           .filter(Boolean)
           .join('，')}
         accessibilityState={hasDetails ? { expanded } : undefined}
+        accessibilityValue={
+          statusText ? undefined : { text: PROCESS_STATUS_LABELS[step.status] }
+        }
         disabled={!hasDetails}
         hitSlop={10}
         onPress={onToggle}
         style={({ pressed }) => [
           styles.compactHeader,
+          dense && styles.compactHeaderDense,
           pressed && { opacity: pressedOpacity },
         ]}
       >
@@ -101,7 +106,12 @@ export function ProcessCompactStep({
         <Text style={styles.compactDescription}>{step.description}</Text>
       ) : null}
       {hasDetails && expanded ? (
-        <Reveal style={styles.compactDetailsContainer}>
+        <Reveal
+          style={[
+            styles.compactDetailsContainer,
+            dense && styles.compactDetailsDense,
+          ]}
+        >
           <ScrollView
             testID={`process-step-${step.id}-details`}
             style={styles.compactDetails}
