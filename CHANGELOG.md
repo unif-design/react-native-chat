@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.1.1](https://github.com/unif-design/react-native-chat/compare/v4.1.0...v4.1.1) (2026-10-12)
+
+### Bug Fixes
+
+* compact markdown paragraph spacing ([#28](https://github.com/unif-design/react-native-chat/issues/28)) ([833ae85](https://github.com/unif-design/react-native-chat/commit/833ae85e115a85c693dd10af2cce1c7fa9bdc704))
+
 # [4.1.0](https://github.com/unif-design/react-native-chat/compare/v4.0.0...v4.1.0) (2026-10-12)
 
 ### Features
