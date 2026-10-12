@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { type, fw } from '@unif/react-native-design';
+import { type, fw, r } from '@unif/react-native-design';
 import type { ColorTokens } from '@unif/react-native-design';
 
 const makeMarkdownStyles = (colors: ColorTokens, outgoing: boolean) => {
@@ -11,6 +11,7 @@ const makeMarkdownStyles = (colors: ColorTokens, outgoing: boolean) => {
   };
   return StyleSheet.create({
     text: body,
+    paragraph: { paddingVertical: 0, paddingBottom: r(6) },
     em: { color: textColor, fontStyle: 'italic' },
     strong: { color: textColor, fontWeight: 'bold' },
     strikethrough: { color: textColor, textDecorationLine: 'line-through' },
