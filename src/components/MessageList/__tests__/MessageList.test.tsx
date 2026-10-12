@@ -1,5 +1,5 @@
 import { createRef } from 'react';
-import { FlatList, Platform, StyleSheet, Text } from 'react-native';
+import { FlatList, Platform, StyleSheet, Text, View } from 'react-native';
 import { IconButton, Spinner, ThemeProvider } from '@unif/react-native-design';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { afterEach, describe, expect, jest, test } from '@jest/globals';
@@ -37,6 +37,35 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 describe('MessageList', () => {
+  test.each([0, 112, -1, Number.NaN])(
+    '返回按钮避让输入区 %s，仍使用真实滚动入口',
+    (inset) => {
+      const scrollToOffset = jest
+        .spyOn(FlatList.prototype, 'scrollToOffset')
+        .mockImplementation(() => {});
+      render(<MessageList {...props} scrollToEndBottomInset={inset} />, {
+        wrapper: ThemeProvider,
+      });
+      measure();
+      scroll(100);
+      scrollToOffset.mockClear();
+      const floating = screen
+        .UNSAFE_getAllByType(View)
+        .find(
+          (node) =>
+            StyleSheet.flatten(node.props.style)?.position === 'absolute' &&
+            node.props.pointerEvents === 'box-none'
+        );
+      expect(StyleSheet.flatten(floating?.props.style).bottom).toBe(
+        Number.isFinite(inset) ? Math.max(0, inset) : 0
+      );
+      fireEvent.press(screen.getByRole('button', { name: '回到最新消息' }));
+      expect(scrollToOffset).toHaveBeenCalledWith({
+        offset: 600,
+        animated: true,
+      });
+    }
+  );
   test.each([false, true])(
     '玻璃返回按钮忙碌=%s 时仍滚动，外环不代替操作',
     (busy) => {
