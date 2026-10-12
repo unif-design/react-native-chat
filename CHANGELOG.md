@@ -1,5 +1,11 @@
 # Changelog
 
+# [4.1.0](https://github.com/unif-design/react-native-chat/compare/v4.0.0...v4.1.0) (2026-10-12)
+
+### Features
+
+* **process:** add dense compact progress rows ([#27](https://github.com/unif-design/react-native-chat/issues/27)) ([f3cc3d8](https://github.com/unif-design/react-native-chat/commit/f3cc3d86da74b4d8211ec3fdfec448c95f20b1d0))
+
 # [4.0.0](https://github.com/unif-design/react-native-chat/compare/v3.7.0...v4.0.0) (2026-10-11)
 
 ### Features
