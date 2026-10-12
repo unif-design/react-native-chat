@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.1.2](https://github.com/unif-design/react-native-chat/compare/v4.1.1...v4.1.2) (2026-10-12)
+
+### Bug Fixes
+
+* **message-list:** keep return control above floating composer ([#29](https://github.com/unif-design/react-native-chat/issues/29)) ([e5b0891](https://github.com/unif-design/react-native-chat/commit/e5b08912b5eeb2be160d65ce56739e5c6c485f45))
+
 ## [4.1.1](https://github.com/unif-design/react-native-chat/compare/v4.1.0...v4.1.1) (2026-10-12)
 
 ### Bug Fixes
