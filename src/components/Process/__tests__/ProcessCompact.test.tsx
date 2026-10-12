@@ -165,3 +165,35 @@ test('显式无图标的紧凑行不补减号', () => {
   expect(page.UNSAFE_queryAllByType(Svg)).toHaveLength(0);
   expect(page.queryByRole('button')).toBeNull();
 });
+
+test('密集文字行减少留白，仍通过原受控展开入口交付详情', () => {
+  const changed = jest.fn();
+  const content = (expanded: readonly string[]) => (
+    <ThemeProvider>
+      <Process
+        variant="compact"
+        compactDensity="dense"
+        expandedIds={expanded}
+        onExpandedChange={changed}
+        steps={[
+          {
+            id: 'a',
+            title: '读取商品简称',
+            status: 'completed',
+            statusText: '',
+            details: <Text>真实简称</Text>,
+          },
+        ]}
+      />
+    </ThemeProvider>
+  );
+  const page = render(content([]));
+  const row = page.getByRole('button', { name: '读取商品简称' });
+  expect(row).toHaveStyle({ minHeight: 24, paddingVertical: 0 });
+  expect(row.props.accessibilityValue).toEqual({ text: '已完成' });
+  fireEvent.press(row);
+  expect(changed).toHaveBeenCalledWith(['a']);
+  expect(page.queryByText('真实简称')).toBeNull();
+  page.rerender(content(['a']));
+  expect(page.getByText('真实简称')).toBeTruthy();
+});

@@ -53,6 +53,8 @@ export const createStyles = (colors: ColorTokens) =>
       minHeight: 44,
       paddingVertical: space[1],
     },
+    compactHeaderDense: { minHeight: 24, paddingVertical: 0 },
+    compactDetailsDense: { paddingTop: space[1], paddingBottom: space[1] },
     compactTitle: {
       flex: 1,
       minWidth: 0,

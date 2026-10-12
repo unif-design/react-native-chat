@@ -125,6 +125,7 @@ export function Process(props: ProcessProps): React.JSX.Element {
                 key={step.id}
                 step={step}
                 identity={inlineIdentity ? identity : undefined}
+                dense={props.compactDensity === 'dense'}
                 expanded={isExpanded}
                 elapsed={elapsed}
                 onToggle={() => toggleDetails(step.id)}

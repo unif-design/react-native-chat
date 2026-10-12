@@ -42,6 +42,7 @@ export function ProcessExample() {
       />
       <Process
         variant="compact"
+        compactDensity="dense"
         identity={<Text style={styles.details}>助手</Text>}
         identityPlacement="inline"
         steps={[

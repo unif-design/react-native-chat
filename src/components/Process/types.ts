@@ -25,6 +25,8 @@ export interface ProcessStep {
 export interface ProcessBaseProps {
   /** card 为状态面板；compact 为单行过程；timeline 为带状态节点的连续步骤。 */
   variant?: 'card' | 'compact' | 'timeline';
+  /** compact 文字密度；dense 用于与行内文字相邻的公开过程。 */
+  compactDensity?: 'comfortable' | 'dense';
   steps: readonly ProcessStep[];
   title?: string;
   identity?: ReactNode;
@@ -35,6 +37,7 @@ export interface ProcessBaseProps {
 }
 
 export interface ProcessCompactStepProps {
+  dense?: boolean;
   identity?: ReactNode;
   step: ProcessStep;
   expanded: boolean;
