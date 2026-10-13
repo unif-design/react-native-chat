@@ -12,6 +12,7 @@ import {
 } from '@unif/react-native-design';
 import { PROCESS_STATUS_ICONS, PROCESS_STATUS_LABELS } from './constants';
 import { createStyles } from './styles';
+import { hasProcessDetails } from './hasProcessDetails';
 import type { ProcessCompactStepProps } from './types';
 
 export function ProcessTraceStep({
@@ -22,7 +23,7 @@ export function ProcessTraceStep({
 }: ProcessCompactStepProps) {
   const styles = useThemedStyles(createStyles);
   const colors = useColors();
-  const hasDetails = step.details != null;
+  const hasDetails = hasProcessDetails(step.details);
   const label = step.statusText ?? PROCESS_STATUS_LABELS[step.status];
   const variant =
     step.status === 'failed'
@@ -98,7 +99,11 @@ export function ProcessTraceStep({
           {head}
         </Pressable>
       ) : (
-        <View accessible accessibilityLabel={accessibilityLabel}>
+        <View
+          accessible
+          accessibilityRole="text"
+          accessibilityLabel={accessibilityLabel}
+        >
           {head}
         </View>
       )}

@@ -8,6 +8,7 @@ import {
 } from '@unif/react-native-design';
 import { PROCESS_STATUS_ICONS, PROCESS_STATUS_LABELS } from './constants';
 import { createStyles } from './styles';
+import { hasProcessDetails } from './hasProcessDetails';
 import { ProcessCompactStep } from './ProcessCompactStep';
 import { ProcessTimelineStep } from './ProcessTimelineStep';
 import { ProcessTraceStep } from './ProcessTraceStep';
@@ -18,7 +19,9 @@ function idsWithDetails(
   steps: readonly ProcessStep[]
 ): readonly string[] {
   const availableIds = new Set(
-    steps.filter((step) => step.details != null).map((step) => step.id)
+    steps
+      .filter((step) => hasProcessDetails(step.details))
+      .map((step) => step.id)
   );
   return ids.filter((id) => availableIds.has(id));
 }
@@ -182,7 +185,7 @@ export function Process(props: ProcessProps): React.JSX.Element {
                 <Text style={styles.description}>{step.description}</Text>
               ) : null}
               {elapsed ? <Text style={styles.elapsed}>{elapsed}</Text> : null}
-              {step.details != null ? (
+              {hasProcessDetails(step.details) ? (
                 <>
                   <Button
                     label={isExpanded ? '收起详情' : '展开详情'}

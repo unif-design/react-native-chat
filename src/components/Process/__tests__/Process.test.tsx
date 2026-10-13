@@ -164,3 +164,29 @@ test('过程操作只在用户点击时交付，忙碌操作不重复交付', ()
   expect(onRetry).toHaveBeenCalledTimes(1);
   expect(onBusy).not.toHaveBeenCalled();
 });
+
+test.each(['card', 'compact', 'timeline', 'trace'] as const)(
+  '%s 条件详情没有内容时不提供空展开入口',
+  (variant) => {
+    renderProcess(
+      <Process
+        variant={variant}
+        steps={[
+          {
+            id: 'hidden',
+            title: '未公开详情',
+            status: 'completed',
+            details: false,
+          },
+          {
+            id: 'empty',
+            title: '空详情',
+            status: 'completed',
+            details: [null, false, ''],
+          },
+        ]}
+      />
+    );
+    expect(screen.queryAllByRole('button')).toHaveLength(0);
+  }
+);

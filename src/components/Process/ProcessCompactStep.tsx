@@ -15,6 +15,7 @@ import {
 } from '@unif/react-native-design';
 import { PROCESS_STATUS_ICONS, PROCESS_STATUS_LABELS } from './constants';
 import { createStyles } from './styles';
+import { hasProcessDetails } from './hasProcessDetails';
 import type { ProcessCompactStepProps } from './types';
 
 export function ProcessCompactStep({
@@ -27,7 +28,7 @@ export function ProcessCompactStep({
 }: ProcessCompactStepProps) {
   const styles = useThemedStyles(createStyles);
   const colors = useColors();
-  const hasDetails = step.details != null;
+  const hasDetails = hasProcessDetails(step.details);
   const running = step.status === 'running';
   const statusText = step.statusText ?? PROCESS_STATUS_LABELS[step.status];
   const color = running
