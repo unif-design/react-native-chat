@@ -10,6 +10,7 @@ import { PROCESS_STATUS_ICONS, PROCESS_STATUS_LABELS } from './constants';
 import { createStyles } from './styles';
 import { ProcessCompactStep } from './ProcessCompactStep';
 import { ProcessTimelineStep } from './ProcessTimelineStep';
+import { ProcessTraceStep } from './ProcessTraceStep';
 import type { ProcessProps, ProcessStep } from './types';
 
 function idsWithDetails(
@@ -81,9 +82,11 @@ export function Process(props: ProcessProps): React.JSX.Element {
       style={[
         variant === 'compact'
           ? styles.compactRoot
-          : variant === 'timeline'
-            ? styles.timelineRoot
-            : styles.root,
+          : variant === 'trace'
+            ? styles.traceRoot
+            : variant === 'timeline'
+              ? styles.timelineRoot
+              : styles.root,
         style,
       ]}
       testID={testID}
@@ -108,6 +111,16 @@ export function Process(props: ProcessProps): React.JSX.Element {
             step.statusText ?? PROCESS_STATUS_LABELS[step.status];
           const elapsed = formatElapsedMs(step.elapsedMs);
           const isExpanded = expandedIds.includes(step.id);
+          if (variant === 'trace')
+            return (
+              <ProcessTraceStep
+                key={step.id}
+                step={step}
+                expanded={isExpanded}
+                elapsed={elapsed}
+                onToggle={() => toggleDetails(step.id)}
+              />
+            );
           if (variant === 'timeline')
             return (
               <ProcessTimelineStep

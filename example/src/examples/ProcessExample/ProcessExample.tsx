@@ -62,6 +62,19 @@ export function ProcessExample() {
           { id: 'review', title: '核对资料', status: 'pending' },
         ]}
       />
+      <Process
+        variant="trace"
+        steps={[
+          {
+            id: 'tool-query',
+            title: '查询资料',
+            sourceLabel: '工具',
+            status: 'failed',
+            statusText: '失败',
+            details: <Text style={styles.details}>资料暂时无法读取。</Text>,
+          },
+        ]}
+      />
       <Text style={styles.result}>{lastAction}</Text>
     </View>
   );

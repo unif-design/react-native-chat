@@ -1,9 +1,61 @@
 import { StyleSheet } from 'react-native';
-import { fw, icon, r, radius, space, type } from '@unif/react-native-design';
+import {
+  fontMono,
+  fw,
+  icon,
+  r,
+  radius,
+  space,
+  type,
+} from '@unif/react-native-design';
 import type { ColorTokens } from '@unif/react-native-design';
 
 export const createStyles = (colors: ColorTokens) =>
   StyleSheet.create({
+    traceRoot: { gap: space[3] },
+    traceHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[3],
+      paddingVertical: space[4],
+      paddingHorizontal: space[5],
+    },
+    traceTitle: {
+      fontSize: type.xxs,
+      fontFamily: fontMono,
+      color: colors.foreground,
+      fontWeight: fw.medium,
+      flexShrink: 1,
+    },
+    traceContent: {
+      flex: 1,
+      minWidth: 0,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      gap: space[3],
+    },
+    traceIdentity: {
+      flex: 1,
+      minWidth: r(100),
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[3],
+    },
+    traceGlyph: { flexShrink: 0 },
+    traceBadges: {
+      marginLeft: 'auto',
+      maxWidth: '100%',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: space[2],
+    },
+    traceDetails: {
+      paddingHorizontal: space[5],
+      paddingVertical: space[4],
+      borderTopWidth: 1,
+      borderTopColor: colors.outlineFaint,
+    },
     timelineRoot: {
       backgroundColor: colors.surface,
       borderRadius: radius.lg,
