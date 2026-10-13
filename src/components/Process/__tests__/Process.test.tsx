@@ -25,7 +25,7 @@ const steps: readonly ProcessStep[] = [
   { id: 'cancelled', title: '生成草稿', status: 'cancelled' },
 ];
 
-test.each(['card', 'compact'] as const)(
+test.each(['card', 'compact', 'trace'] as const)(
   '%s 可见地展示全部真实状态、说明与外部时长',
   (variant) => {
     renderProcess(<Process variant={variant} title="处理进度" steps={steps} />);
@@ -40,11 +40,11 @@ test.each(['card', 'compact'] as const)(
     ]);
     expect(screen.getByText('待处理')).toBeOnTheScreen();
     expect(screen.getByText('处理中')).toBeOnTheScreen();
-    expect(screen.getByText('已完成')).toBeOnTheScreen();
+    expect(screen.getByText(/^已完成/)).toBeOnTheScreen();
     expect(screen.getByText('失败')).toBeOnTheScreen();
     expect(screen.getByText('已取消')).toBeOnTheScreen();
     expect(screen.getByText('已整理公开字段')).toBeOnTheScreen();
-    expect(screen.getByText('1.3 秒')).toBeOnTheScreen();
+    expect(screen.getByText(/1.3 秒/)).toBeOnTheScreen();
   }
 );
 
@@ -66,7 +66,7 @@ test('时长进位后不会显示六十秒余数', () => {
   expect(screen.queryByText(/60 秒/)).toBeNull();
 });
 
-test.each(['card', 'timeline'] as const)(
+test.each(['card', 'timeline', 'trace'] as const)(
   '%s 局部展开只初始化一次，交付变化并在项目移除后收尾',
   (variant) => {
     const onExpandedChange = jest.fn();
@@ -164,3 +164,29 @@ test('过程操作只在用户点击时交付，忙碌操作不重复交付', ()
   expect(onRetry).toHaveBeenCalledTimes(1);
   expect(onBusy).not.toHaveBeenCalled();
 });
+
+test.each(['card', 'compact', 'timeline', 'trace'] as const)(
+  '%s 条件详情没有内容时不提供空展开入口',
+  (variant) => {
+    renderProcess(
+      <Process
+        variant={variant}
+        steps={[
+          {
+            id: 'hidden',
+            title: '未公开详情',
+            status: 'completed',
+            details: false,
+          },
+          {
+            id: 'empty',
+            title: '空详情',
+            status: 'completed',
+            details: [null, false, ''],
+          },
+        ]}
+      />
+    );
+    expect(screen.queryAllByRole('button')).toHaveLength(0);
+  }
+);

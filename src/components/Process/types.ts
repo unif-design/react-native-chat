@@ -16,6 +16,8 @@ export interface ProcessStep {
   icon?: ComponentType<IconProps> | null;
   /** 调用者提供的状态显示文案；不改变 status 的语义。 */
   statusText?: string;
+  /** trace 中显示的来源标签，由调用方提供，如“本机”或“工具”。 */
+  sourceLabel?: string;
   description?: string;
   elapsedMs?: number;
   details?: ReactNode;
@@ -23,8 +25,8 @@ export interface ProcessStep {
 }
 
 export interface ProcessBaseProps {
-  /** card 为状态面板；compact 为单行过程；timeline 为带状态节点的连续步骤。 */
-  variant?: 'card' | 'compact' | 'timeline';
+  /** card 为状态面板；compact 为单行过程；timeline 为连续步骤；trace 为独立工具卡。 */
+  variant?: 'card' | 'compact' | 'timeline' | 'trace';
   /** compact 文字密度；dense 用于与行内文字相邻的公开过程。 */
   compactDensity?: 'comfortable' | 'dense';
   steps: readonly ProcessStep[];

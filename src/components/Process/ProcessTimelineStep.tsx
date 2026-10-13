@@ -9,6 +9,7 @@ import {
 } from '@unif/react-native-design';
 import { PROCESS_STATUS_LABELS } from './constants';
 import { createStyles } from './styles';
+import { hasProcessDetails } from './hasProcessDetails';
 import type { ProcessCompactStepProps } from './types';
 
 export function ProcessTimelineStep({
@@ -72,7 +73,7 @@ export function ProcessTimelineStep({
           ) : null}
         </View>
         {elapsed ? <Text style={styles.elapsed}>{elapsed}</Text> : null}
-        {step.details != null ? (
+        {hasProcessDetails(step.details) ? (
           <>
             <Button
               label={expanded ? '收起详情' : '展开详情'}

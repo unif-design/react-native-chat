@@ -53,6 +53,19 @@ export function ProcessDemo() {
         }}
       />
       <DemoResult>{result}</DemoResult>
+      <Process
+        variant="trace"
+        steps={[
+          {
+            id: 'query-result',
+            title: '查询资料',
+            sourceLabel: '工具',
+            status: 'completed',
+            statusText: '完成',
+            details: <Text style={styles.details}>已读取本次查询的资料。</Text>,
+          },
+        ]}
+      />
     </View>
   );
 }
