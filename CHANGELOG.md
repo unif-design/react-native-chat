@@ -1,5 +1,11 @@
 # Changelog
 
+# [4.2.0](https://github.com/unif-design/react-native-chat/compare/v4.1.2...v4.2.0) (2026-10-13)
+
+### Features
+
+* **process:** restore identity and tool trace presentation ([#30](https://github.com/unif-design/react-native-chat/issues/30)) ([956dcd9](https://github.com/unif-design/react-native-chat/commit/956dcd956626d118e73f1deb940911879aeeef1d))
+
 ## [4.1.2](https://github.com/unif-design/react-native-chat/compare/v4.1.1...v4.1.2) (2026-10-12)
 
 ### Bug Fixes
