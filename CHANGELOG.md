@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.2.1](https://github.com/unif-design/react-native-chat/compare/v4.2.0...v4.2.1) (2026-10-14)
+
+### Bug Fixes
+
+* **chat:** simplify image progress and avoid redundant process updates ([#31](https://github.com/unif-design/react-native-chat/issues/31)) ([3e312f8](https://github.com/unif-design/react-native-chat/commit/3e312f8966fda676d2c49cb59f3ddc416a9d56e2))
+
 # [4.2.0](https://github.com/unif-design/react-native-chat/compare/v4.1.2...v4.2.0) (2026-10-13)
 
 ### Features
