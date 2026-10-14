@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { expect, jest, test } from '@jest/globals';
 import { Text } from 'react-native';
+import { Profiler } from 'react';
 import { ThemeProvider } from '@unif/react-native-design';
 import { Process } from '..';
 import type { ProcessStep } from '..';
@@ -190,3 +191,32 @@ test.each(['card', 'compact', 'timeline', 'trace'] as const)(
     expect(screen.queryAllByRole('button')).toHaveLength(0);
   }
 );
+
+test('非受控展开在流式详情更新时只提交一次，删除详情仍关闭', () => {
+  const commits = jest.fn();
+  const content = (details?: string) => (
+    <ThemeProvider>
+      <Profiler id="process" onRender={commits}>
+        <Process
+          defaultExpandedIds={['stream']}
+          steps={[
+            {
+              id: 'stream',
+              title: '读取',
+              status: 'running',
+              details: details ? <Text>{details}</Text> : undefined,
+            },
+          ]}
+        />
+      </Profiler>
+    </ThemeProvider>
+  );
+  const view = render(content('第一段'));
+  commits.mockClear();
+  view.rerender(content('第二段'));
+  expect(screen.getByText('第二段')).toBeOnTheScreen();
+  expect(commits).toHaveBeenCalledTimes(1);
+  view.rerender(content());
+  view.rerender(content('新的详情'));
+  expect(screen.queryByText('新的详情')).toBeNull();
+});

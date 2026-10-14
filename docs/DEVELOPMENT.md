@@ -11,10 +11,10 @@
 ## 工程接线
 
 - create-react-native-library 0.63.1，library/js 模板；库源码 TS/TSX，Bob 生成 ESM 和声明。Community CLI 原生 example 与 Docusaurus Web 文档站分别验证原生和浏览器消费。
-- 库名 @unif/react-native-chat，示例工作区 @unif/react-native-chat-example；React 19.2.3、RN 0.86.3、Design 1.0.0、Yarn 4.11.0。
-- Design 从包根消费，Thumbnail 尺寸对象/fallback、Textarea（含 plain 表面）/TextFieldHandle、CircularProgress、ActionMenuContent（含 popover 展示）按 1.0.0 实际接口使用。Composer 的菜单开关与定位留在 Chat，菜单卡和菜单行由 Design 提供。详细接线见[组合验证](../../unif-platform-architecture/libraries/react-native-chat/composition.md#6-design-依赖与接入验证)。
+- 库名 @unif/react-native-chat，示例工作区 @unif/react-native-chat-example；React 19.2.3、RN 0.86.3、Design 1.2.0、Yarn 4.11.0。
+- Design 从包根消费，Thumbnail 尺寸对象/fallback、Textarea（含 plain 表面）/TextFieldHandle、CircularProgress（formatLabel 仅改变视觉文字，读屏保留百分比）、ActionMenuContent（含 popover 展示）按 1.2.0 实际接口使用。Composer 的菜单开关与定位留在 Chat，菜单卡和菜单行由 Design 提供。详细接线见[组合验证](../../unif-platform-architecture/libraries/react-native-chat/composition.md#6-design-依赖与接入验证)。
 - Composer card、图片普通移除圆圈和中央状态／重试圆层复用 GlassLayer，plain 继续由外层提供表面；返回末尾操作复用 IconButton 的 glass 变体。交互 Suggestions、附件继续操作和 Confirmation 取消分别消费 Chip／secondary Button 的共享默认玻璃表面。材质、减少透明度和平台降级由 Design 处理，Chat 保留输入层级、浮菜单定位、附件独立触达区及滚动行为。失败附件仍使用错误色，消息正文与内容内轻量操作保留原层次。
-- 本版本的 Design peer 为 `>=1.0.0`；根库、example 与 Website 使用 `@callstack/liquid-glass` 0.8.2 满足 Design 的玻璃材质依赖。Jest 继续复用 Design preset，Web 通过 Design 的 Web 入口消费。
+- 本版本的 Design peer 为 `>=1.2.0`；根库、example 与 Website 使用 `@callstack/liquid-glass` 0.8.2 满足 Design 的玻璃材质依赖。Jest 继续复用 Design preset，Web 通过 Design 的 Web 入口消费。
 - Markdown 使用 react-native-marked 8.2.0，归所属消息单元，不建立解析器、模型 SDK 或组件注册中心。
 - Yarn 默认提升相同版本依赖，根库和 example 共用 React/原生模块实例；测试复用 Design 公开 preset。
 - src/index.tsx 只导出真实实现；type-tests 验证依赖公开类型，example 验证公开消费。Git 忽略安装、构建和本地资料；npm files 只发布源码、构建产物及标准包说明。
