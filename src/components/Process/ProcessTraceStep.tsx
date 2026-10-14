@@ -5,7 +5,6 @@ import {
 import { Pressable, Text, View } from 'react-native';
 import {
   Button,
-  Card,
   Tag,
   useColors,
   useThemedStyles,
@@ -87,7 +86,7 @@ export function ProcessTraceStep({
     .filter(Boolean)
     .join('，');
   return (
-    <Card variant="plain" bare>
+    <View>
       {hasDetails ? (
         <Pressable
           testID={`process-step-${step.id}-toggle`}
@@ -135,6 +134,6 @@ export function ProcessTraceStep({
           ))}
         </View>
       ) : null}
-    </Card>
+    </View>
   );
 }

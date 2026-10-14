@@ -12,11 +12,11 @@ export interface ProcessStep {
   id: string;
   title: string;
   status: ProcessStepStatus;
-  /** compact 的活动图标；null 不显示，省略时沿状态呈现。 */
+  /** compact / trace 的活动图标；null 不显示，省略时沿状态呈现。 */
   icon?: ComponentType<IconProps> | null;
   /** 调用者提供的状态显示文案；不改变 status 的语义。 */
   statusText?: string;
-  /** trace 中显示的来源标签，由调用方提供，如“本机”或“工具”。 */
+  /** trace 中显示的来源标签，由调用方提供，如“本机”。 */
   sourceLabel?: string;
   description?: string;
   elapsedMs?: number;
@@ -25,7 +25,7 @@ export interface ProcessStep {
 }
 
 export interface ProcessBaseProps {
-  /** card 为状态面板；compact 为单行过程；timeline 为连续步骤；trace 为独立工具卡。 */
+  /** card 为状态面板；compact 为单行过程；timeline 为连续步骤；trace 为透明工具行。 */
   variant?: 'card' | 'compact' | 'timeline' | 'trace';
   /** compact 文字密度；dense 用于与行内文字相邻的公开过程。 */
   compactDensity?: 'comfortable' | 'dense';
