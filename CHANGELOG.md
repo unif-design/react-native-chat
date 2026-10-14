@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.2.2](https://github.com/unif-design/react-native-chat/compare/v4.2.1...v4.2.2) (2026-10-14)
+
+### Bug Fixes
+
+* render tool traces without card backgrounds ([#32](https://github.com/unif-design/react-native-chat/issues/32)) ([f922c2b](https://github.com/unif-design/react-native-chat/commit/f922c2b35cfb24ee27859342c71cf43b3209baa7))
+
 ## [4.2.1](https://github.com/unif-design/react-native-chat/compare/v4.2.0...v4.2.1) (2026-10-14)
 
 ### Bug Fixes
