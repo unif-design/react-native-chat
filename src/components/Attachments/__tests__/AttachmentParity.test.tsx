@@ -292,3 +292,66 @@ it('单个普通动作保留自身文案，不被猜测为失败重试', () => {
   fireEvent.press(screen.getByRole('button', { name: '查看错误详情' }));
   expect(details).toHaveBeenCalledTimes(1);
 });
+
+it.each(['center', 'caption'] as const)(
+  '图片上传%s只显示进度数字，文件保留百分号',
+  (loadingVisual) => {
+    render(
+      <Attachments
+        showProgressLabel
+        items={[
+          {
+            id: 'photo',
+            name: '照片',
+            kind: 'image',
+            status: 'uploading',
+            progress: 0.42,
+            loadingVisual,
+          },
+          {
+            id: 'file',
+            name: '清单',
+            kind: 'file',
+            status: 'uploading',
+            progress: 0.58,
+            loadingVisual,
+          },
+        ]}
+      />,
+      { wrapper: ThemeProvider }
+    );
+    expect(
+      screen.getByText('42', { includeHiddenElements: true })
+    ).toBeOnTheScreen();
+    expect(
+      screen.queryByText('42%', { includeHiddenElements: true })
+    ).toBeNull();
+    expect(
+      screen.getByText('58%', { includeHiddenElements: true })
+    ).toBeOnTheScreen();
+  }
+);
+
+it.each(['grid', 'list'] as const)(
+  '图片 %s caption 保留完整读屏百分比',
+  (layout) => {
+    render(
+      <Attachments
+        layout={layout}
+        showProgressLabel
+        items={[
+          {
+            id: 'photo',
+            kind: 'image',
+            name: '照片',
+            status: 'uploading',
+            progress: 0.42,
+            loadingVisual: 'caption',
+          },
+        ]}
+      />,
+      { wrapper: ThemeProvider }
+    );
+    expect(screen.getByText('42')).toHaveProp('accessibilityLabel', '42%');
+  }
+);

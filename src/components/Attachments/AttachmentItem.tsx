@@ -54,6 +54,10 @@ export function AttachmentItem({
       ? item.progress
       : undefined;
   const statusText = item.statusText ?? STATUS_LABELS[status];
+  const progressLabel =
+    progress === undefined
+      ? undefined
+      : `${Math.round(progress * 100)}${item.kind === 'image' ? '' : '%'}`;
   const previewable = item.previewable && onPreview;
   const separatePreview = previewable && (busy || failed);
   const removable = item.removable && onRemove;
@@ -101,6 +105,7 @@ export function AttachmentItem({
             value={progress}
             size={36}
             showLabel={showProgressLabel}
+            formatLabel={item.kind === 'image' ? String : undefined}
             color={colors.onPrimary}
             labelColor={colors.onPrimary}
             accessibilityLabel={`${name}上传进度`}
@@ -196,7 +201,12 @@ export function AttachmentItem({
             </Text>
           ) : null}
           {busy && caption && showProgressLabel && progress !== undefined ? (
-            <Text style={styles.meta}>{`${Math.round(progress * 100)}%`}</Text>
+            <Text
+              style={styles.meta}
+              accessibilityLabel={`${Math.round(progress * 100)}%`}
+            >
+              {progressLabel}
+            </Text>
           ) : null}
         </View>
       </>
@@ -350,7 +360,10 @@ export function AttachmentItem({
           {showProgressLabel && progress !== undefined ? (
             <Text
               style={styles.captionText}
-            >{`${Math.round(progress * 100)}%`}</Text>
+              accessibilityLabel={`${Math.round(progress * 100)}%`}
+            >
+              {progressLabel}
+            </Text>
           ) : null}
         </View>
       ) : null}

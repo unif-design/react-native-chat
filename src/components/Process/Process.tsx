@@ -23,7 +23,8 @@ function idsWithDetails(
       .filter((step) => hasProcessDetails(step.details))
       .map((step) => step.id)
   );
-  return ids.filter((id) => availableIds.has(id));
+  const available = ids.filter((id) => availableIds.has(id));
+  return available.length === ids.length ? ids : available;
 }
 
 function formatElapsedMs(elapsedMs: number | undefined): string | undefined {
