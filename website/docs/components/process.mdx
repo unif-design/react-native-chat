@@ -35,13 +35,13 @@ import { ProcessDemo } from '@site/src/demos/ProcessDemo';
 
 过程组件不执行任务、不解析工具协议，也不根据步骤名称推断业务行为。多组过程由页面组合多个 Process。
 
-`variant="trace"` 用独立工具卡显示图标、名称、`sourceLabel` 来源标签和状态。有 `details` 的卡片可点击展开，默认收起；流式更新不重置用户选择。可以与 `compact` 的身份／思考行组合，保留实际执行顺序。标签来自宿主，组件不推断执行者或工具归属。
+`variant="trace"` 用透明工具行显示图标、名称、可选的 `sourceLabel` 来源标签和状态，不绘制卡片背景。有 `details` 的工具行可点击展开，默认收起；流式更新不重置用户选择。可以与 `compact` 的身份／思考行组合，保留实际执行顺序。标签来自宿主，组件不推断执行者或工具归属。
 
 `variant="timeline"` 将已有步骤组合成竖向状态节点和连接线，标题右侧呈现该步骤的说明；不会额外生成“已完成”等成功段落。`card` 保留完整状态面板，两种形态共用同一份步骤、操作与展开状态。
 
 单项紧凑过程可传 `identityPlacement="inline"`，把已有 `identity` 内容放在状态同行左侧。`step.statusText` 可提供适合当前公开业务状态的显示文案；它不改变 `status`，也不会让组件生成新的状态或时长。多项或非 compact 仍使用独立身份标题。
 
-compact 的 `step.icon` 接收 `@unif/react-native-icons` 的组件引用（如 `FileOutlined`、`ImageOutlined`），设为 `null` 时不显示图标；省略时保持原状态图标。`statusText: ''` 隐藏重复状态文字，标题仍须明确说明当前动作。公开文字与各批 Process 由调用方按顺序组合，整轮内容无需套在一个折叠入口内。
+compact / trace 的 `step.icon` 接收 `@unif/react-native-icons` 的组件引用（如 `FileOutlined`、`ImageOutlined`），设为 `null` 时不显示图标；省略时保持原状态图标。`statusText: ''` 隐藏重复状态文字，标题仍须明确说明当前动作。公开文字与各批 Process 由调用方按顺序组合，整轮内容无需套在一个折叠入口内。
 
 `compactDensity="dense"` 适用于消息内连续的文字过程行：取消标题上下内边距，最小行高为 24；默认 `comfortable` 保持 44 的行高。两者保留相同的展开、状态和操作行为；隐藏视觉状态文字时，读屏仍能读取真实状态。
 
