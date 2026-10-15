@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.2.3](https://github.com/unif-design/react-native-chat/compare/v4.2.2...v4.2.3) (2026-10-15)
+
+### Bug Fixes
+
+* refine composer keyboard and attachment previews ([#33](https://github.com/unif-design/react-native-chat/issues/33)) ([f45428f](https://github.com/unif-design/react-native-chat/commit/f45428f26f925fac338d39cd74de227b395b0868))
+
 ## [4.2.2](https://github.com/unif-design/react-native-chat/compare/v4.2.1...v4.2.2) (2026-10-14)
 
 ### Bug Fixes
