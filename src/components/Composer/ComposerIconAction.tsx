@@ -27,7 +27,9 @@ export function ComposerIconAction({
     ? disabled
       ? colors.foregroundSubtle
       : colors.onPrimary
-    : colors.foregroundMuted;
+    : visual === 'cancel'
+      ? colors.foregroundMuted
+      : colors.foreground;
   const Glyph = icon;
   return (
     <Pressable
