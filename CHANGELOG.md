@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.2.5](https://github.com/unif-design/react-native-chat/compare/v4.2.4...v4.2.5) (2026-10-15)
+
+### Bug Fixes
+
+* improve composer action icon size and contrast ([#35](https://github.com/unif-design/react-native-chat/issues/35)) ([484c922](https://github.com/unif-design/react-native-chat/commit/484c922d3bff60934aec2d8298212cbe4481f0cb))
+
 ## [4.2.4](https://github.com/unif-design/react-native-chat/compare/v4.2.3...v4.2.4) (2026-10-15)
 
 ### Bug Fixes
