@@ -6,9 +6,8 @@ import {
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import {
   Button,
-  Pulse,
   Reveal,
-  motion,
+  ShimmerText,
   pressedOpacity,
   useColors,
   useThemedStyles,
@@ -79,13 +78,7 @@ export function ProcessCompactStep({
             <View style={styles.spacer} />
           </>
         ) : null}
-        {running && icon ? (
-          <Pulse from={0.4} duration={motion.pulse / 2}>
-            {icon}
-          </Pulse>
-        ) : (
-          icon
-        )}
+        {icon}
         {!identity ? (
           <Text
             style={styles.compactTitle}
@@ -96,7 +89,9 @@ export function ProcessCompactStep({
           </Text>
         ) : null}
         {statusText ? (
-          <Text style={styles.compactStatus}>{statusText}</Text>
+          <ShimmerText style={styles.compactStatus} active={running}>
+            {statusText}
+          </ShimmerText>
         ) : null}
         {elapsed ? <Text style={styles.elapsed}>{elapsed}</Text> : null}
         {hasDetails ? (

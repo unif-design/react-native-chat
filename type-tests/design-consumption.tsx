@@ -2,6 +2,7 @@ import { createRef } from 'react';
 import { View } from 'react-native';
 import {
   CircularProgress,
+  ShimmerText,
   Textarea,
   Thumbnail,
 } from '@unif/react-native-design';
@@ -30,6 +31,9 @@ export const designConsumption = (
       ref={inputRef}
     />
     <CircularProgress value={0.5} showLabel />
+    <ShimmerText active numberOfLines={1}>
+      思考中
+    </ShimmerText>
   </View>
 );
 // @ts-expect-error 明确图像框仍必须同时提供宽高。
