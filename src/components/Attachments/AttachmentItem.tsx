@@ -59,7 +59,7 @@ export function AttachmentItem({
       ? undefined
       : `${Math.round(progress * 100)}${item.kind === 'image' ? '' : '%'}`;
   const previewable = item.previewable && onPreview;
-  const separatePreview = previewable && (busy || failed);
+  const separatePreview = previewable && (busy || (failed && !caption));
   const removable = item.removable && onRemove;
   const singleAction = item.actions?.length === 1 ? item.actions[0] : undefined;
   const retry =

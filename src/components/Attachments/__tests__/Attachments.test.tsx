@@ -207,40 +207,51 @@ test('根 padding 不参与内部网格宽度，真实 Thumbnail 消费实际尺
   expect(screen.queryByText('处理失败')).toBeNull();
 });
 
-test('输入预览布局保留大图中心与右上移除的独立操作', () => {
-  const item: ChatAttachmentItem = {
-    id: 'photo',
-    name: '清单',
-    kind: 'image',
-    previewable: true,
-    removable: true,
-  };
-  const onPreview = jest.fn();
-  const onRemove = jest.fn();
-  renderAttachments({ items: [item], layout: 'preview', onPreview, onRemove });
-  const tile = screen.getByLabelText('预览清单');
-  const remove = screen.getByLabelText('移除清单');
-  const tileStyle = StyleSheet.flatten(tile.props.style);
-  const removeStyle = StyleSheet.flatten(remove.props.style);
-  expect(screen.UNSAFE_getByType(ScrollView).props.horizontal).toBe(true);
-  expect(removeStyle.left).toBeGreaterThan(tileStyle.width / 2);
-  expect(removeStyle.left + removeStyle.width).toBeLessThanOrEqual(
-    tileStyle.width
-  );
-  expect(removeStyle.width).toBeGreaterThanOrEqual(44);
-  expect(removeStyle.overflow).not.toBe('hidden');
-  expect(screen.UNSAFE_getByType(GlassLayer).props.colorScheme).toBe('dark');
-  expect(
-    StyleSheet.flatten(screen.UNSAFE_getByType(GlassLayer).parent!.props.style)
-      .overflow
-  ).toBe('hidden');
-  fireEvent.press(tile);
-  expect(onPreview).toHaveBeenCalledWith(item);
-  expect(onRemove).not.toHaveBeenCalled();
-  fireEvent.press(screen.getByLabelText('移除清单'));
-  expect(onRemove).toHaveBeenCalledWith(item);
-  expect(onPreview).toHaveBeenCalledTimes(1);
-});
+test.each(['image', 'file'] as const)(
+  '输入预览的 %s 保留中心预览与右上移除的独立操作',
+  (kind) => {
+    const item: ChatAttachmentItem = {
+      id: 'attachment',
+      name: '清单',
+      kind,
+      previewable: true,
+      removable: true,
+    };
+    const onPreview = jest.fn();
+    const onRemove = jest.fn();
+    renderAttachments({
+      items: [item],
+      layout: 'preview',
+      onPreview,
+      onRemove,
+    });
+    const tile = screen.getByLabelText('预览清单');
+    const remove = screen.getByLabelText('移除清单');
+    const tileStyle = StyleSheet.flatten(tile.props.style);
+    const removeStyle = StyleSheet.flatten(remove.props.style);
+    expect(screen.UNSAFE_getByType(ScrollView).props.horizontal).toBe(true);
+    // 96 的设计尺寸在 390pt、3x 屏幕上按既有缩放对齐为 93pt。
+    expect(tile).toHaveStyle({ width: 93, height: 93 });
+    expect(removeStyle.left).toBeGreaterThan(tileStyle.width / 2);
+    expect(removeStyle.left + removeStyle.width).toBeLessThanOrEqual(
+      tileStyle.width
+    );
+    expect(removeStyle.width).toBeGreaterThanOrEqual(44);
+    expect(removeStyle.overflow).not.toBe('hidden');
+    expect(screen.UNSAFE_getByType(GlassLayer).props.colorScheme).toBe('dark');
+    expect(
+      StyleSheet.flatten(
+        screen.UNSAFE_getByType(GlassLayer).parent!.props.style
+      ).overflow
+    ).toBe('hidden');
+    fireEvent.press(tile);
+    expect(onPreview).toHaveBeenCalledWith(item);
+    expect(onRemove).not.toHaveBeenCalled();
+    fireEvent.press(screen.getByLabelText('移除清单'));
+    expect(onRemove).toHaveBeenCalledWith(item);
+    expect(onPreview).toHaveBeenCalledTimes(1);
+  }
+);
 
 test('预览布局的重试与移除命中区域不重叠，且保留原动作', () => {
   const onRetry = jest.fn();
@@ -289,3 +300,38 @@ test('预览布局的重试与移除命中区域不重叠，且保留原动作',
   expect(onRemove).not.toHaveBeenCalled();
   expect(onPreview).not.toHaveBeenCalled();
 });
+
+test.each(['carousel', 'preview'] as const)(
+  '%s 失败说明在图片下方时，整图预览与重试及移除独立且不增加眼睛入口',
+  (layout) => {
+    const onPreview = jest.fn();
+    const onRemove = jest.fn();
+    const onRetry = jest.fn();
+    const item: ChatAttachmentItem = {
+      id: 'failed-caption',
+      name: '订货清单',
+      kind: 'image',
+      thumbnail: { uri: 'file:///order.jpg' },
+      status: 'failed',
+      statusText: '图片内容无法识别',
+      loadingVisual: 'caption',
+      previewable: true,
+      removable: true,
+      actions: [{ id: 'retry', label: '继续此附件', onPress: onRetry }],
+    };
+    renderAttachments({ items: [item], layout, onPreview, onRemove });
+    const preview = screen.getByRole('button', { name: '预览订货清单' });
+    expect(preview.findByType(Thumbnail).props.source).toEqual(item.thumbnail);
+    expect(screen.getByText('图片内容无法识别')).toBeOnTheScreen();
+    fireEvent.press(preview);
+    expect(onPreview).toHaveBeenCalledWith(item);
+    expect(onRetry).not.toHaveBeenCalled();
+    expect(onRemove).not.toHaveBeenCalled();
+    fireEvent.press(screen.getByRole('button', { name: '继续此附件' }));
+    expect(onRetry).toHaveBeenCalledTimes(1);
+    expect(onPreview).toHaveBeenCalledTimes(1);
+    fireEvent.press(screen.getByRole('button', { name: '移除订货清单' }));
+    expect(onRemove).toHaveBeenCalledWith(item);
+    expect(onPreview).toHaveBeenCalledTimes(1);
+  }
+);
