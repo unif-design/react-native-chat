@@ -130,7 +130,10 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
           label="更多操作"
           expanded={menuOpen}
           disabled={moreDisabled}
-          onPress={() => setMenuOpen((open) => !open)}
+          onPress={() => {
+            inputRef.current?.blur();
+            setMenuOpen((open) => !open);
+          }}
         />
       ) : null;
 

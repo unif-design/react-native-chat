@@ -80,7 +80,7 @@ describe('Composer', () => {
     expect(screen.getByDisplayValue('保留')).toBeOnTheScreen();
   });
 
-  test('公共浮菜单按操作状态交付一次并关闭，焦点变化也收起', () => {
+  test('更多操作先让输入失焦，公共浮菜单按操作状态交付一次并关闭', () => {
     const onPress = jest.fn();
     const onFocusChange = jest.fn();
     renderComposer({
@@ -102,7 +102,17 @@ describe('Composer', () => {
       ],
     });
     const input = screen.UNSAFE_getByType(TextInput).instance;
+    const blur = jest.spyOn(
+      screen.UNSAFE_getByType(Textarea).props.ref.current,
+      'blur'
+    );
+    fireEvent(screen.getByLabelText('消息输入框'), 'focus', {
+      nativeEvent: {},
+    });
     fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
+    expect(blur).toHaveBeenCalledTimes(1);
+    fireEvent(screen.getByLabelText('消息输入框'), 'blur', { nativeEvent: {} });
+    expect(onFocusChange).toHaveBeenLastCalledWith(false);
     expect(screen.UNSAFE_getByType(ActionMenuContent).props.presentation).toBe(
       'popover'
     );
