@@ -1,16 +1,16 @@
 import { Text, View } from 'react-native';
 import {
-  usePrefersReducedMotion,
+  ShimmerText,
+  useTheme,
   useThemedStyles,
 } from '@unif/react-native-design';
 import { PROCESSING_PROGRESS_SEPARATOR } from './constants';
-import { ProcessingProgressPrefix } from './ProcessingProgressPrefix';
 import { createStyles } from './styles';
 import type { ProcessingProgressProps } from './types';
 
 export function ProcessingProgress({ progress }: ProcessingProgressProps) {
   const styles = useThemedStyles(createStyles);
-  const reducedMotion = usePrefersReducedMotion();
+  const { colors, scheme } = useTheme();
   const separatorIndex = progress.indexOf(PROCESSING_PROGRESS_SEPARATOR);
   const prefix =
     separatorIndex === -1 ? progress : progress.slice(0, separatorIndex);
@@ -34,12 +34,14 @@ export function ProcessingProgress({ progress }: ProcessingProgressProps) {
         accessible={false}
         aria-hidden
       >
-        <ProcessingProgressPrefix
-          // Each prefix/motion generation owns its value, including late frames.
-          key={`${reducedMotion}:${prefix}`}
-          text={prefix}
-          reducedMotion={reducedMotion}
-        />
+        <ShimmerText
+          style={{
+            color:
+              scheme === 'dark' ? colors.foregroundMuted : colors.foreground,
+          }}
+        >
+          {prefix}
+        </ShimmerText>
         {suffix ? (
           <Text testID="processing-progress-suffix">{suffix}</Text>
         ) : null}

@@ -6479,7 +6479,7 @@ __metadata:
     "@react-native/typescript-config": "npm:0.86.3"
     "@types/react": "npm:^19.2.0"
     "@unif/react-native-chat": "workspace:*"
-    "@unif/react-native-design": "npm:>=1.2.0"
+    "@unif/react-native-design": "npm:^1.4.0"
     "@unif/react-native-icons": "npm:>=0.1.0"
     react: "npm:19.2.3"
     react-dom: "npm:19.2.3"
@@ -6516,7 +6516,7 @@ __metadata:
     "@react-native/metro-config": "npm:0.86.3"
     "@types/react": "npm:^19.2.0"
     "@unif/react-native-chat": "workspace:*"
-    "@unif/react-native-design": "npm:>=1.2.0"
+    "@unif/react-native-design": "npm:^1.4.0"
     "@unif/react-native-icons": "npm:>=0.1.0"
     babel-loader: "npm:^9.2.1"
     gray-matter: "npm:^4.0.3"
@@ -6558,7 +6558,7 @@ __metadata:
     "@release-it/conventional-changelog": "npm:^12.0.0"
     "@testing-library/react-native": "npm:13.3.3"
     "@types/react": "npm:^19.2.0"
-    "@unif/react-native-design": "npm:>=1.2.0"
+    "@unif/react-native-design": "npm:^1.4.0"
     "@unif/react-native-icons": "npm:>=0.1.0"
     commitlint: "npm:^21.2.1"
     del-cli: "npm:^7.0.0"
@@ -6587,7 +6587,7 @@ __metadata:
     turbo: "npm:^2.10.8"
     typescript: "npm:^6.0.3"
   peerDependencies:
-    "@unif/react-native-design": ">=1.2.0"
+    "@unif/react-native-design": ^1.4.0
     "@unif/react-native-icons": ">=0.1.0"
     react: ">=19.2.3 <20.0.0"
     react-native: ">=0.86.0"
@@ -6595,9 +6595,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@unif/react-native-design@npm:>=1.2.0":
-  version: 1.2.0
-  resolution: "@unif/react-native-design@npm:1.2.0"
+"@unif/react-native-design@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@unif/react-native-design@npm:1.4.0"
   dependencies:
     react-is: "npm:^19.2.8"
   peerDependencies:
@@ -6611,7 +6611,7 @@ __metadata:
     react-native-safe-area-context: ">=5"
     react-native-svg: ">=15"
     react-native-worklets: ">=0.11.0 <0.13.0"
-  checksum: 10c0/feee5ea96651755c46e3650409cee2fc01f32ee086dca611bb97d640c4811bf648ce77b9622a006e3cfe743dec365373b3c8d172a22476b9484830a7ef3541a3
+  checksum: 10c0/578840486d7bf552c63c994a5e18cb81c2112bfe5548bbe6f0b393adbddab6880c05643ae4d5184b626de6118304583ec030740ec50c416fdc281e528c82e1b0
   languageName: node
   linkType: hard
 

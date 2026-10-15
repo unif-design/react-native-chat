@@ -39,6 +39,8 @@ import { ProcessDemo } from '@site/src/demos/ProcessDemo';
 
 `variant="timeline"` 将已有步骤组合成竖向状态节点和连接线，标题右侧呈现该步骤的说明；不会额外生成“已完成”等成功段落。`card` 保留完整状态面板，两种形态共用同一份步骤、操作与展开状态。
 
+compact 运行状态的文字复用 Design ShimmerText，每 4 秒从首字到尾字扫过一次白色高光；状态图标保持静止。完成、失败、取消、待处理或开启系统减少动态效果时，文字保持静态。
+
 单项紧凑过程可传 `identityPlacement="inline"`，把已有 `identity` 内容放在状态同行左侧。`step.statusText` 可提供适合当前公开业务状态的显示文案；它不改变 `status`，也不会让组件生成新的状态或时长。多项或非 compact 仍使用独立身份标题。
 
 compact / trace 的 `step.icon` 接收 `@unif/react-native-icons` 的组件引用（如 `FileOutlined`、`ImageOutlined`），设为 `null` 时不显示图标；省略时保持原状态图标。`statusText: ''` 隐藏重复状态文字，标题仍须明确说明当前动作。公开文字与各批 Process 由调用方按顺序组合，整轮内容无需套在一个折叠入口内。

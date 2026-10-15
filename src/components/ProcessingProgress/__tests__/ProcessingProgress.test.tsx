@@ -1,4 +1,10 @@
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import {
+  AccessibilityInfo,
+  Animated,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import type { TextProps, ViewProps } from 'react-native';
 import { act, cleanup, render } from '@testing-library/react-native';
 import { afterEach, beforeEach, expect, jest, test } from '@jest/globals';
@@ -9,14 +15,9 @@ import {
 } from '@unif/react-native-design';
 import { ProcessingProgress } from '@unif/react-native-chat';
 
-const mockUsePrefersReducedMotion = jest.fn(() => false);
-
-jest.mock('@unif/react-native-design', () => ({
-  ...jest.requireActual<typeof import('@unif/react-native-design')>(
-    '@unif/react-native-design'
-  ),
-  usePrefersReducedMotion: () => mockUsePrefersReducedMotion(),
-}));
+const reanimated = jest.requireMock<typeof import('react-native-reanimated')>(
+  'react-native-reanimated'
+);
 
 const realLoop = jest.requireActual<{
   default: Pick<typeof Animated, 'loop'>;
@@ -43,7 +44,10 @@ const progressView = (progress: string, dark = false, fontScale = 1) => (
 
 beforeEach(() => {
   animations = [];
-  mockUsePrefersReducedMotion.mockReturnValue(false);
+  jest
+    .spyOn(AccessibilityInfo, 'isReduceTransparencyEnabled')
+    .mockResolvedValue(true);
+  jest.spyOn(reanimated, 'useReducedMotion').mockReturnValue(false);
   // Keep RN's loop lifecycle; only replace frames driven by the native clock.
   jest.spyOn(Animated, 'loop').mockImplementation(realLoop);
   jest.spyOn(Animated, 'timing').mockImplementation((value) => {
@@ -149,13 +153,13 @@ test('前缀更新停止旧动画，迟到完成不能重启旧循环或影响�
 test('减少动态效果切换后显示静态文字，恢复时隔离旧动画', () => {
   const page = render(progressView('正在准备资料'));
   const first = animations[0]!;
-  mockUsePrefersReducedMotion.mockReturnValue(true);
+  jest.mocked(reanimated.useReducedMotion).mockReturnValue(true);
   page.rerender(progressView('正在准备资料', true));
   expect(first.stop).toHaveBeenCalledTimes(1);
   expect(page.getByRole('text', { name: '正在准备资料' })).toBeOnTheScreen();
   expect(animations).toHaveLength(1);
 
-  mockUsePrefersReducedMotion.mockReturnValue(false);
+  jest.mocked(reanimated.useReducedMotion).mockReturnValue(false);
   page.rerender(progressView('正在准备资料', false));
   expect(animations).toHaveLength(2);
   expect(animations[1]!.value).not.toBe(first.value);
@@ -164,7 +168,7 @@ test('减少动态效果切换后显示静态文字，恢复时隔离旧动画',
 });
 
 test('初始减少动态效果时不启动动画，空文字不虚构进度', () => {
-  mockUsePrefersReducedMotion.mockReturnValue(true);
+  jest.mocked(reanimated.useReducedMotion).mockReturnValue(true);
   const page = render(progressView('正在准备资料'));
   expect(page.getByRole('text', { name: '正在准备资料' })).toBeOnTheScreen();
   expect(Animated.loop).not.toHaveBeenCalled();
@@ -174,7 +178,7 @@ test('初始减少动态效果时不启动动画，空文字不虚构进度', ()
 });
 
 test('长中文和大字号共用一个可省略的文字行，主题和字号只应用一次', () => {
-  mockUsePrefersReducedMotion.mockReturnValue(true);
+  jest.mocked(reanimated.useReducedMotion).mockReturnValue(true);
   const text =
     '正在整理跨多个门店的商品资料与订单说明 · 请稍候，仍在读取全部内容';
   const page = render(progressView(text));
@@ -196,4 +200,29 @@ test('长中文和大字号共用一个可省略的文字行，主题和字号�
   expect(large.lineHeight).toBeCloseTo(normal.lineHeight * 1.5);
   expect(large.color).toBe(darkColors.foregroundMuted);
   expect(page.getByRole('text', { name: text })).toBeOnTheScreen();
+});
+
+test.each([
+  [false, lightColors.foreground],
+  [true, darkColors.foregroundMuted],
+] as const)('前缀保持主题基础色，后缀沿用原行颜色：dark=%s', (dark, color) => {
+  jest.mocked(reanimated.useReducedMotion).mockReturnValue(true);
+  const prefix = '正在整理资料 ';
+  const page = render(progressView(`${prefix}· 附件一`, dark));
+  const prefixText = page
+    .UNSAFE_getAllByType(Text)
+    .find((node) => node.props.children === prefix)!;
+  expect(StyleSheet.flatten(prefixText.props.style)).toMatchObject({ color });
+  expect(
+    page.getByTestId('processing-progress-line', {
+      includeHiddenElements: true,
+    })
+  ).toHaveStyle({
+    color: dark ? darkColors.foregroundMuted : lightColors.foregroundMuted,
+  });
+  expect(
+    page.getByTestId('processing-progress-suffix', {
+      includeHiddenElements: true,
+    })
+  ).toHaveTextContent('· 附件一');
 });
