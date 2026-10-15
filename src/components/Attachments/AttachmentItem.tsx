@@ -1,3 +1,4 @@
+import { resolveFileAppearance } from './resolveFileAppearance';
 import {
   CloseOutlined,
   EyeOutlined,
@@ -76,8 +77,17 @@ export function AttachmentItem({
             ATTACHMENT_STATUS_OWNER_SIZE
         )
       : statusLeft;
-  const Glyph = ATTACHMENT_ICONS[item.kind ?? 'file'];
-  const icon = <Glyph size={ROW_IMAGE_SIZE} color={colors.foregroundMuted} />;
+  const file = resolveFileAppearance(item, colors);
+  const isFile = !item.kind || item.kind === 'file';
+  const Glyph = isFile ? file.Icon : ATTACHMENT_ICONS[item.kind!];
+  const meta =
+    item.meta ?? (isFile && file.label !== name ? file.label : undefined);
+  const icon = (
+    <Glyph
+      size={ROW_IMAGE_SIZE}
+      color={isFile ? file.color : colors.foregroundMuted}
+    />
+  );
   const thumbnail = item.thumbnail ? (
     <Thumbnail
       source={item.thumbnail}
@@ -184,12 +194,12 @@ export function AttachmentItem({
           <Text style={styles.name} numberOfLines={1} ellipsizeMode="middle">
             {name}
           </Text>
-          {item.meta ? (
+          {meta ? (
             <Text
               style={[styles.meta, !mixed && styles.fileMeta]}
               numberOfLines={1}
             >
-              {item.meta}
+              {meta}
             </Text>
           ) : null}
           {statusText ? (

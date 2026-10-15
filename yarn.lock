@@ -6480,7 +6480,7 @@ __metadata:
     "@types/react": "npm:^19.2.0"
     "@unif/react-native-chat": "workspace:*"
     "@unif/react-native-design": "npm:^1.4.0"
-    "@unif/react-native-icons": "npm:>=0.1.0"
+    "@unif/react-native-icons": "npm:^0.3.0"
     react: "npm:19.2.3"
     react-dom: "npm:19.2.3"
     react-native: "npm:0.86.3"
@@ -6517,7 +6517,7 @@ __metadata:
     "@types/react": "npm:^19.2.0"
     "@unif/react-native-chat": "workspace:*"
     "@unif/react-native-design": "npm:^1.4.0"
-    "@unif/react-native-icons": "npm:>=0.1.0"
+    "@unif/react-native-icons": "npm:^0.3.0"
     babel-loader: "npm:^9.2.1"
     gray-matter: "npm:^4.0.3"
     prism-react-renderer: "npm:^2.3.0"
@@ -6559,7 +6559,7 @@ __metadata:
     "@testing-library/react-native": "npm:13.3.3"
     "@types/react": "npm:^19.2.0"
     "@unif/react-native-design": "npm:^1.4.0"
-    "@unif/react-native-icons": "npm:>=0.1.0"
+    "@unif/react-native-icons": "npm:^0.3.0"
     commitlint: "npm:^21.2.1"
     del-cli: "npm:^7.0.0"
     eslint: "npm:^9.39.5"
@@ -6588,7 +6588,7 @@ __metadata:
     typescript: "npm:^6.0.3"
   peerDependencies:
     "@unif/react-native-design": ^1.4.0
-    "@unif/react-native-icons": ">=0.1.0"
+    "@unif/react-native-icons": ^0.3.0
     react: ">=19.2.3 <20.0.0"
     react-native: ">=0.86.0"
     react-native-svg: ">=15"
@@ -6615,14 +6615,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@unif/react-native-icons@npm:>=0.1.0":
-  version: 0.1.0
-  resolution: "@unif/react-native-icons@npm:0.1.0"
+"@unif/react-native-icons@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@unif/react-native-icons@npm:0.3.0"
   peerDependencies:
     react: ">=19.2.3 <20"
     react-native: ">=0.86.3 <0.87"
     react-native-svg: ">=15.15.5 <16"
-  checksum: 10c0/75844575fca1152649bf91aac32815a3f91c795dc4fd8808ae9b399df77a1adee51bc12f78f88999e0de722a659fea878481d47f925d1e8dee327c03de3c169d
+  checksum: 10c0/3f6eadae2eb1285ddca0393c3a08414a8032c38ca9e83952ec93fe4b047cc44e1c6f826827d695e80e01e6d926277c3d1add58b7e4ea80f9441c404acafa8446
   languageName: node
   linkType: hard
 

@@ -69,7 +69,7 @@
     "@testing-library/react-native": "13.3.3",
     "@types/react": "^19.2.0",
     "@unif/react-native-design": "^1.4.0",
-    "@unif/react-native-icons": ">=0.1.0",
+    "@unif/react-native-icons": "^0.3.0",
     "commitlint": "^21.2.1",
     "del-cli": "^7.0.0",
     "eslint": "^9.39.5",
@@ -98,7 +98,7 @@
   },
   "peerDependencies": {
     "@unif/react-native-design": "^1.4.0",
-    "@unif/react-native-icons": ">=0.1.0",
+    "@unif/react-native-icons": "^0.3.0",
     "react": ">=19.2.3 <20.0.0",
     "react-native": ">=0.86.0",
     "react-native-svg": ">=15"

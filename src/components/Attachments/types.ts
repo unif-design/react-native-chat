@@ -6,6 +6,8 @@ export type ChatAttachmentStatus =
 export interface ChatAttachmentItem {
   id: string;
   name?: string;
+  /** MIME metadata for document icons; images still use their thumbnail. */
+  mimeType?: string;
   kind?: 'image' | 'file' | 'audio' | 'video';
   thumbnail?: ImageSourcePropType;
   meta?: string;
