@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.2.4](https://github.com/unif-design/react-native-chat/compare/v4.2.3...v4.2.4) (2026-10-15)
+
+### Bug Fixes
+
+* **process:** reuse shared shimmer text for running status ([#34](https://github.com/unif-design/react-native-chat/issues/34)) ([32a823a](https://github.com/unif-design/react-native-chat/commit/32a823a585d85575d2297fff48871b1acbf4d698))
+
 ## [4.2.3](https://github.com/unif-design/react-native-chat/compare/v4.2.2...v4.2.3) (2026-10-15)
 
 ### Bug Fixes
