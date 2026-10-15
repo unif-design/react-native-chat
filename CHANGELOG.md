@@ -1,5 +1,11 @@
 # Changelog
 
+# [4.3.0](https://github.com/unif-design/react-native-chat/compare/v4.2.5...v4.3.0) (2026-10-15)
+
+### Features
+
+* display typed document icons in attachments ([#36](https://github.com/unif-design/react-native-chat/issues/36)) ([15ff204](https://github.com/unif-design/react-native-chat/commit/15ff20403c31b4563b2cf600e8bb636c6abe02ff))
+
 ## [4.2.5](https://github.com/unif-design/react-native-chat/compare/v4.2.4...v4.2.5) (2026-10-15)
 
 ### Bug Fixes
