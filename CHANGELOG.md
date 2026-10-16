@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.3.1](https://github.com/unif-design/react-native-chat/compare/v4.3.0...v4.3.1) (2026-10-16)
+
+### Bug Fixes
+
+* remove trace detail borders ([#37](https://github.com/unif-design/react-native-chat/issues/37)) ([c812ce1](https://github.com/unif-design/react-native-chat/commit/c812ce1183206cd40bae4c5548067c1f2af7ecb4))
+
 # [4.3.0](https://github.com/unif-design/react-native-chat/compare/v4.2.5...v4.3.0) (2026-10-15)
 
 ### Features
