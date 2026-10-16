@@ -53,8 +53,6 @@ export const createStyles = (colors: ColorTokens) =>
     traceDetails: {
       paddingHorizontal: space[5],
       paddingVertical: space[4],
-      borderTopWidth: 1,
-      borderTopColor: colors.outlineFaint,
     },
     timelineRoot: {
       backgroundColor: colors.surface,
