@@ -440,7 +440,7 @@ test('真实 Textarea 接收字体相关高度、ref 转交且进入语音时失
   expect(voice.onStart).not.toHaveBeenCalled();
 });
 
-test('全部附件操作不可用时更多入口禁用，已打开菜单随状态关闭', () => {
+test('附件忙碌只禁用对应菜单项，加号仍可查看与收起菜单', () => {
   const props: ComposerProps = {
     value: '',
     onChangeText: jest.fn(),
@@ -456,8 +456,16 @@ test('全部附件操作不可用时更多入口禁用，已打开菜单随状�
       actions={props.actions!.map((action) => ({ ...action, disabled: true }))}
     />
   );
-  expect(screen.getByRole('button', { name: '更多操作' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: '更多操作' })).toBeEnabled();
+  expect(screen.getByTestId('composer-menu')).toBeOnTheScreen();
+  expect(screen.getByRole('button', { name: '照片' })).toBeDisabled();
+  fireEvent.press(screen.getByRole('button', { name: '照片' }));
+  expect(props.actions![0]!.onPress).not.toHaveBeenCalled();
+  fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
   expect(screen.queryByTestId('composer-menu')).toBeNull();
   fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
+  expect(screen.getByTestId('composer-menu')).toBeOnTheScreen();
+  view.rerender(<Composer {...props} disabled />);
+  expect(screen.getByRole('button', { name: '更多操作' })).toBeDisabled();
   expect(screen.queryByTestId('composer-menu')).toBeNull();
 });
