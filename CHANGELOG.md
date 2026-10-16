@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.3.2](https://github.com/unif-design/react-native-chat/compare/v4.3.1...v4.3.2) (2026-10-16)
+
+### Bug Fixes
+
+* **composer:** keep attachment menu available while actions are busy ([#38](https://github.com/unif-design/react-native-chat/issues/38)) ([adae18c](https://github.com/unif-design/react-native-chat/commit/adae18c8b0168f53cc472b5be6e49f5623836a61))
+
 ## [4.3.1](https://github.com/unif-design/react-native-chat/compare/v4.3.0...v4.3.1) (2026-10-16)
 
 ### Bug Fixes
