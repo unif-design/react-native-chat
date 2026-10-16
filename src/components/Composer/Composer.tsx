@@ -76,11 +76,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
     const voiceActive = voice !== undefined && voice.status !== 'idle';
     const expanded = focused || value.length > 0;
     const moreDisabled =
-      disabled ||
-      voiceActive ||
-      actions.every(
-        (action) => !action.label.trim() || action.disabled || action.loading
-      );
+      disabled || voiceActive || !actions.some((action) => action.label.trim());
     const minHeight = Number.isFinite(minInputHeight)
       ? Math.max(fixed.hitTarget, minInputHeight!)
       : fixed.hitTarget;
