@@ -502,3 +502,183 @@ test('opposite header and footer resizes refresh the anchor when total content h
     animated: false,
   });
 });
+
+test('同值新keys和行重排按语义重连，缺省浏览器观察器仍可响应滚动', () => {
+  const scroller = new FakeElement();
+  const elements = new Map<string, FakeElement>();
+  installWebGlobals(elements);
+  Reflect.deleteProperty(globalThis, 'ResizeObserver');
+  Reflect.deleteProperty(globalThis, 'MutationObserver');
+  Reflect.deleteProperty(globalThis, 'requestAnimationFrame');
+  const listRef = createRef<WebPrependAnchorListHandle>();
+  const scrollToOffset = jest.fn();
+  listRef.current = { getScrollableNode: () => scroller, scrollToOffset };
+  const { result, rerender } = renderHook(
+    ({ keys }: { keys: readonly string[] }) =>
+      useWebPrependAnchor({ listRef, keys, itemsIdentity: keys }),
+    { initialProps: { keys: ['a', 'b'] } }
+  );
+  const row = createRow(result.current.getRowNativeID('a'), 120);
+  scroller.rows = [row];
+  elements.set(row.id, row);
+  act(() => scroller.dispatch('scroll'));
+  rerender({ keys: ['a', 'b'] });
+  expect(result.current.preservingPrependRef.current).toBe(false);
+  rerender({ keys: ['b', 'a'] });
+  expect(result.current.preservingPrependRef.current).toBe(false);
+  expect(scrollToOffset).not.toHaveBeenCalled();
+  listRef.current = null;
+  rerender({ keys: ['b', 'a'] });
+  expect(
+    [...scroller.listeners.values()].every((listeners) => listeners.size === 0)
+  ).toBe(true);
+});
+
+test('无滚动节点、非法节点与原生平台均不注册Web监听', () => {
+  installWebGlobals(new Map());
+  const listRef = createRef<WebPrependAnchorListHandle>();
+  const { result, rerender } = renderHook(() =>
+    useWebPrependAnchor({ listRef, keys: [], itemsIdentity: null })
+  );
+  act(() => {
+    result.current.cancelPrependPreservation();
+    flushFrames();
+  });
+  listRef.current = {
+    getScrollableNode: () => ({ scrollTop: 0 }),
+    scrollToOffset: jest.fn(),
+  };
+  rerender(undefined);
+  jest.replaceProperty(Platform, 'OS', 'ios');
+  rerender(undefined);
+  expect(FakeObserver.instances).toHaveLength(0);
+});
+
+test('节点替换取消旧帧，卸载后的迟到帧和交互不滚动新节点', () => {
+  const first = new FakeElement();
+  const second = new FakeElement();
+  installWebGlobals(new Map());
+  const listRef = createRef<WebPrependAnchorListHandle>();
+  const scrollToOffset = jest.fn();
+  listRef.current = { getScrollableNode: () => first, scrollToOffset };
+  const { rerender, unmount } = renderHook(() =>
+    useWebPrependAnchor({ listRef, keys: [], itemsIdentity: null })
+  );
+  const lateFrame = [...frames.values()][0]!;
+  const lateInteraction = [...first.listeners.get('wheel')!][0]!;
+  listRef.current = { getScrollableNode: () => second, scrollToOffset };
+  rerender(undefined);
+  expect(
+    [...first.listeners.values()].every((listeners) => listeners.size === 0)
+  ).toBe(true);
+  Reflect.deleteProperty(globalThis, 'cancelAnimationFrame');
+  unmount();
+  act(() => {
+    lateFrame();
+    lateInteraction();
+    flushFrames();
+  });
+  expect(scrollToOffset).not.toHaveBeenCalled();
+  expect(
+    [...second.listeners.values()].every((listeners) => listeners.size === 0)
+  ).toBe(true);
+});
+
+test('没有可见旧行或锚点移出容器且高度不变时不补偿', () => {
+  const scroller = new FakeElement();
+  const elements = new Map<string, FakeElement>();
+  installWebGlobals(elements);
+  Object.defineProperty(scroller, 'getInnerViewNode', { value: undefined });
+  const listRef = createRef<WebPrependAnchorListHandle>();
+  const scrollToOffset = jest.fn();
+  listRef.current = { getScrollableNode: () => scroller, scrollToOffset };
+  const { result, rerender } = renderHook(
+    ({ keys }: { keys: string[] }) =>
+      useWebPrependAnchor({ listRef, keys, itemsIdentity: keys }),
+    { initialProps: { keys: ['a'] } }
+  );
+  const offscreen = createRow(result.current.getRowNativeID('a'), 600);
+  scroller.rows = [offscreen];
+  elements.set(offscreen.id, offscreen);
+  act(() => flushFrames());
+  rerender({ keys: ['before', 'a'] });
+  expect(result.current.preservingPrependRef.current).toBe(false);
+  offscreen.rect = { top: 120, bottom: 160 };
+  act(() => {
+    scroller.dispatch('scroll');
+    flushFrames();
+  });
+  rerender({ keys: ['next', 'before', 'a'] });
+  scroller.rows = [];
+  act(() => flushFrames());
+  expect(scrollToOffset).not.toHaveBeenCalled();
+  Reflect.deleteProperty(globalThis, 'document');
+  act(() => {
+    scroller.dispatch('scroll');
+    flushFrames();
+  });
+  expect(scrollToOffset).not.toHaveBeenCalled();
+});
+
+test('内容容器可没有子节点，非元素子项和已移走的观察目标被忽略', () => {
+  const scroller = new FakeElement();
+  const content = new FakeElement();
+  scroller.innerView = content;
+  installWebGlobals(new Map());
+  Object.defineProperty(content, 'children', {
+    value: undefined,
+    writable: true,
+  });
+  const listRef = createRef<WebPrependAnchorListHandle>();
+  listRef.current = {
+    getScrollableNode: () => scroller,
+    scrollToOffset: jest.fn(),
+  };
+  renderHook(() =>
+    useWebPrependAnchor({ listRef, keys: ['a'], itemsIdentity: null })
+  );
+  act(() => flushFrames());
+  content.children = [{} as FakeElement];
+  act(() => {
+    scroller.dispatch('scroll');
+    flushFrames();
+  });
+  const observer = FakeObserver.instances.find(
+    (value) => value instanceof FakeResizeObserver
+  )!;
+  Object.defineProperty(observer, 'unobserve', { value: undefined });
+  scroller.innerView = undefined;
+  act(() => {
+    scroller.dispatch('scroll');
+    flushFrames();
+  });
+  expect(observer.targets.has(scroller)).toBe(true);
+});
+
+test('锚点位置没有变化或仅有亚像素差异时不重复滚动', () => {
+  const scroller = new FakeElement();
+  const elements = new Map<string, FakeElement>();
+  installWebGlobals(elements);
+  const listRef = createRef<WebPrependAnchorListHandle>();
+  const scrollToOffset = jest.fn();
+  listRef.current = { getScrollableNode: () => scroller, scrollToOffset };
+  const { result, rerender } = renderHook(
+    ({ keys }: { keys: string[] }) =>
+      useWebPrependAnchor({ listRef, keys, itemsIdentity: keys }),
+    { initialProps: { keys: ['a'] } }
+  );
+  const row = createRow(result.current.getRowNativeID('a'), 120);
+  scroller.rows = [row];
+  elements.set(row.id, row);
+  act(flushFrames);
+  rerender({ keys: ['new', 'a'] });
+  act(flushFrames);
+  expect(scrollToOffset).not.toHaveBeenCalled();
+  row.rect = { top: 120.25, bottom: 160.25 };
+  act(() => {
+    resize(row);
+    flushFrames();
+  });
+  expect(scrollToOffset).not.toHaveBeenCalled();
+  expect(result.current.preservingPrependRef.current).toBe(true);
+});

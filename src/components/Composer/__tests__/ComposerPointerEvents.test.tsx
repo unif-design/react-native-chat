@@ -271,3 +271,24 @@ test('真实 RNW 键盘路径保留 Tab 默认行为，并让 Enter 打开更多
     else Reflect.deleteProperty(globalThis, 'document');
   }
 });
+
+test('触控笔的离开事件不取消当前鼠标按压反馈', () => {
+  jest.replaceProperty(Platform, 'OS', 'web');
+  render(
+    <ComposerIconAction
+      icon={PlusOutlined}
+      label="更多操作"
+      onPress={jest.fn()}
+    />,
+    { wrapper: ThemeProvider }
+  );
+  const action = screen.getByRole('button', { name: '更多操作' });
+  fireEvent(action, 'pointerDown', {
+    nativeEvent: { pointerType: 'mouse', button: 0 },
+    preventDefault: jest.fn(),
+  });
+  fireEvent(action, 'pointerLeave', { nativeEvent: { pointerType: 'pen' } });
+  expect(iconBackground()).toBeDefined();
+  fireEvent(action, 'pointerUp', { nativeEvent: { pointerType: 'mouse' } });
+  expect(iconBackground()).toBeUndefined();
+});

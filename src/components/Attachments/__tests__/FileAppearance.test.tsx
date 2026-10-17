@@ -63,3 +63,16 @@ describe('typed attachments', () => {
     expect(screen.queryByText('文件')).toBeNull();
   });
 });
+
+test.each([
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+])('Excel MIME %s 优先于矛盾扩展名', (mimeType) => {
+  expect(
+    resolveFileAppearance({ name: 'wrong.pdf', mimeType }, lightColors)
+  ).toEqual({
+    Icon: FileExcelOutlined,
+    color: lightColors.success,
+    label: 'Excel 表格',
+  });
+});

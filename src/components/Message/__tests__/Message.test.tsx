@@ -233,3 +233,24 @@ test('Web 合成事件从可交互子节点冒泡时不交付消息点击', () =
   });
   expect(outer).toHaveBeenCalledTimes(1);
 });
+
+test('只提供长按时交付正文长按，失败全宽消息仍显示消费者名称', () => {
+  const onLongPress = jest.fn();
+  render(
+    <Message
+      text="保留正文"
+      name="客服"
+      fullWidth
+      status="failed"
+      onLongPress={onLongPress}
+      failureAction={{ id: 'retry', label: '重试', onPress: jest.fn() }}
+    />,
+    { wrapper: ThemeProvider }
+  );
+  expect(screen.getByText('客服')).toBeOnTheScreen();
+  fireEvent(screen.getByText('保留正文'), 'longPress', {
+    target: 1,
+    currentTarget: 1,
+  });
+  expect(onLongPress).toHaveBeenCalledTimes(1);
+});

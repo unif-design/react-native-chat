@@ -307,3 +307,21 @@ test('Web 滚轮离开末尾后不被后续内容增长拉回', () => {
   );
   expect(scrollToEnd).not.toHaveBeenCalled();
 });
+
+test('空状态与页脚通过真实列表插槽呈现，页脚布局参与滚动尺寸', () => {
+  render(
+    <MessageList
+      {...props}
+      items={[]}
+      empty={<Text>暂无消息</Text>}
+      footer={<Text>消息结束</Text>}
+    />,
+    { wrapper: ThemeProvider }
+  );
+  expect(screen.getByText('暂无消息')).toBeOnTheScreen();
+  expect(screen.getByText('消息结束')).toBeOnTheScreen();
+  fireEvent(screen.getByText('消息结束').parent!, 'layout', {
+    nativeEvent: { layout: { x: 0, y: 0, width: 320, height: 30 } },
+  });
+  expect(screen.getByTestId('messages-list').props.data).toEqual([]);
+});
