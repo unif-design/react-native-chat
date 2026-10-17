@@ -153,9 +153,10 @@ export function useWebPrependAnchor({
   );
 
   const correctPrepend = useCallback(
-    (connection: WebPrependAnchorConnection) => {
-      const preservation = preservationRef.current;
-      if (!preservation) return;
+    (
+      connection: WebPrependAnchorConnection,
+      preservation: WebAnchorSnapshot
+    ) => {
       const anchor = findRow(connection.scroller, preservation.id);
       if (anchor) {
         const viewport = connection.scroller.getBoundingClientRect();
@@ -189,7 +190,8 @@ export function useWebPrependAnchor({
     const connection = connectionRef.current;
     if (!connection) return;
     refreshResizeTargets(connection);
-    if (preservingPrependRef.current) correctPrepend(connection);
+    const preservation = preservationRef.current;
+    if (preservation) correctPrepend(connection, preservation);
     else captureAnchor(connection);
   }, [captureAnchor, correctPrepend, refreshResizeTargets]);
 

@@ -1,4 +1,9 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  userEvent,
+} from '@testing-library/react-native';
 import { expect, jest, test } from '@jest/globals';
 import { ThemeProvider } from '@unif/react-native-design';
 import { Sources } from '..';
@@ -61,4 +66,23 @@ test('没有回调时静态显示', () => {
     <Sources items={[{ id: 'static', label: '1', title: '资料' }]} />
   );
   expect(screen.queryByRole('button')).toBeNull();
+});
+
+test('来源描述与缺省标题的可访问名称，按压态不改变原项事件', async () => {
+  const item = { id: 'details', label: '3', description: '原始来源描述' };
+  const onPress = jest.fn();
+  const view = renderSources(
+    <Sources title="引用" items={[item]} onPress={onPress} />
+  );
+  const row = screen.getByRole('button', { name: '3' });
+  expect(screen.getByText('原始来源描述')).toBeOnTheScreen();
+  await userEvent.press(row);
+  expect(onPress).toHaveBeenCalledWith(item);
+  view.rerender(
+    <ThemeProvider>
+      <Sources items={[{ ...item, disabled: true }]} />
+    </ThemeProvider>
+  );
+  expect(screen.queryByRole('button')).toBeNull();
+  expect(screen.getByText('原始来源描述')).toBeOnTheScreen();
 });

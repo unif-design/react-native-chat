@@ -272,8 +272,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
                       setMenuOpen(false);
                       if (primaryAction.kind === 'send')
                         primaryAction.onPress(value);
-                      else if (primaryAction.kind === 'stop')
-                        primaryAction.onPress();
+                      else primaryAction.onPress();
                     }}
                   />
                 ) : null}

@@ -11,7 +11,7 @@
 ## 工程接线
 
 - create-react-native-library 0.63.1，library/js 模板；库源码 TS/TSX，Bob 生成 ESM 和声明。Community CLI 原生 example 与 Docusaurus Web 文档站分别验证原生和浏览器消费。
-- 库名 @unif/react-native-chat，示例工作区 @unif/react-native-chat-example；React 19.2.3、RN 0.86.3、Design 1.4.0、Yarn 4.11.0。
+- 库名 @unif/react-native-chat，示例工作区 @unif/react-native-chat-example；React 19.3.0、RN 0.88.0、Design 1.6.2、Icons 0.4.1、Yarn 4.11.0。
 - Design 从包根消费，Thumbnail 尺寸对象/fallback、Textarea（含 plain 表面）/TextFieldHandle、CircularProgress（formatLabel 仅改变视觉文字，读屏保留百分比）、ActionMenuContent（含 popover 展示）、ShimmerText 按 1.4.0 实际接口使用。Composer 的菜单开关与定位留在 Chat，菜单卡和菜单行由 Design 提供。处理中的文字扫光复用 ShimmerText，状态、文案和图标归 Chat。详细接线见[组合验证](../../unif-platform-architecture/libraries/react-native-chat/composition.md#6-design-依赖与接入验证)。
 - Composer card、图片普通移除圆圈和中央状态／重试圆层复用 GlassLayer，plain 继续由外层提供表面；返回末尾操作复用 IconButton 的 glass 变体。交互 Suggestions、附件继续操作和 Confirmation 取消分别消费 Chip／secondary Button 的共享默认玻璃表面。材质、减少透明度和平台降级由 Design 处理，Chat 保留输入层级、浮菜单定位、附件独立触达区及滚动行为。失败附件仍使用错误色，消息正文与内容内轻量操作保留原层次。
 - 本版本的 Design peer 为 `^1.4.0`；根库、example 与 Website 使用 `@callstack/liquid-glass` 0.8.2 满足 Design 的玻璃材质依赖。Jest 继续复用 Design preset，Web 通过 Design 的 Web 入口消费。
@@ -21,7 +21,7 @@
 
 现有上游 peer 声明有两处差异：RN eslint-config 的 ft-flow 2.x 要求 ESLint 8，脚手架采用 ESLint 9；Design 要求 RNGH 3，Carousel 5.0.0 仍声明 RNGH 小于 3。保留真实声明，不通过 resolutions 或忽略警告掩盖差异。基础输入测试不能证明 Carousel 原生/Web 手势兼容，后续验证实际消费链路。
 
-当前依赖的 Web 差异：Design Button 的 disabled 状态经 RNGH 3.1.0／RN Web 0.21.2 未输出 `aria-disabled`，点击禁用仍生效；react-native-svg 15.15.5 将圆环 origin 转为 `transform-origin`，触发 React 19 的 DOM 属性开发警告。这两项属于基础依赖的 Web 接线，不能用 Chat 的 Jest 状态断言代替浏览器无障碍证据。
+历史 Web 验证（RNGH 3.1.0／RN Web 0.21.2、react-native-svg 15.15.5）发现：Design Button 的 disabled 状态未输出 `aria-disabled`，点击禁用仍生效；SVG 将圆环 origin 转为 `transform-origin`，触发 React 19 的 DOM 属性开发警告。新基线的构建与资产注册验证不代表这两项浏览器行为已经复验；不能用 Chat 的 Jest 状态断言代替浏览器无障碍证据。
 
 ## 组件与文件归属
 
@@ -76,3 +76,17 @@ LLM 索引、链接与产物提交采用组织共用生成器；本库保留由�
 真实 MessageList + RN FlatList 的 Jest renderer 中，1000 条数据保持同一引用、keyExtractor 和 renderItem 稳定时，一次父级重渲染从 1023 次取 key / 10 次行渲染降为 0 / 0；仅更新屏外一项时，可见行渲染从 10 次降为 0。只改变一条可见消息时只重渲染该行。extraData、renderer 变化、分隔符前项、前插和重排索引均有行为保护。这些是调用次数，不代表设备帧耗时。
 
 IAB 真实浏览器另用 React 19.2.3、RN Web 0.21.2 和当前 MessageList／Web hook 完成两种前插验收。普通场景从 header 100 增至 180，前插 100 后锚点仍为 180、scrollTop 为 100、内容高为 1408；抵消场景在 header 增高时内容高保持 1228，前插后锚点仍为 180、scrollTop 为 100、内容高为 1328。两者锚点位移均为 0。样例仅对未启用的 Design 按钮和 spacing 导入提供边界替身，未替换 FlatList、布局算法或浏览器观察器。以上证明这两个 Web 布局场景，手机长列表性能、原生动态高度与键盘仍需设备验收。
+
+## RN 0.88 开发基线与验证范围
+
+根库、Community CLI example 和 Website 固定 React 19.3.0／RN 0.88.0；Reanimated 4.7.1、Worklets 0.13.0 与正式 Design 1.6.2 配套。CLI 20.2.0 及原生 example 按官方 `@react-native-community/template@0.88.0` 同步：iOS 采用 SceneDelegate，Android 采用 SDK 37、Kotlin 2.2.0、Gradle 9.4.1 及模板 AGP 9 兼容开关。库没有自有原生模块；example 原生文件是模板宿主接线，其编译与设备运行单独验证。
+
+SVG 15.16.0 在原生端使用 RN 0.87+ 资源解析接口；Website 按上游 Webpack 说明显式安装 `@react-native/assets-registry@0.88.0`，配合 RN Web 0.21.4 [正式公开的 AssetRegistry](https://github.com/necolas/react-native-web/releases/tag/0.21.4)；该兼容包的混合模块格式由 Babel 转换，共享 Web 消费者的资产注册表。
+
+Jest 统计全部 `src/**/*.{ts,tsx}` 与 `example/src/**/*.{ts,tsx}`，仅排除测试文件，语句、分支、函数、行门禁均为 100%。测试保留真实组件、Markdown 解析、状态和列表锚点逻辑，只替换原生布局、图片尺寸与浏览器观察器等外部边界。文档工具测试、Website 构建、Metro bundle、原生编译、远端 CI 和真机验收分别记录，不能用运行时覆盖率代替它们。
+
+### 原生宿主与构建工具
+
+iOS example 使用 Ruby 3.3+，`example/Gemfile.lock` 固定 CocoaPods 1.17.0、ActiveSupport 7.2.4 与 xcodeproj 1.28.1；在 `example/` 执行 `bundle install`，再到 `example/ios/` 执行 `bundle exec pod install --deployment`。提交的 Podfile.lock 与实际 RN 0.88 构建一致。该组合已通过真实 iOS 设备 SDK 的无签名 Debug 编译；Android example 的 `:app:assembleDebug -PreactNativeArchitectures=arm64-v8a` 已通过。设备安装、交互和远端 CI 另行验收。
+
+`yarn test:native` 直接插桩 example 的两个 Kotlin 文件以及 AppDelegate／SceneDelegate 原始 Swift 文件，分别执行 Swift Debug 和 Release。测试替换外部 RN／UIKit 接口，断言宿主启动、依赖与窗口接线、场景筛选、链接转发及资源查找；Android 断言宿主延迟创建和 Fabric 开关。脚本校验完整源码清单与哈希，输出各工具原始报告；编译器没有产生的分支计数标为 N/A。JaCoCo 0.8.13 从官方 Maven 获取并核对固定 SHA256，可通过 `JACOCO_HOME` 复用同版本已校验缓存。宿主行为覆盖与真实 SDK 编译分别执行。

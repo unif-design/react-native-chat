@@ -1,0 +1,28 @@
+import __PACKAGE__.MainApplication
+import __PACKAGE__.MainActivity
+import com.facebook.react.PackageList
+import com.facebook.react.ReactNativeApplicationEntryPoint
+import com.facebook.react.defaults.DefaultReactHost
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
+import com.facebook.react.defaults.DefaultReactActivityDelegate
+fun main() {
+  val app = MainApplication()
+  check(DefaultReactHost.hosts.isEmpty())
+  app.onCreate()
+  check(app.superCreateCalls == 1)
+  check(ReactNativeApplicationEntryPoint.loaded == listOf(app))
+  val first = app.reactHost
+  check(first === app.reactHost)
+  check(DefaultReactHost.hosts == listOf(first))
+  check(first.context === app.applicationContext)
+  check(first.packages == listOf("autolinked-package"))
+  check(PackageList.createdFor == listOf(app))
+  val activity = MainActivity()
+  check(activity.componentNameForTest() == "__MODULE__")
+  for (fabric in listOf(false, true)) {
+    DefaultNewArchitectureEntryPoint.fabricEnabled = fabric
+    val delegate = activity.delegateForTest() as DefaultReactActivityDelegate
+    check(delegate.activity === activity && delegate.module == "__MODULE__" && delegate.fabric == fabric)
+  }
+  println("Original MainApplication and MainActivity contracts passed")
+}

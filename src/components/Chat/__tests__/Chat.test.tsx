@@ -24,3 +24,16 @@ test('Chat 内容按顺序布局，底部留白只属于根容器', () => {
   ).toEqual(['顶部', '消息', '输入', '底部']);
   expect(screen.getByTestId('chat')).toHaveStyle({ paddingBottom: 20 });
 });
+
+test.each([Number.NaN, Infinity, -20])(
+  '非法或负底部留白 %s 不向布局传播',
+  (bottomInset) => {
+    render(
+      <Chat testID="chat" bottomInset={bottomInset}>
+        {null}
+      </Chat>,
+      { wrapper: ThemeProvider }
+    );
+    expect(screen.getByTestId('chat')).toHaveStyle({ paddingBottom: 0 });
+  }
+);

@@ -469,3 +469,82 @@ test('附件忙碌只禁用对应菜单项，加号仍可查看与收起菜单',
   expect(screen.getByRole('button', { name: '更多操作' })).toBeDisabled();
   expect(screen.queryByTestId('composer-menu')).toBeNull();
 });
+
+test('命令式失焦、无高度订阅与菜单自行关闭均不修改草稿', () => {
+  const ref = createRef<ComposerHandle>();
+  const onChangeText = jest.fn();
+  render(
+    <Composer
+      ref={ref}
+      testID="composer"
+      value="草稿"
+      onChangeText={onChangeText}
+      primaryAction={{ kind: 'send', onPress: jest.fn() }}
+      actions={[{ id: 'pick', label: '选择', onPress: jest.fn() }]}
+    />,
+    { wrapper: ThemeProvider }
+  );
+  const blur = jest.spyOn(
+    screen.UNSAFE_getByType(Textarea).props.ref.current,
+    'blur'
+  );
+  ref.current?.blur();
+  expect(blur).toHaveBeenCalledTimes(1);
+  fireEvent(screen.getByTestId('composer'), 'layout', {
+    nativeEvent: { layout: { width: 320, height: 80, x: 0, y: 0 } },
+  });
+  fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
+  fireEvent(screen.UNSAFE_getByType(ActionMenuContent), 'close');
+  expect(screen.queryByTestId('composer-menu')).toBeNull();
+  expect(onChangeText).not.toHaveBeenCalled();
+});
+
+test('菜单与主动作的禁用状态拒绝已排队的回调', () => {
+  const onPress = jest.fn();
+  const props: ComposerProps = {
+    value: '草稿',
+    onChangeText: jest.fn(),
+    primaryAction: { kind: 'send', onPress },
+    actions: [
+      { id: 'disabled', label: '禁用', disabled: true, onPress },
+      { id: 'loading', label: '加载', loading: true, onPress },
+    ],
+  };
+  const view = renderComposer(props);
+  fireEvent.press(screen.getByRole('button', { name: '更多操作' }));
+  const menu = screen.UNSAFE_getByType(ActionMenuContent);
+  menu.props.actions.forEach((action: { onPress(): void }) => action.onPress());
+  expect(onPress).not.toHaveBeenCalled();
+  view.rerender(<Composer {...props} primaryAction={{ kind: 'busy' }} />);
+  const primary = screen
+    .UNSAFE_getAllByType(ComposerIconAction)
+    .find((node) => node.props.busy);
+  primary?.props.onPress();
+  expect(onPress).not.toHaveBeenCalled();
+});
+
+test('显式高度与主动作名称保持消费者提供的值，禁用时ref不聚焦', () => {
+  const ref = createRef<ComposerHandle>();
+  render(
+    <Composer
+      ref={ref}
+      disabled
+      value="文字"
+      onChangeText={jest.fn()}
+      surface="plain"
+      header={<Text>自定义头部</Text>}
+      minInputHeight={60}
+      maxInputHeight={120}
+      primaryAction={{ kind: 'send', label: '提交草稿', onPress: jest.fn() }}
+    />,
+    { wrapper: ThemeProvider }
+  );
+  const input = screen.UNSAFE_getByType(Textarea);
+  const focus = jest.spyOn(input.props.ref.current, 'focus');
+  ref.current?.focus();
+  expect(focus).not.toHaveBeenCalled();
+  expect(input.props.minHeight).toBe(60);
+  expect(input.props.maxHeight).toBe(120);
+  expect(screen.getByRole('button', { name: '提交草稿' })).toBeDisabled();
+  expect(screen.getByText('自定义头部')).toBeOnTheScreen();
+});

@@ -1,0 +1,58 @@
+import UIKit
+import React
+import React_RCTAppDelegate
+import ReactAppDependencyProvider
+
+private func require(_ value: @autoclosure () -> Bool, _ message: String) {
+  guard value() else { fatalError(message) }
+}
+
+@_cdecl("native_host_tests")
+public func runTests() {
+  let app = AppDelegate()
+  require(app.application(UIApplication()), "default launch options are accepted")
+  require(app.application(UIApplication(), didFinishLaunchingWithOptions: [UIApplication.LaunchOptionsKey(): "value"]), "launch is accepted")
+  let delegate = SceneDelegate()
+  require(delegate.window == nil && delegate.reactNativeFactory == nil, "initial scene owns no host")
+  let session = UISceneSession()
+  let options = UIScene.ConnectionOptions()
+  delegate.scene(UIScene(), willConnectTo: session, options: options)
+  require(delegate.window == nil && delegate.reactNativeFactory == nil && Boundary.events.isEmpty, "non-window scenes do not start React")
+  let scene = UIWindowScene()
+  delegate.scene(scene, willConnectTo: session, options: options)
+  require(delegate.dependencyProvider is RCTAppDependencyProvider, "autolinked dependencies are installed")
+  require(delegate.window?.windowScene === scene, "window belongs to the supplied scene")
+  require(delegate.reactNativeFactory?.delegate === delegate, "React retains the scene factory delegate")
+  require(Boundary.events.map(\.0) == ["start"], "React starts exactly once")
+  require(Boundary.events[0].1["module"] as? String == "__MODULE__", "native and JavaScript entry module agree")
+  require(Boundary.events[0].1["window"] as? UIWindow === delegate.window, "React uses the created window")
+  #if DEBUG
+  let menu = delegate.reactNativeFactory!.devMenuConfiguration!
+  require(menu.devMenuEnabled && menu.shakeGestureEnabled && menu.keyboardShortcutsEnabled, "debug menu has all template controls")
+  for bundle in [URL(string: "http://localhost:8082/index.bundle"), nil] {
+    Boundary.bundle = bundle
+    Boundary.events = []
+    require(delegate.bundleURL() == bundle, "Metro result is propagated")
+    require(Boundary.events.count == 1 && Boundary.events[0].1["root"] as? String == "index", "Metro receives the example entry")
+  }
+  #else
+  require(delegate.reactNativeFactory!.devMenuConfiguration == nil, "release does not enable development controls")
+  let bundle = delegate.bundleURL()
+  if ProcessInfo.processInfo.environment["EXPECT_BUNDLE"] == "present" {
+    require(bundle?.lastPathComponent == "main.jsbundle", "release resolves the packaged bundle")
+  } else {
+    require(bundle == nil, "missing release bundle is propagated")
+  }
+  #endif
+  Boundary.events = []
+  let url = UIOpenURLContext(url: URL(string: "example://native/callback")!)
+  let contexts: Set<UIOpenURLContext> = [url]
+  let activity = NSUserActivity(activityType: "NSUserActivityTypeBrowsingWeb")
+  delegate.scene(scene, openURLContexts: contexts)
+  delegate.scene(scene, continue: activity)
+  require(Boundary.events.map(\.0) == ["link.url", "link.activity"], "both scene link callbacks reach React")
+  require(Boundary.events[0].1["scene"] as? UIScene === scene && Boundary.events[1].1["scene"] as? UIScene === scene, "scene identity is preserved")
+  require(Boundary.events[0].1["contexts"] as? Set<UIOpenURLContext> == contexts, "URL contexts are forwarded unchanged")
+  require(Boundary.events[1].1["activity"] as? NSUserActivity === activity, "universal-link activity identity is preserved")
+  print("Original AppDelegate and SceneDelegate contracts passed")
+}

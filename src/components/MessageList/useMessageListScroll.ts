@@ -81,7 +81,6 @@ export function useMessageListScroll<T>({
   const layoutRevision = useRef(0);
   const footerHeight = useRef(0);
   if (!hasFooter) footerHeight.current = 0;
-  const layoutChanged = useRef<() => void>(() => {});
   const [anchorMinimumHeight, setAnchorMinimumHeight] = useState<number>();
   const minimumRef = useRef<number | undefined>(undefined);
   const threshold = Number.isFinite(endThreshold)
@@ -168,6 +167,8 @@ export function useMessageListScroll<T>({
     measurements.current.offset = offset;
     publishPosition();
   }, [listRef, publishPosition, ready]);
+
+  const layoutChanged = useRef(applyAnchor);
 
   const onCellLayout = useCallback(
     (key: string, index: number, cell: LayoutRectangle) => {

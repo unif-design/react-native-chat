@@ -23,5 +23,13 @@ module.exports = {
     '<rootDir>/lib/',
     '<rootDir>/website/',
   ],
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    'example/src/**/*.{ts,tsx}',
+    '!**/__tests__/**',
+  ],
+  coverageThreshold: {
+    global: { statements: 100, branches: 100, functions: 100, lines: 100 },
+  },
   watchman: false,
 };
