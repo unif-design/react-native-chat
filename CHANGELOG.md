@@ -1,5 +1,7 @@
 # Changelog
 
+## [4.3.3](https://github.com/unif-design/react-native-chat/compare/v4.3.2...v4.3.3) (2026-10-17)
+
 ## [4.3.2](https://github.com/unif-design/react-native-chat/compare/v4.3.1...v4.3.2) (2026-10-16)
 
 ### Bug Fixes
