@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { r, space, type } from '@unif/react-native-design';
+import { leading, space, type } from '@unif/react-native-design';
 import type { ColorTokens } from '@unif/react-native-design';
 
 export const createStyles = (colors: ColorTokens) =>
@@ -12,6 +12,6 @@ export const createStyles = (colors: ColorTokens) =>
     text: {
       color: colors.foregroundMuted,
       fontSize: type.xs,
-      lineHeight: r(20),
+      lineHeight: leading.sm,
     },
   });

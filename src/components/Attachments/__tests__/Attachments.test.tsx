@@ -275,10 +275,12 @@ test('预览布局的重试与移除命中区域不重叠，且保留原动作',
   });
   const retry = screen.getByLabelText('重新上传');
   const remove = screen.getByLabelText('移除清单');
-  expect(screen.UNSAFE_getByType(GlassLayer).props.colorScheme).toBe('dark');
+  const retryLayers = screen
+    .UNSAFE_getAllByType(GlassLayer)
+    .filter((layer) => layer.props.colorScheme === 'dark');
+  expect(retryLayers).toHaveLength(1);
   expect(
-    StyleSheet.flatten(screen.UNSAFE_getByType(GlassLayer).parent!.props.style)
-      .overflow
+    StyleSheet.flatten(retryLayers[0]!.parent!.props.style).overflow
   ).not.toBe('hidden');
   expect(
     remove

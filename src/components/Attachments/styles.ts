@@ -51,8 +51,8 @@ export const createStyles = (colors: ColorTokens) =>
       borderWidth: 1,
       borderColor: colors.outline,
       borderRadius: radius.md,
-      backgroundColor: colors.surface,
     },
+    itemMaterial: { borderRadius: radius.md },
     row: { width: '100%', flexDirection: 'row', alignItems: 'center' },
     rowBody: {
       flex: 1,
@@ -68,7 +68,6 @@ export const createStyles = (colors: ColorTokens) =>
       paddingHorizontal: space[3],
       borderWidth: StyleSheet.hairlineWidth,
       borderRadius: radius.md,
-      backgroundColor: colors.surfaceContainerHigh,
     },
     content: { minWidth: 0, flexShrink: 1 },
     rowContent: { flex: 1 },

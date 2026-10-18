@@ -54,8 +54,9 @@ export const createStyles = (colors: ColorTokens) =>
       paddingHorizontal: space[5],
       paddingVertical: space[4],
     },
+    timelineMaterial: { borderRadius: radius.lg },
+    material: { borderRadius: radius.xl },
     timelineRoot: {
-      backgroundColor: colors.surface,
       borderRadius: radius.lg,
       padding: space[5],
     },
@@ -134,7 +135,6 @@ export const createStyles = (colors: ColorTokens) =>
       borderRadius: radius.xl,
       borderWidth: 1,
       borderColor: colors.outline,
-      backgroundColor: colors.surface,
     },
     heading: {
       flexDirection: 'row',
@@ -191,7 +191,6 @@ export const createStyles = (colors: ColorTokens) =>
     details: {
       padding: space[4],
       borderRadius: radius.md,
-      backgroundColor: colors.surfaceContainer,
     },
     actions: {
       flexDirection: 'row',

@@ -223,6 +223,7 @@ export function AttachmentItem({
     );
     return (
       <View style={[styles.item, styles.row, mixed && styles.mixedRow]}>
+        <GlassLayer style={styles.itemMaterial} />
         {previewable && !retry ? (
           <Pressable
             style={[styles.rowBody, mixed && styles.mixedRowBody]}
@@ -240,6 +241,7 @@ export function AttachmentItem({
         <View style={styles.actions}>
           {previewable && retry ? (
             <IconButton
+              variant="glass"
               icon={EyeOutlined}
               size="sm"
               accessibilityLabel={`预览${name}`}
@@ -248,6 +250,7 @@ export function AttachmentItem({
           ) : null}
           {removable ? (
             <IconButton
+              variant="glass"
               icon={CloseOutlined}
               size="sm"
               accessibilityLabel={`移除${name}`}
@@ -380,6 +383,7 @@ export function AttachmentItem({
       {separatePreview ? (
         <View style={[styles.previewAction, { width: imageSize }]}>
           <IconButton
+            variant="glass"
             icon={EyeOutlined}
             size="sm"
             accessibilityLabel={`预览${name}`}

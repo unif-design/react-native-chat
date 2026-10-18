@@ -11,6 +11,7 @@ export const createStyles = (colors: ColorTokens) =>
       padding: space[4],
       borderRadius: radius.lg,
     },
+    material: { borderRadius: radius.lg },
     content: {
       flex: 1,
       gap: space[1],

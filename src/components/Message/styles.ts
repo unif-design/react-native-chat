@@ -24,8 +24,9 @@ export const createStyles = (colors: ColorTokens) =>
       paddingHorizontal: space[5],
       paddingVertical: space[4],
       borderRadius: radius['2xl'],
-      backgroundColor: colors.surface,
     },
+    material: { borderRadius: radius['2xl'] },
+    waitingMaterial: { borderTopLeftRadius: 0 },
     outgoing: { backgroundColor: colors.primary },
     outgoingText: { color: colors.onPrimary },
     outlined: {

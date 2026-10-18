@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 import {
   Button,
+  GlassLayer,
   r,
   useColors,
   useThemedStyles,
@@ -50,14 +51,12 @@ export function Feedback({
 
   const Glyph = FEEDBACK_TONE_ICONS[tone];
   return (
-    <View
-      style={[
-        styles.root,
-        { backgroundColor: toneColors.backgroundColor },
-        style,
-      ]}
-      testID={testID}
-    >
+    <View style={[styles.root, style]} testID={testID}>
+      <GlassLayer
+        style={styles.material}
+        tintColor={toneColors.backgroundColor}
+        fallbackColor={toneColors.backgroundColor}
+      />
       <Glyph size={r(18)} color={toneColors.iconColor} />
       <View style={styles.content}>
         <View accessible accessibilityLabel={accessibilityLabel}>
@@ -78,7 +77,7 @@ export function Feedback({
               loading={action.loading}
               accessibilityHint={action.accessibilityHint}
               size="sm"
-              variant="outline"
+              variant="secondary"
             />
           </View>
         ) : null}
