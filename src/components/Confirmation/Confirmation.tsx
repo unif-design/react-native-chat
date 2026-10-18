@@ -6,6 +6,7 @@ import {
 import { Text, View } from 'react-native';
 import {
   Button,
+  GlassLayer,
   Spinner,
   useColors,
   useThemedStyles,
@@ -56,6 +57,7 @@ export function Confirmation({
         : WarningOutlined;
   return (
     <View style={[styles.root, { borderColor }, style]} testID={testID}>
+      <GlassLayer style={styles.material} />
       <View style={styles.heading}>
         {status === 'processing' ? (
           <Spinner size={14} color={tint} />

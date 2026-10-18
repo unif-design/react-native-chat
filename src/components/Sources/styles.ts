@@ -1,12 +1,5 @@
 import { StyleSheet } from 'react-native';
-import {
-  fixed,
-  fw,
-  pressedOpacity,
-  radius,
-  space,
-  type,
-} from '@unif/react-native-design';
+import { fixed, fw, radius, space, type } from '@unif/react-native-design';
 import type { ColorTokens } from '@unif/react-native-design';
 
 export const createStyles = (colors: ColorTokens) =>
@@ -24,18 +17,14 @@ export const createStyles = (colors: ColorTokens) =>
     },
     item: {
       minHeight: fixed.hitTarget,
+      padding: space[3],
+      borderRadius: radius.md,
+    },
+    material: { borderRadius: radius.md },
+    itemContent: {
       flexDirection: 'row',
       alignItems: 'flex-start',
       gap: space[3],
-      padding: space[3],
-      borderRadius: radius.md,
-      backgroundColor: colors.surfaceContainer,
-    },
-    pressed: {
-      opacity: pressedOpacity,
-    },
-    disabled: {
-      opacity: 0.5,
     },
     label: {
       minWidth: space[7],

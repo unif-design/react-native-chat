@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import {
   Button,
+  GlassLayer,
   r,
   useColors,
   useThemedStyles,
@@ -95,6 +96,13 @@ export function Process(props: ProcessProps): React.JSX.Element {
       ]}
       testID={testID}
     >
+      {variant === 'card' || variant === 'timeline' ? (
+        <GlassLayer
+          style={
+            variant === 'timeline' ? styles.timelineMaterial : styles.material
+          }
+        />
+      ) : null}
       {title || (identity && !inlineIdentity) ? (
         <View style={styles.heading}>
           {!inlineIdentity ? identity : null}

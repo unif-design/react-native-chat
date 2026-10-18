@@ -2,6 +2,7 @@ import { AlertOutlined } from '@unif/react-native-icons';
 import { Pressable, Text, View } from 'react-native';
 import {
   Button,
+  GlassLayer,
   IconButton,
   useThemedStyles,
   useColors,
@@ -59,6 +60,15 @@ export function Message(props: MessageProps) {
   ];
   const content = (
     <>
+      {surface === 'outlined' ||
+      (surface === 'bubble' && placement === 'start') ? (
+        <GlassLayer
+          style={[
+            styles.material,
+            waiting && surface === 'bubble' && styles.waitingMaterial,
+          ]}
+        />
+      ) : null}
       {header}
       {props.text !== undefined ? (
         props.format === 'markdown' ? (
@@ -145,7 +155,7 @@ export function Message(props: MessageProps) {
             <IconButton
               icon={AlertOutlined}
               size="sm"
-              variant="ghost"
+              variant="glass"
               color={colors.error}
               style={styles.failureAction}
               accessibilityLabel={failedAction.label}
@@ -166,7 +176,7 @@ export function Message(props: MessageProps) {
                   key={action.id}
                   icon={action.icon}
                   size="sm"
-                  variant="ghost"
+                  variant="glass"
                   color={colors.foregroundSubtle}
                   accessibilityLabel={action.label}
                   accessibilityHint={action.accessibilityHint}

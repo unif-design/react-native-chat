@@ -1,6 +1,12 @@
 import { ChevronRightOutlined } from '@unif/react-native-icons';
 import { Pressable, Text, View } from 'react-native';
-import { r, useColors, useThemedStyles } from '@unif/react-native-design';
+import {
+  GlassLayer,
+  pressedOpacity,
+  r,
+  useColors,
+  useThemedStyles,
+} from '@unif/react-native-design';
 import { DEFAULT_SOURCES_TITLE } from './constants';
 import { createStyles } from './styles';
 import type { SourceItem, SourcesProps } from './types';
@@ -17,20 +23,27 @@ export function Sources({
 
   if (items.length === 0) return null;
 
-  const renderItem = (item: SourceItem, showChevron: boolean) => (
+  const renderItem = (
+    item: SourceItem,
+    showChevron: boolean,
+    opacity: number
+  ) => (
     <>
-      <Text style={styles.label} testID={`source-label-${item.id}`}>
-        {item.label}
-      </Text>
-      <View style={styles.content}>
-        {item.title ? <Text style={styles.title}>{item.title}</Text> : null}
-        {item.description ? (
-          <Text style={styles.description}>{item.description}</Text>
+      <GlassLayer style={styles.material} />
+      <View style={[styles.itemContent, { opacity }]}>
+        <Text style={styles.label} testID={`source-label-${item.id}`}>
+          {item.label}
+        </Text>
+        <View style={styles.content}>
+          {item.title ? <Text style={styles.title}>{item.title}</Text> : null}
+          {item.description ? (
+            <Text style={styles.description}>{item.description}</Text>
+          ) : null}
+        </View>
+        {showChevron ? (
+          <ChevronRightOutlined size={r(18)} color={colors.foregroundMuted} />
         ) : null}
       </View>
-      {showChevron ? (
-        <ChevronRightOutlined size={r(18)} color={colors.foregroundMuted} />
-      ) : null}
     </>
   );
 
@@ -42,11 +55,7 @@ export function Sources({
           onPress ? (
             <Pressable
               key={item.id}
-              style={({ pressed }) => [
-                styles.item,
-                pressed && styles.pressed,
-                item.disabled && styles.disabled,
-              ]}
+              style={styles.item}
               onPress={item.disabled ? undefined : () => onPress(item)}
               disabled={item.disabled}
               accessibilityRole="button"
@@ -56,15 +65,21 @@ export function Sources({
               accessibilityState={{ disabled: item.disabled === true }}
               testID={`source-${item.id}`}
             >
-              {renderItem(item, true)}
+              {({ pressed }) =>
+                renderItem(
+                  item,
+                  true,
+                  item.disabled ? 0.5 : pressed ? pressedOpacity : 1
+                )
+              }
             </Pressable>
           ) : (
             <View
               key={item.id}
-              style={[styles.item, item.disabled && styles.disabled]}
+              style={styles.item}
               testID={`source-${item.id}`}
             >
-              {renderItem(item, false)}
+              {renderItem(item, false, item.disabled ? 0.5 : 1)}
             </View>
           )
         )}

@@ -14,8 +14,8 @@ export const createStyles = (colors: ColorTokens) =>
       borderWidth: 2,
       borderColor: colors.outline,
       borderRadius: radius.lg,
-      backgroundColor: colors.surface,
     },
+    material: { borderRadius: radius.lg },
     heading: {
       flexDirection: 'row',
       alignItems: 'center',

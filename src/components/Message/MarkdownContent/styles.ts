@@ -13,7 +13,7 @@ const makeMarkdownStyles = (colors: ColorTokens, outgoing: boolean) => {
     text: body,
     paragraph: { paddingVertical: 0, paddingBottom: r(6) },
     em: { color: textColor, fontStyle: 'italic' },
-    strong: { color: textColor, fontWeight: 'bold' },
+    strong: { color: textColor, fontWeight: fw.bold },
     strikethrough: { color: textColor, textDecorationLine: 'line-through' },
     link: {
       color: outgoing ? colors.onPrimary : colors.primary,
