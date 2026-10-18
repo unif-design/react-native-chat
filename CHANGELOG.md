@@ -1,5 +1,11 @@
 # Changelog
 
+# [4.4.0](https://github.com/unif-design/react-native-chat/compare/v4.3.3...v4.4.0) (2026-10-18)
+
+### Features
+
+* unify chat cards with shared glass themes ([#40](https://github.com/unif-design/react-native-chat/issues/40)) ([dbf5ffb](https://github.com/unif-design/react-native-chat/commit/dbf5ffba8175a46e9844ab574162737cbfbc9aae))
+
 ## [4.3.3](https://github.com/unif-design/react-native-chat/compare/v4.3.2...v4.3.3) (2026-10-17)
 
 ## [4.3.2](https://github.com/unif-design/react-native-chat/compare/v4.3.1...v4.3.2) (2026-10-16)
