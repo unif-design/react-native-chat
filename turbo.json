@@ -20,11 +20,10 @@
         "RCT_REMOVE_LEGACY_ARCH",
         "RCT_USE_RN_DEP",
         "RCT_USE_PREBUILT_RNCORE",
-        "XCODE_VERSION",
-        "USE_CCACHE"
+        "XCODE_VERSION"
       ],
-      "passThroughEnv": ["CCACHE_*"],
       "inputs": [
+        "$TURBO_ROOT$/.github/workflows/ci.yml",
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/src/**",
         "$TURBO_ROOT$/package.json",
