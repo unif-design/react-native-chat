@@ -17,7 +17,7 @@
     "@react-native/assets-registry": "0.88.0",
     "@unif/react-native-chat": "workspace:*",
     "@unif/react-native-design": "^1.7.0",
-    "@unif/react-native-icons": "^0.4.1",
+    "@unif/react-native-icons": "^0.5.0",
     "prism-react-renderer": "^2.3.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
