@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.4.1](https://github.com/unif-design/react-native-chat/compare/v4.4.0...v4.4.1) (2026-10-19)
+
+### Bug Fixes
+
+* **deps:** support compatible Icons versions below 1.0 ([#42](https://github.com/unif-design/react-native-chat/issues/42)) ([ca09979](https://github.com/unif-design/react-native-chat/commit/ca0997987c5cf41d198be117ae6da1d50778f36d))
+
 # [4.4.0](https://github.com/unif-design/react-native-chat/compare/v4.3.3...v4.4.0) (2026-10-18)
 
 ### Features
