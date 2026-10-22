@@ -39,6 +39,8 @@ import { ProcessDemo } from '@site/src/demos/ProcessDemo';
 
 `variant="timeline"` 将已有步骤组合成竖向状态节点和连接线，标题右侧呈现该步骤的说明；不会额外生成“已完成”等成功段落。`card` 保留完整状态面板，两种形态共用同一份步骤、操作与展开状态。
 
+timeline 步骤可设置 `actionsPlacement="trailing"`，把已有 `actions` 放到标题同行、说明之后，适合停止或重新开始等简短操作。默认 `below` 保持步骤下方位置；其他形态仍在下方展示。操作沿用 `ChatAction` 的禁用、忙碌、可访问提示和点击事件，不改变步骤状态或自动执行任务。
+
 compact 运行状态的文字复用 Design ShimmerText，每 4 秒从首字到尾字扫过一次白色高光；状态图标保持静止。完成、失败、取消、待处理或开启系统减少动态效果时，文字保持静态。
 
 单项紧凑过程可传 `identityPlacement="inline"`，把已有 `identity` 内容放在状态同行左侧。`step.statusText` 可提供适合当前公开业务状态的显示文案；它不改变 `status`，也不会让组件生成新的状态或时长。多项或非 compact 仍使用独立身份标题。

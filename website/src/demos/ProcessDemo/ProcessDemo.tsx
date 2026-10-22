@@ -13,6 +13,7 @@ export function ProcessDemo() {
   ]);
   const [result, setResult] = useState('“组织回答”详情已展开');
   const styles = useThemedStyles(createStyles);
+  const [reviewStopped, setReviewStopped] = useState(false);
 
   const steps: readonly ProcessStep[] = PROCESS_STEPS.map((step) =>
     step.id === 'organize'
@@ -40,6 +41,31 @@ export function ProcessDemo() {
 
   return (
     <View style={styles.root}>
+      <Process
+        variant="timeline"
+        steps={[
+          { id: 'receive', title: '接收资料', status: 'completed' },
+          {
+            id: 'review',
+            title: '核对资料',
+            status: reviewStopped ? 'cancelled' : 'running',
+            description: '还有 3 份',
+            actionsPlacement: 'trailing',
+            actions: [
+              {
+                id: 'toggle-review',
+                label: reviewStopped ? '重新核对' : '停止核对',
+                onPress: () => {
+                  setReviewStopped(!reviewStopped);
+                  setResult(
+                    reviewStopped ? '已请求重新核对' : '已请求停止核对'
+                  );
+                },
+              },
+            ],
+          },
+        ]}
+      />
       <Process
         variant="compact"
         compactDensity="dense"

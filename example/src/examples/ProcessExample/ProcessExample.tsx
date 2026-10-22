@@ -59,7 +59,20 @@ export function ProcessExample() {
         variant="timeline"
         steps={[
           { id: 'received', title: '接收资料', status: 'completed' },
-          { id: 'review', title: '核对资料', status: 'pending' },
+          {
+            id: 'review',
+            title: '核对资料',
+            status: 'running',
+            description: '还有 3 份',
+            actionsPlacement: 'trailing',
+            actions: [
+              {
+                id: 'stop-review',
+                label: '停止核对',
+                onPress: () => setLastAction('已请求停止核对'),
+              },
+            ],
+          },
         ]}
       />
       <Process

@@ -60,6 +60,8 @@ test('展厅可切换全部真实示例、主题和字号，并记录独立组�
   press('Process');
   press('重新查询');
   expect(screen.getByText('已请求重新查询')).toBeOnTheScreen();
+  press('停止核对');
+  expect(screen.getByText('已请求停止核对')).toBeOnTheScreen();
   press('Sources');
   press('1 当前客户资料');
   expect(screen.getByText('当前来源：customer')).toBeOnTheScreen();

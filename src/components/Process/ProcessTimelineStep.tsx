@@ -21,6 +21,29 @@ export function ProcessTimelineStep({
 }: ProcessCompactStepProps & { last: boolean }) {
   const styles = useThemedStyles(createStyles);
   const colors = useColors();
+  const trailingActions = step.actionsPlacement === 'trailing';
+  const actions = step.actions?.length ? (
+    <View
+      style={[
+        styles.actions,
+        trailingActions && styles.timelineTrailingActions,
+      ]}
+    >
+      {step.actions.map((action) => (
+        <Button
+          key={action.id}
+          label={action.label}
+          leftIcon={action.icon}
+          onPress={action.onPress}
+          disabled={action.disabled}
+          loading={action.loading}
+          accessibilityHint={action.accessibilityHint}
+          size="sm"
+          variant="text"
+        />
+      ))}
+    </View>
+  ) : null;
   const status =
     step.status === 'running'
       ? 'active'
@@ -64,6 +87,7 @@ export function ProcessTimelineStep({
             <Text
               style={[
                 styles.timelineDescription,
+                trailingActions && styles.timelineDescriptionWithActions,
                 step.status === 'failed' && styles.timelineError,
               ]}
               numberOfLines={1}
@@ -71,6 +95,7 @@ export function ProcessTimelineStep({
               {step.description}
             </Text>
           ) : null}
+          {trailingActions ? actions : null}
         </View>
         {elapsed ? <Text style={styles.elapsed}>{elapsed}</Text> : null}
         {hasProcessDetails(step.details) ? (
@@ -87,23 +112,7 @@ export function ProcessTimelineStep({
             ) : null}
           </>
         ) : null}
-        {step.actions?.length ? (
-          <View style={styles.actions}>
-            {step.actions.map((action) => (
-              <Button
-                key={action.id}
-                label={action.label}
-                leftIcon={action.icon}
-                onPress={action.onPress}
-                disabled={action.disabled}
-                loading={action.loading}
-                accessibilityHint={action.accessibilityHint}
-                size="sm"
-                variant="text"
-              />
-            ))}
-          </View>
-        ) : null}
+        {!trailingActions ? actions : null}
       </View>
     </View>
   );
