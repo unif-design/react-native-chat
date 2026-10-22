@@ -1,5 +1,11 @@
 # Changelog
 
+# [4.5.0](https://github.com/unif-design/react-native-chat/compare/v4.4.1...v4.5.0) (2026-10-22)
+
+### Features
+
+* **process:** support trailing timeline actions ([#43](https://github.com/unif-design/react-native-chat/issues/43)) ([ee857cb](https://github.com/unif-design/react-native-chat/commit/ee857cbe696d0a3e4d9e114724ed4e28b08720cd))
+
 ## [4.4.1](https://github.com/unif-design/react-native-chat/compare/v4.4.0...v4.4.1) (2026-10-19)
 
 ### Bug Fixes
