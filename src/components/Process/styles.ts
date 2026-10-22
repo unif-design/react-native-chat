@@ -93,6 +93,8 @@ export const createStyles = (colors: ColorTokens) =>
       fontSize: type.xs,
       color: colors.foregroundSubtle,
     },
+    timelineDescriptionWithActions: { flexShrink: 1 },
+    timelineTrailingActions: { flexShrink: 0 },
     timelineError: { color: colors.error },
     compactRoot: { gap: space[2] },
     compactSteps: { gap: space[2] },

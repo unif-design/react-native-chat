@@ -41,7 +41,10 @@ export const auxiliaryConsumption = (
       <Text>客户甲</Text>
     </Confirmation>
     <Process steps={[processStep]} defaultExpandedIds={[]} />
-    <Process variant="timeline" steps={[processStep]} />
+    <Process
+      variant="timeline"
+      steps={[{ ...processStep, actionsPlacement: 'trailing' }]}
+    />
     <Process
       variant="compact"
       identity={<Text>助手</Text>}

@@ -22,6 +22,8 @@ export interface ProcessStep {
   elapsedMs?: number;
   details?: ReactNode;
   actions?: readonly ChatAction[];
+  /** timeline 中 trailing 将操作放在说明后；默认 below，其它形态仍置于下方。 */
+  actionsPlacement?: 'below' | 'trailing';
 }
 
 export interface ProcessBaseProps {
