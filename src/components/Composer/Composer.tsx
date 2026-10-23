@@ -93,7 +93,10 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
       primaryAction.allowEmpty ||
       value.trim().length > 0;
     const primaryDisabled =
-      disabled || primaryAction.kind === 'busy' || primaryAction.disabled;
+      disabled ||
+      voiceActive ||
+      primaryAction.kind === 'busy' ||
+      primaryAction.disabled;
     const showToolbar =
       (expanded && actions.length > 0) || Boolean(voice) || showPrimary;
     const primaryLabel = primaryAction.label?.trim()
@@ -188,6 +191,9 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
             expanded && styles.expanded,
             voiceActive && styles.hidden,
           ]}
+          pointerEvents={voiceActive ? 'none' : 'auto'}
+          aria-hidden={voiceActive}
+          accessibilityElementsHidden={voiceActive}
           importantForAccessibility={
             voiceActive ? 'no-hide-descendants' : 'auto'
           }
@@ -212,6 +218,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
               onChangeText={onChangeText}
               editable={editable}
               disabled={disabled || voiceActive}
+              tabIndex={voiceActive ? -1 : undefined}
               placeholder={placeholder}
               accessibilityLabel={inputAccessibilityLabel}
               minHeight={minHeight}
@@ -251,7 +258,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
                   <ComposerIconAction
                     icon={MicOutlined}
                     label="开始语音输入"
-                    disabled={disabled || voice.disabled}
+                    disabled={disabled || voiceActive || voice.disabled}
                     onPress={() => {
                       setMenuOpen(false);
                       voice.onStart();

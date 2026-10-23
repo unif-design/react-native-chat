@@ -1,7 +1,8 @@
 import { FileOutlined, ImageOutlined } from '@unif/react-native-icons';
 import { createRef } from 'react';
-import { StyleSheet, Text, TextInput } from 'react-native';
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import type { ReactNode } from 'react';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { describe, expect, jest, test } from '@jest/globals';
 import {
   ActionMenuContent,
@@ -548,3 +549,119 @@ test('显式高度与主动作名称保持消费者提供的值，禁用时ref�
   expect(screen.getByRole('button', { name: '提交草稿' })).toBeDisabled();
   expect(screen.getByText('自定义头部')).toBeOnTheScreen();
 });
+
+// 将真实 Composer / Textarea 的输入 props 交给 RNW，验证浏览器实际输出。
+function renderComposerWebInput() {
+  const { View: WebView, TextInput: WebTextInput } = jest.requireActual<{
+    View: typeof View;
+    TextInput: typeof TextInput;
+  }>('react-native-web');
+  const { renderToStaticMarkup } = jest.requireActual<{
+    renderToStaticMarkup(node: ReactNode): string;
+  }>('react-dom/server');
+  const regular = screen
+    .UNSAFE_getAllByType(View)
+    .find((node) => node.props.testID === 'composer-regular')!;
+  const input = screen.UNSAFE_getByType(TextInput);
+  return renderToStaticMarkup(
+    <WebView {...regular.props}>
+      <WebTextInput {...input.props} />
+    </WebView>
+  );
+}
+
+test.each(['', '原草稿'])(
+  '语音期间保留输入的宽度测量，长文写回后恢复同一可编辑输入（初值：%s）',
+  async (initialValue) => {
+    const onChangeText = jest.fn();
+    const onSend = jest.fn();
+    const voice = {
+      status: 'idle' as const,
+      onStart: jest.fn(),
+      onStop: jest.fn(),
+      onCancel: jest.fn(),
+    };
+    const props: ComposerProps = {
+      value: initialValue,
+      onChangeText,
+      primaryAction: { kind: 'send', onPress: onSend },
+      voice,
+    };
+    const view = renderComposer(props);
+    await act(async () => {
+      await Promise.resolve();
+    });
+    const input = screen.getByLabelText('消息输入框');
+    const textarea = screen.UNSAFE_getByType(Textarea);
+    const blur = jest.spyOn(textarea.props.ref.current, 'blur');
+    fireEvent(input, 'focus', { nativeEvent: {} });
+
+    view.rerender(
+      <Composer {...props} voice={{ ...voice, status: 'listening' }} />
+    );
+    const regular = screen.getByTestId('composer-regular', {
+      includeHiddenElements: true,
+    });
+    const hiddenStyle = StyleSheet.flatten(regular.props.style);
+    // display:none 会跳过整棵输入的原生测量；隐藏期间也须保留测量条件。
+    expect(hiddenStyle.display).not.toBe('none');
+    expect(hiddenStyle).toMatchObject({
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      opacity: 0,
+    });
+    expect(regular.props.pointerEvents).toBe('none');
+    expect(regular.props.accessibilityElementsHidden).toBe(true);
+    expect(regular.props.importantForAccessibility).toBe('no-hide-descendants');
+    const hiddenMarkup = renderComposerWebInput();
+    expect(hiddenMarkup.match(/<div[^>]*>/)?.[0]).toContain(
+      'aria-hidden="true"'
+    );
+    expect(hiddenMarkup.match(/<textarea[^>]*>/)?.[0]).toContain(
+      'tabindex="-1"'
+    );
+    expect(screen.queryByLabelText('消息输入框')).toBeNull();
+    expect(screen.queryByRole('button', { name: '发送' })).toBeNull();
+    if (initialValue) {
+      expect(
+        screen.getByLabelText('发送', { includeHiddenElements: true })
+      ).toBeDisabled();
+    }
+    expect(
+      screen.getByLabelText('开始语音输入', { includeHiddenElements: true })
+    ).toBeDisabled();
+    expect(input.props.editable).toBe(false);
+    expect(blur).toHaveBeenCalledTimes(1);
+
+    view.rerender(
+      <Composer {...props} voice={{ ...voice, status: 'finishing' }} />
+    );
+    const text =
+      '统一冰红茶二十箱，老坛酸菜三十箱，小明同学二十箱，红袖十箱。\n再加两箱方便面。';
+    view.rerender(<Composer {...props} value={text} />);
+    expect(screen.UNSAFE_getByType(Textarea)).toBe(textarea);
+    expect(screen.getByLabelText('消息输入框')).toBe(input);
+    expect(input.props.value).toBe(text);
+    expect(input.props.editable).toBe(true);
+    expect(StyleSheet.flatten(regular.props.style).position).not.toBe(
+      'absolute'
+    );
+    expect(regular.props.pointerEvents).toBe('auto');
+    expect(regular.props.accessibilityElementsHidden).toBe(false);
+    expect(regular.props.importantForAccessibility).toBe('auto');
+    const visibleMarkup = renderComposerWebInput();
+    expect(visibleMarkup.match(/<div[^>]*>/)?.[0]).not.toContain(
+      'aria-hidden="true"'
+    );
+    expect(visibleMarkup.match(/<textarea[^>]*>/)?.[0]).not.toContain(
+      'tabindex="-1"'
+    );
+    expect(StyleSheet.flatten(input.props.style).height).toBeUndefined();
+    expect(input.props.scrollEnabled).toBe(true);
+    expect(onChangeText).not.toHaveBeenCalled();
+    fireEvent.press(screen.getByRole('button', { name: '发送' }));
+    expect(onSend).toHaveBeenCalledWith(text);
+    blur.mockRestore();
+  }
+);
