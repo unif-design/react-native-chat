@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.5.1](https://github.com/unif-design/react-native-chat/compare/v4.5.0...v4.5.1) (2026-10-23)
+
+### Bug Fixes
+
+* **composer:** preserve text measurement during voice input ([#44](https://github.com/unif-design/react-native-chat/issues/44)) ([6142933](https://github.com/unif-design/react-native-chat/commit/614293331411d96ed16630fd0a91a0a53514c0c9))
+
 # [4.5.0](https://github.com/unif-design/react-native-chat/compare/v4.4.1...v4.5.0) (2026-10-22)
 
 ### Features
