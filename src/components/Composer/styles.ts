@@ -35,7 +35,8 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
     },
     plainCompact: { paddingVertical: 0 },
     expanded: { flexDirection: 'column', alignItems: 'stretch', gap: 0 },
-    hidden: { display: 'none' },
+    // 录音期保留文字测量，避免长文写回与恢复显示时复用旧行高。
+    hidden: { position: 'absolute', left: 0, right: 0, opacity: 0 },
     input: {
       flex: 1,
       minWidth: 0,
