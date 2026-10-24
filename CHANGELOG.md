@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.5.2](https://github.com/unif-design/react-native-chat/compare/v4.5.1...v4.5.2) (2026-10-24)
+
+### Bug Fixes
+
+* **composer:** distinguish native fallback surfaces ([#45](https://github.com/unif-design/react-native-chat/issues/45)) ([06af8d5](https://github.com/unif-design/react-native-chat/commit/06af8d5dff472d15883f2ba302fcf68c61818143))
+
 ## [4.5.1](https://github.com/unif-design/react-native-chat/compare/v4.5.0...v4.5.1) (2026-10-23)
 
 ### Bug Fixes
