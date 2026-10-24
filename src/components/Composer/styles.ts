@@ -12,6 +12,11 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
       borderColor: colors.glassBorder,
       ...shadows.card,
     },
+    cardFallback: {
+      backgroundColor: colors.surface,
+      borderColor: colors.outlineVariant,
+      ...shadows.subtle,
+    },
     // 仅材质层定义圆角，根容器保留浮菜单的溢出空间。
     glass: { borderRadius: r(20) },
     accessory: { padding: space[3] },

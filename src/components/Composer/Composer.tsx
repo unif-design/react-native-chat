@@ -5,6 +5,7 @@ import {
   SendOutlined,
   StopFilled,
 } from '@unif/react-native-icons';
+import { isLiquidGlassSupported } from '@callstack/liquid-glass';
 import {
   forwardRef,
   useEffect,
@@ -14,6 +15,7 @@ import {
 } from 'react';
 import {
   LayoutAnimation,
+  Platform,
   Pressable,
   Text,
   View,
@@ -66,6 +68,7 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
     ref
   ) {
     const styles = useThemedStyles(createStyles);
+    const nativeFallback = Platform.OS !== 'web' && !isLiquidGlassSupported;
     const { fontScale } = useTheme();
     const reducedMotion = usePrefersReducedMotion();
     const { height: windowHeight } = useWindowDimensions();
@@ -139,7 +142,12 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
     return (
       <View
         testID={testID}
-        style={[styles.root, surface === 'card' && styles.card, style]}
+        style={[
+          styles.root,
+          surface === 'card' && styles.card,
+          surface === 'card' && nativeFallback && styles.cardFallback,
+          style,
+        ]}
         onLayout={({ nativeEvent: { layout } }) => {
           if (layout.height !== lastHeight.current) {
             lastHeight.current = layout.height;

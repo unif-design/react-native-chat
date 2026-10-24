@@ -6686,6 +6686,7 @@ __metadata:
     turbo: "npm:^2.10.8"
     typescript: "npm:^6.0.3"
   peerDependencies:
+    "@callstack/liquid-glass": ">=0.8.2 <0.9.0"
     "@unif/react-native-design": ^1.7.0
     "@unif/react-native-icons": ">=0.3.0 <1.0.0"
     react: ">=19.2.3 <20.0.0"

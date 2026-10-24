@@ -1,7 +1,8 @@
 import { FileOutlined, ImageOutlined } from '@unif/react-native-icons';
 import { createRef } from 'react';
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import * as LiquidGlass from '@callstack/liquid-glass';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { describe, expect, jest, test } from '@jest/globals';
 import {
@@ -10,6 +11,10 @@ import {
   Textarea,
   ThemeProvider,
   space,
+  lightColors,
+  darkColors,
+  lightShadow,
+  darkShadow,
   type as typography,
 } from '@unif/react-native-design';
 import { Composer } from '..';
@@ -325,7 +330,12 @@ test('空白时同一行，聚焦或有文字后展开且不重新挂载 Textare
   expect(screen.UNSAFE_getByType(TextInput).instance).toBe(nativeInput);
 });
 
-test('玻璃卡片不裁切浮菜单，切为 plain 保留输入并交由外层提供表面', () => {
+test('原生玻璃卡片不裁切浮菜单，切为 plain 保留输入并交由外层提供表面', () => {
+  const support = jest.replaceProperty(
+    LiquidGlass as { isLiquidGlassSupported: boolean },
+    'isLiquidGlassSupported',
+    true
+  );
   const props: ComposerProps = {
     value: '',
     onChangeText: jest.fn(),
@@ -347,6 +357,7 @@ test('玻璃卡片不裁切浮菜单，切为 plain 保留输入并交由外层�
   expect(screen.UNSAFE_queryAllByType(GlassLayer)).toHaveLength(0);
   expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
   expect(screen.UNSAFE_getByType(Textarea).props.surface).toBe('plain');
+  support.restore();
 });
 
 test('空输入失焦后保留原加号、Textarea 实例与原生堆叠层级，原按钮仍可交付操作', () => {
@@ -663,5 +674,76 @@ test.each(['', '原草稿'])(
     fireEvent.press(screen.getByRole('button', { name: '发送' }));
     expect(onSend).toHaveBeenCalledWith(text);
     blur.mockRestore();
+  }
+);
+
+test.each([
+  ['ios', false, true],
+  ['android', false, true],
+  ['ios', true, false],
+  ['web', false, false],
+] as const)(
+  '%s 原生玻璃=%s 时卡片仅在原生降级绘制中性边界，plain 不叠加表面',
+  async (platform, supported, fallback) => {
+    const platformProperty = jest.replaceProperty(Platform, 'OS', platform);
+    const supportProperty = jest.replaceProperty(
+      LiquidGlass as { isLiquidGlassSupported: boolean },
+      'isLiquidGlassSupported',
+      supported
+    );
+    try {
+      const props: ComposerProps = {
+        value: '保留的订单原稿',
+        onChangeText: jest.fn(),
+        primaryAction: { kind: 'busy' },
+        testID: 'composer',
+      };
+      const view = render(
+        <ThemeProvider forceScheme="light">
+          <Composer {...props} />
+        </ThemeProvider>
+      );
+      const input = screen.UNSAFE_getByType(TextInput).instance;
+      for (const scheme of ['light', 'dark'] as const) {
+        view.rerender(
+          <ThemeProvider forceScheme={scheme}>
+            <Composer {...props} />
+          </ThemeProvider>
+        );
+        await act(async () => {});
+        const colors = scheme === 'light' ? lightColors : darkColors;
+        const shadow = scheme === 'light' ? lightShadow : darkShadow;
+        const card = StyleSheet.flatten(
+          screen.getByTestId('composer').props.style
+        );
+        expect(card).toMatchObject({
+          borderWidth: 0.5,
+          borderColor: fallback ? colors.outlineVariant : colors.glassBorder,
+          ...(fallback ? shadow.subtle : shadow.card),
+        });
+        expect(card.backgroundColor).toBe(
+          fallback ? colors.surface : undefined
+        );
+        expect(card.overflow).not.toBe('hidden');
+        expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
+        expect(screen.getByDisplayValue('保留的订单原稿')).toBeOnTheScreen();
+      }
+      view.rerender(
+        <ThemeProvider forceScheme="dark">
+          <Composer {...props} surface="plain" />
+        </ThemeProvider>
+      );
+      const plain = StyleSheet.flatten(
+        screen.getByTestId('composer').props.style
+      );
+      expect(plain.borderWidth).toBeUndefined();
+      expect(plain.backgroundColor).toBeUndefined();
+      expect(plain.shadowOpacity).toBeUndefined();
+      expect(screen.UNSAFE_queryAllByType(GlassLayer)).toHaveLength(0);
+      expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
+    } finally {
+      platformProperty.restore();
+      supportProperty.restore();
+    }
   }
 );
