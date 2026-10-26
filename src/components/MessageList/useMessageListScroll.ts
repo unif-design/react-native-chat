@@ -347,7 +347,7 @@ export function useMessageListScroll<T>({
       if (contentChanged) prependPending.current = false;
       const shouldFollow =
         initialized.current &&
-        followOutput === 'whenAtEnd' &&
+        (!contentChanged || followOutput === 'whenAtEnd') &&
         !userScrolling.current &&
         !prepended &&
         !preservingPrependRef.current &&
@@ -393,7 +393,8 @@ export function useMessageListScroll<T>({
         atEndRef.current &&
         !movedUp &&
         !userScrolling.current &&
-        followOutput === 'whenAtEnd' &&
+        (followOutput === 'whenAtEnd' ||
+          measurements.current.viewport !== layoutMeasurement.height) &&
         geometryChanged;
       measurements.current = {
         width: layoutMeasurement.width,
