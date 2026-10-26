@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.5.3](https://github.com/unif-design/react-native-chat/compare/v4.5.2...v4.5.3) (2026-10-26)
+
+### Bug Fixes
+
+* **message-list:** preserve bottom position when keyboard resizes viewport ([#46](https://github.com/unif-design/react-native-chat/issues/46)) ([4334a44](https://github.com/unif-design/react-native-chat/commit/4334a442700f3c3ea8fa531188253392ae278a9c))
+
 ## [4.5.2](https://github.com/unif-design/react-native-chat/compare/v4.5.1...v4.5.2) (2026-10-24)
 
 ### Bug Fixes
