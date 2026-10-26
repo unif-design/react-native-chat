@@ -29,6 +29,7 @@ export interface MessageListProps<T> {
   empty?: ReactNode;
   renderSeparator?(previous: T, next: T): ReactNode;
   initialPosition?: 'start' | 'end';
+  /** 控制内容更新跟尾；视口变化仍保持原先的末尾或阅读位置。 */
   followOutput?: 'whenAtEnd' | 'never';
   endThreshold?: number;
   showScrollToEnd?: boolean;

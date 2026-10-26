@@ -325,3 +325,91 @@ test('空状态与页脚通过真实列表插槽呈现，页脚布局参与滚�
   });
   expect(screen.getByTestId('messages-list').props.data).toEqual([]);
 });
+
+test.each(['layout-first', 'scroll-first'])(
+  'never 模式在末尾随键盘缩小视口保持底部，事件顺序 %s',
+  (order) => {
+    const scrolling = jest
+      .spyOn(FlatList.prototype, 'scrollToOffset')
+      .mockImplementation(() => {});
+    const onAtEndChange = jest.fn();
+    render(
+      <MessageList
+        {...props}
+        followOutput="never"
+        onAtEndChange={onAtEndChange}
+      />,
+      { wrapper: ThemeProvider }
+    );
+    measure();
+    scroll(600);
+    scrolling.mockClear();
+    onAtEndChange.mockClear();
+    if (order === 'scroll-first') scroll(600, 1000, 200);
+    fireEvent(screen.getByTestId('messages-list'), 'layout', {
+      nativeEvent: { layout: { width: 320, height: 200, x: 0, y: 0 } },
+    });
+    expect(scrolling).toHaveBeenLastCalledWith({
+      offset: 800,
+      animated: false,
+    });
+    expect(onAtEndChange).not.toHaveBeenCalledWith(false);
+    scroll(800, 1000, 200);
+    expect(screen.queryByRole('button', { name: '回到最新消息' })).toBeNull();
+    scrolling.mockClear();
+    fireEvent(screen.getByTestId('messages-list'), 'layout', {
+      nativeEvent: { layout: { width: 320, height: 400, x: 0, y: 0 } },
+    });
+    expect(scrolling).toHaveBeenLastCalledWith({
+      offset: 600,
+      animated: false,
+    });
+    scroll(600);
+    scrolling.mockClear();
+    fireEvent(
+      screen.getByTestId('messages-list'),
+      'contentSizeChange',
+      320,
+      1200
+    );
+    expect(scrolling).not.toHaveBeenCalled();
+    expect(onAtEndChange).toHaveBeenLastCalledWith(false);
+  }
+);
+
+test('never 模式阅读历史时，键盘缩小视口不会抢回末尾', () => {
+  const scrolling = jest
+    .spyOn(FlatList.prototype, 'scrollToOffset')
+    .mockImplementation(() => {});
+  render(<MessageList {...props} followOutput="never" />, {
+    wrapper: ThemeProvider,
+  });
+  measure();
+  scroll(100);
+  scrolling.mockClear();
+  scroll(100, 1000, 200);
+  fireEvent(screen.getByTestId('messages-list'), 'layout', {
+    nativeEvent: { layout: { width: 320, height: 200, x: 0, y: 0 } },
+  });
+  expect(scrolling).not.toHaveBeenCalled();
+  expect(
+    screen.getByRole('button', { name: '回到最新消息' })
+  ).toBeOnTheScreen();
+});
+
+test('never 模式仍在拖动时不因键盘缩小视口抢回末尾', () => {
+  const scrolling = jest
+    .spyOn(FlatList.prototype, 'scrollToOffset')
+    .mockImplementation(() => {});
+  render(<MessageList {...props} followOutput="never" />, {
+    wrapper: ThemeProvider,
+  });
+  measure();
+  scroll(600);
+  fireEvent(screen.getByTestId('messages-list'), 'scrollBeginDrag');
+  scrolling.mockClear();
+  fireEvent(screen.getByTestId('messages-list'), 'layout', {
+    nativeEvent: { layout: { width: 320, height: 200, x: 0, y: 0 } },
+  });
+  expect(scrolling).not.toHaveBeenCalled();
+});
