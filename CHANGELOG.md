@@ -1,5 +1,7 @@
 # Changelog
 
+## [4.5.6](https://github.com/unif-design/react-native-chat/compare/v4.5.5...v4.5.6) (2026-10-26)
+
 ## [4.5.5](https://github.com/unif-design/react-native-chat/compare/v4.5.4...v4.5.5) (2026-10-26)
 
 ## [4.5.4](https://github.com/unif-design/react-native-chat/compare/v4.5.3...v4.5.4) (2026-10-26)
