@@ -1,5 +1,7 @@
 # Example native host verification
 
+Run `yarn test:native` from the repository root. The runner remains in `scripts/test-native-hosts.py`; example-only assertions and boundary doubles live in `example/android/__tests__` and `example/ios/__tests__`.
+
 `yarn test:native` compiles and instruments the original two Android host Kotlin sources and the original iOS AppDelegate and SceneDelegate Swift sources. It retains the production `@main`, replacing only UIKit's application event loop. No implementation is extracted or copied into the harness.
 
 Requirements: macOS/Xcode, the example's Kotlin compiler dependencies in the Gradle cache, JDK 17+, and JaCoCo 0.8.13 agent/CLI jars. Set `JAVA_HOME` and `JACOCO_HOME` when these are not in their default locations.

@@ -17,7 +17,8 @@ import xml.etree.ElementTree as ET
 from native.coverage_tools import jacoco_tools
 
 ROOT = Path(__file__).resolve().parent.parent
-TESTS = ROOT / "scripts/native-host-tests"
+ANDROID_TESTS = ROOT / "example/android/__tests__"
+IOS_TESTS = ROOT / "example/ios/__tests__"
 OUTPUT = ROOT / "coverage/native-hosts"
 MODULE = json.loads((ROOT / "example/app.json").read_text())["name"]
 
@@ -34,12 +35,12 @@ def ios(build):
     for module in modules:
         run(*common, "-emit-library", "-emit-module", "-module-name", module,
             "-emit-module-path", build / (module + ".swiftmodule"),
-            TESTS / "ios" / (module + ".swift"), *linked,
+            IOS_TESTS / (module + ".swift"), *linked,
             "-Xlinker", "-undefined", "-Xlinker", "dynamic_lookup",
             "-o", build / ("lib" + module + ".dylib"))
         linked.append("-l" + module)
     harness = build / "NativeHostTests.swift"
-    harness.write_text((TESTS / "ios/NativeHostTests.swift.in").read_text().replace("__MODULE__", MODULE))
+    harness.write_text((IOS_TESTS / "NativeHostTests.swift.in").read_text().replace("__MODULE__", MODULE))
     sources = sorted((ROOT / "example/ios" / MODULE).glob("*.swift"))
     reports = []
     for variant, flags in [("debug", ["-D", "DEBUG"]), ("release", [])]:
@@ -103,13 +104,13 @@ def android(build):
     sources = sorted((ROOT / "example/android/app/src/main").rglob("*.kt"))
     package = re.search(r"^package ([\w.]+)", sources[0].read_text()).group(1)
     harness = build / "NativeHostTests.kt"
-    harness.write_text((TESTS / "android/NativeHostTests.kt.in").read_text().replace("__PACKAGE__", package).replace("__MODULE__", MODULE))
+    harness.write_text((ANDROID_TESTS / "NativeHostTests.kt.in").read_text().replace("__PACKAGE__", package).replace("__MODULE__", MODULE))
     classes = build / "classes"
     classes.mkdir()
-    run(java.with_name("javac"), "-d", classes, *sorted((TESTS / "android/java").rglob("*.java")))
+    run(java.with_name("javac"), "-d", classes, *sorted((ANDROID_TESTS / "java").rglob("*.java")))
     run(java, "-cp", os.pathsep.join(map(str, cp)), "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler",
         "-nowarn", "-no-stdlib", "-no-reflect", "-classpath", os.pathsep.join(map(str, [stdlib_jar, classes])),
-        "-d", classes, *sources, *sorted((TESTS / "android").glob("*.kt")), harness)
+        "-d", classes, *sources, *sorted(ANDROID_TESTS.glob("*.kt")), harness)
     agent, cli = jacoco_tools(ROOT)
     execution = OUTPUT / "android.exec"
     run(java, "-javaagent:" + str(agent) + "=destfile=" + str(execution) + ",append=false",
