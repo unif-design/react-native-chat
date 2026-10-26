@@ -28,7 +28,7 @@ import { SuggestionsDemo } from '@site/src/demos/SuggestionsDemo';
 
 选项复用 Design `Chip`：提供 `onSelect` 时使用共享交互 Chip 的玻璃表面，选中项保留主色文字和边框；未提供回调时使用静态标签表面。忙碌和禁用只淡化前景，平台降级和减少透明度由 Design 处理。
 
-`icon` 保留调用方提供的图标名称，以 14 布局单位和当前主题主色展示；普通与选中状态使用相同图标样式，图标不随应用字号整体放大。没有 `icon` 时只展示文字。
+`icon` 接收调用方提供的图标组件（`ComponentType<IconProps>`），可直接传入 `@unif/react-native-icons` 的命名导出。图标以 14 布局单位和当前主题主色展示；普通与选中状态使用相同图标样式，图标不随应用字号整体放大。没有 `icon` 时只展示文字。
 
 默认从起始方向排列，`align="center"` 可居中。组件不自行选中、填入输入框或发送消息；需要哪一种结果，由场景在回调中决定。
 
