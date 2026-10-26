@@ -1,5 +1,9 @@
 # Chat 组件开发交接
 
+## 库能力技能
+
+本库使用 unif-chat 定位当前版本的公开能力、接入与排障资料。修改源码时同时采用 code-development 的库开发规则；设计、测试、审查和交付按当前阶段取得依据。应用仅消费库时可直接查公开类型和文档，无需先取得维护工作区。
+
 ## 范围与依据
 
 本库实现独立聊天 UI，职责与公共接口由下面的 Chat 契约维护。
@@ -90,6 +94,14 @@ Jest 统计全部 `src/**/*.{ts,tsx}` 与 `example/src/**/*.{ts,tsx}`，仅排�
 iOS example 使用 Ruby 3.3+，`example/Gemfile.lock` 固定 CocoaPods 1.17.0、ActiveSupport 7.2.4 与 xcodeproj 1.28.1；在 `example/` 执行 `bundle install`，再到 `example/ios/` 执行 `bundle exec pod install --deployment`。提交的 Podfile.lock 与实际 RN 0.88 构建一致。该组合已通过真实 iOS 设备 SDK 的无签名 Debug 编译；Android example 的 `:app:assembleDebug -PreactNativeArchitectures=arm64-v8a` 已通过。设备安装、交互和远端 CI 另行验收。
 
 `yarn test:native` 直接插桩 example 的两个 Kotlin 文件以及 AppDelegate／SceneDelegate 原始 Swift 文件，分别执行 Swift Debug 和 Release。测试替换外部 RN／UIKit 接口，断言宿主启动、依赖与窗口接线、场景筛选、链接转发及资源查找；Android 断言宿主延迟创建和 Fabric 开关。脚本校验完整源码清单与哈希，输出各工具原始报告；编译器没有产生的分支计数标为 N/A。JaCoCo 0.8.13 从官方 Maven 获取并核对固定 SHA256，可通过 `JACOCO_HOME` 复用同版本已校验缓存。宿主行为覆盖与真实 SDK 编译分别执行。
+
+## SVG Web 版本与平台支持
+
+原生库与 example 继续使用正式 `react-native-svg@15.16.0`；Website 单独固定正式 `15.15.5`，并从 Website 的依赖解析 SVG。15.16.0 的 Android 音效依赖会进入 Webpack 的 Web 模块图（[上游问题 #3086](https://github.com/software-mansion/react-native-svg/issues/3086)）；15.15.5 的 Web 实现不包含这条依赖。该选择只影响文档站，保留原生 15.16.0 的资源解析修复。
+
+不使用 Yarn 依赖补丁或 SVG IgnorePlugin，不关闭导出警告。升级 Website 的 SVG 版本前，验证完整站点构建、SVG 图形／渐变／裁剪、点击与卸载。切换版本后先执行 `yarn workspace @unif/react-native-chat-website exec docusaurus clear`，再执行该 workspace 的 `build`，避免复用旧构建缓存。
+
+支持 Web 的组件继续通过真实 React Native Web 实现演示；只有没有 Web 实现的原生 SDK 能力提示到 iOS／Android 示例体验。构建或类型错误不能直接作为“不支持 Web”的判断依据。RN 整库类型改造已停止，本仓未应用 RN 源码或类型补丁。
 
 ## 共享主题与玻璃材质
 

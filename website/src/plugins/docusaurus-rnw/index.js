@@ -22,7 +22,9 @@ module.exports = function reactNativeWebPlugin(context) {
     runtimePackages.map((name) => [
       name,
       path.dirname(
-        require.resolve(`${name}/package.json`, { paths: [projectRoot] })
+        require.resolve(`${name}/package.json`, {
+          paths: [name === 'react-native-svg' ? context.siteDir : projectRoot],
+        })
       ),
     ])
   );

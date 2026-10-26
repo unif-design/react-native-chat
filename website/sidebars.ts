@@ -4,6 +4,7 @@ const sidebars: SidebarsConfig = {
     'components/overview',
     'getting-started',
     'faq',
+    'skills',
     {
       type: 'category',
       label: '输入与附件',
