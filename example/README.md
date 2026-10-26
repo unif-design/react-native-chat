@@ -32,6 +32,9 @@ Web 文档站展示组件 API 与交互示例；原生示例启动 Metro 使用 
 yarn typecheck
 yarn example typecheck
 yarn test --runInBand --runTestsByPath example/src/__tests__/App.test.tsx
+yarn test:native
 ```
+
+原生宿主测试与边界替身位于 `android/__tests__`、`ios/__tests__`；环境要求、覆盖清单与验证范围见[原生宿主测试](NATIVE_TESTS.md)。
 
 实际平台需检查键盘、滚动锚点、动态高度、图片、嵌套点击和大字号；定向测试不代替这些交互验收。更多依据见[开发资料](../docs/DEVELOPMENT.md)。
