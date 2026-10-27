@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.5.8](https://github.com/unif-design/react-native-chat/compare/v4.5.7...v4.5.8) (2026-10-27)
+
+### Bug Fixes
+
+* preserve message end during keyboard layout changes ([#51](https://github.com/unif-design/react-native-chat/issues/51)) ([533be50](https://github.com/unif-design/react-native-chat/commit/533be509d5034c6b8e342aed5d0533673603d134))
+
 ## [4.5.7](https://github.com/unif-design/react-native-chat/compare/v4.5.6...v4.5.7) (2026-10-27)
 
 ### Bug Fixes
