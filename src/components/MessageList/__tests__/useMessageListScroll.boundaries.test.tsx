@@ -285,3 +285,100 @@ test('末尾尺寸变化前保持跟随意图，稳定几何和never模式正常
   act(() => f.result.current.onScroll(scroll(800, 1500)));
   expect(f.onAtEndChange).toHaveBeenLastCalledWith(false);
 });
+
+test.each(['content-first', 'scroll-first'])(
+  'never 模式在末尾时输入区留白先变化，随后键盘收窄视口仍贴底：%s',
+  (order) => {
+    const f = fixture({ followOutput: 'never', contentBottomPadding: 100 });
+    f.ready();
+    act(() => f.result.current.onScroll(scroll(600)));
+    f.scrolling.mockClear();
+    f.rerender({ ...f.options, contentBottomPadding: 200 });
+    if (order === 'scroll-first') {
+      act(() => f.result.current.onScroll(scroll(600, 1100)));
+    }
+    act(() => f.result.current.onContentSizeChange(320, 1100));
+    if (order === 'content-first') {
+      act(() => f.result.current.onScroll(scroll(600, 1100)));
+    }
+    act(() => f.result.current.onLayout(layout(200)));
+    expect(f.scrolling).toHaveBeenLastCalledWith({
+      offset: 900,
+      animated: false,
+    });
+    act(() => f.result.current.onScroll(scroll(900, 1100, 200)));
+    expect(f.result.current.atEnd).toBe(true);
+    f.scrolling.mockClear();
+    act(() => f.result.current.onContentSizeChange(320, 1200));
+    expect(f.scrolling).not.toHaveBeenCalled();
+    expect(f.result.current.atEnd).toBe(false);
+  }
+);
+
+test('输入区留白变化不抢回历史阅读位置，用户拖动取消布局跟随', () => {
+  const f = fixture({ followOutput: 'never', contentBottomPadding: 100 });
+  f.ready();
+  act(() => f.result.current.onScroll(scroll(200)));
+  f.scrolling.mockClear();
+  f.rerender({ ...f.options, contentBottomPadding: 200 });
+  act(() => f.result.current.onContentSizeChange(320, 1100));
+  act(() => f.result.current.onLayout(layout(200)));
+  expect(f.scrolling).not.toHaveBeenCalled();
+  act(() => f.result.current.onScroll(scroll(900, 1100, 200)));
+  f.rerender({ ...f.options, contentBottomPadding: 250 });
+  act(() => f.result.current.onUserScrollBegin());
+  act(() => f.result.current.onScroll(scroll(700, 1150, 200)));
+  act(() => f.result.current.onContentSizeChange(320, 1150));
+  expect(f.scrolling).not.toHaveBeenCalled();
+});
+
+test.each(['drag', 'anchor', 'prepend'])(
+  '输入区变高时已有%s定位优先于末尾布局跟随',
+  (mode) => {
+    const f = fixture({ followOutput: 'never', contentBottomPadding: 100 });
+    f.ready();
+    act(() => f.result.current.onScroll(scroll(600)));
+    if (mode === 'drag') act(() => f.result.current.onUserScrollBegin());
+    if (mode === 'anchor') act(() => f.result.current.anchorToItem('b'));
+    if (mode === 'prepend') f.options.preservingPrependRef.current = true;
+    f.scrolling.mockClear();
+    f.rerender({ ...f.options, contentBottomPadding: 200 });
+    act(() => f.result.current.onContentSizeChange(320, 1100));
+    act(() => f.result.current.onLayout(layout(200)));
+    expect(f.scrolling).not.toHaveBeenCalled();
+  }
+);
+
+test('Web 滚轮在布局跟随途中向上阅读时结束跟随，不等 drag 事件', () => {
+  const f = fixture({ followOutput: 'never', contentBottomPadding: 100 });
+  f.ready();
+  act(() => f.result.current.onScroll(scroll(600)));
+  f.rerender({ ...f.options, contentBottomPadding: 200 });
+  act(() => f.result.current.onContentSizeChange(320, 1100));
+  f.scrolling.mockClear();
+  act(() => f.result.current.onScroll(scroll(400, 1100)));
+  act(() => f.result.current.onLayout(layout(200)));
+  expect(f.scrolling).not.toHaveBeenCalled();
+  expect(f.result.current.atEnd).toBe(false);
+});
+
+test.each(['onMomentumScrollEnd', 'onScrollEndDrag'] as const)(
+  '原生迟到的%s回调不能撤销输入区布局正在保持的末尾位置',
+  (event) => {
+    const f = fixture({ followOutput: 'never', contentBottomPadding: 100 });
+    f.ready();
+    act(() => f.result.current.onScroll(scroll(600)));
+    f.rerender({ ...f.options, contentBottomPadding: 200 });
+    act(() => f.result.current.onContentSizeChange(320, 1100));
+    act(() => f.result.current[event](scroll(600, 1100)));
+    expect(f.result.current.atEnd).toBe(true);
+    f.scrolling.mockClear();
+    act(() => f.result.current.onLayout(layout(200)));
+    expect(f.scrolling).toHaveBeenLastCalledWith({
+      offset: 900,
+      animated: false,
+    });
+    act(() => f.result.current.onScroll(scroll(900, 1100, 200)));
+    expect(f.result.current.atEnd).toBe(true);
+  }
+);

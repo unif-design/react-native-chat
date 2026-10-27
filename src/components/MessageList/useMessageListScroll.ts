@@ -83,6 +83,18 @@ export function useMessageListScroll<T>({
   if (!hasFooter) footerHeight.current = 0;
   const [anchorMinimumHeight, setAnchorMinimumHeight] = useState<number>();
   const minimumRef = useRef<number | undefined>(undefined);
+  const previousPadding = useRef(contentBottomPadding);
+  const followingPaddingChange = useRef(false);
+  useLayoutEffect(() => {
+    if (previousPadding.current === contentBottomPadding) return;
+    previousPadding.current = contentBottomPadding;
+    // Floating input expansion is layout, even when output following is off.
+    followingPaddingChange.current =
+      atEndRef.current === true &&
+      !userScrolling.current &&
+      !anchor.current &&
+      !preservingPrependRef.current;
+  }, [contentBottomPadding, preservingPrependRef]);
   const threshold = Number.isFinite(endThreshold)
     ? Math.max(0, endThreshold)
     : DEFAULT_END_THRESHOLD;
@@ -217,6 +229,7 @@ export function useMessageListScroll<T>({
   const anchorToItem = useCallback(
     (key: string, options: MessageListAnchorOptions = {}) => {
       pendingScroll.current = undefined;
+      followingPaddingChange.current = false;
       cancelPrependPreservation();
       userScrolling.current = false;
       anchor.current = {
@@ -245,6 +258,7 @@ export function useMessageListScroll<T>({
       keys.length !== previous.length ||
       keys.some((key, index) => key !== previous[index]);
     if (changed) {
+      followingPaddingChange.current = false;
       layoutRevision.current++;
       prependPending.current = onlyPrepended;
       const indices = new Map(keys.map((key, index) => [key, index]));
@@ -347,7 +361,9 @@ export function useMessageListScroll<T>({
       if (contentChanged) prependPending.current = false;
       const shouldFollow =
         initialized.current &&
-        (!contentChanged || followOutput === 'whenAtEnd') &&
+        (!contentChanged ||
+          followOutput === 'whenAtEnd' ||
+          followingPaddingChange.current) &&
         !userScrolling.current &&
         !prepended &&
         !preservingPrependRef.current &&
@@ -380,6 +396,15 @@ export function useMessageListScroll<T>({
       const geometryChanged =
         measurements.current.content !== contentSize.height ||
         measurements.current.viewport !== layoutMeasurement.height;
+      if (
+        followingPaddingChange.current &&
+        ((movedUp && !geometryChanged) ||
+          contentSize.height -
+            layoutMeasurement.height -
+            Math.max(0, contentOffset.y) <=
+            threshold)
+      )
+        followingPaddingChange.current = false;
       const request = anchor.current;
       if (request?.offset !== undefined) {
         if (Math.abs(contentOffset.y - request.offset) <= 0.5)
@@ -403,9 +428,9 @@ export function useMessageListScroll<T>({
         viewport: layoutMeasurement.height,
         hasContentSize: true,
       };
-      if (!resizingAtEnd) publishPosition();
+      if (!resizingAtEnd && !followingPaddingChange.current) publishPosition();
     },
-    [cancelAnchor, followOutput, publishPosition]
+    [cancelAnchor, followOutput, publishPosition, threshold]
   );
 
   const onLayout = useCallback(
@@ -426,6 +451,7 @@ export function useMessageListScroll<T>({
   );
   const onUserScrollBegin = useCallback(() => {
     userScrolling.current = true;
+    followingPaddingChange.current = false;
     pendingScroll.current = undefined;
     cancelAnchor();
   }, [cancelAnchor]);
@@ -435,20 +461,16 @@ export function useMessageListScroll<T>({
   const onScrollEndDrag = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       onScroll(event);
-      if (!event.nativeEvent.velocity?.y) {
-        userScrolling.current = false;
-        publishPosition();
-      }
+      if (!event.nativeEvent.velocity?.y) userScrolling.current = false;
     },
-    [onScroll, publishPosition]
+    [onScroll]
   );
   const onMomentumScrollEnd = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       onScroll(event);
       userScrolling.current = false;
-      publishPosition();
     },
-    [onScroll, publishPosition]
+    [onScroll]
   );
   const onScrollToIndexFailed = useCallback(
     (
