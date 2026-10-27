@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.5.7](https://github.com/unif-design/react-native-chat/compare/v4.5.6...v4.5.7) (2026-10-27)
+
+### Bug Fixes
+
+* remove attachment icon backgrounds ([#50](https://github.com/unif-design/react-native-chat/issues/50)) ([73b6603](https://github.com/unif-design/react-native-chat/commit/73b66037f4222add2e923d86af2529e9162eb2fe))
+
 ## [4.5.6](https://github.com/unif-design/react-native-chat/compare/v4.5.5...v4.5.6) (2026-10-26)
 
 ## [4.5.5](https://github.com/unif-design/react-native-chat/compare/v4.5.4...v4.5.5) (2026-10-26)
