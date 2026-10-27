@@ -77,7 +77,6 @@ export const createStyles = (colors: ColorTokens) =>
       position: 'relative',
     },
     placeholder: {
-      backgroundColor: colors.surfaceContainerHigh,
       borderRadius: radius.sm,
       alignItems: 'center',
       justifyContent: 'center',
