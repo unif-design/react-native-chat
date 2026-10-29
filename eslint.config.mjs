@@ -31,6 +31,7 @@ export default defineConfig([
     ignores: [
       'node_modules/',
       'lib/',
+      'coverage/',
       'website/build/',
       'website/.docusaurus/',
       'website/static/md/',
