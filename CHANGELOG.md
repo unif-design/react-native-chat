@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.5.9](https://github.com/unif-design/react-native-chat/compare/v4.5.8...v4.5.9) (2026-10-29)
+
+### Bug Fixes
+
+* **lint:** exclude generated coverage reports ([#52](https://github.com/unif-design/react-native-chat/issues/52)) ([a83bede](https://github.com/unif-design/react-native-chat/commit/a83bededd4260b081d8e9238fd4f5ed79f807e1b))
+
 ## [4.5.8](https://github.com/unif-design/react-native-chat/compare/v4.5.7...v4.5.8) (2026-10-27)
 
 ### Bug Fixes
