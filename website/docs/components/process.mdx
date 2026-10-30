@@ -51,7 +51,7 @@ compact / trace 的 `step.icon` 接收 `@unif/react-native-icons` 的组件引�
 
 工具步骤使用 `variant="trace"`：图标、标题和真实状态组成透明文字行，展开详情不绘制边框或分隔线。具体工具图标由调用方的 `step.icon` 提供。
 
-## API
+## 紧凑过程与材质
 
 `variant="compact"` 使用轻量过程行：标题旁默认显示状态文字，有详情时整行可展开，详情区域以 180 布局单位的缩放预算限制高度并独立滚动。流式更新保留展开选择，完成、失败或取消由外部真实状态决定；不由组件生成推理内容或推测业务成功。默认 `card` 保留完整步骤面板。
 
@@ -61,6 +61,8 @@ compact / trace 的 `step.icon` 接收 `@unif/react-native-icons` 的组件引�
 <Process variant="compact" steps={publicSteps} />
 ```
 
-<ApiReference name="Process" />
-
 card 与 timeline 的背景复用共享 GlassLayer；compact 与 trace 仍是嵌入正文的透明过程行。步骤状态、操作和展开行为保持一致。
+
+## API
+
+<ApiReference name="Process" />

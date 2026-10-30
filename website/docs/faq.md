@@ -19,7 +19,7 @@ Composer 是受控输入。发送事件交付当前原始文字，应用决定�
 
 ## 附件是否会自动上传？
 
-不会。Attachments 展示调用方提供的项目、进度和状态，并交付操作事件。文件选择、上传、重试及业务结果采用由应用负责。
+不会。Attachments 展示调用方提供的项目、进度和状态，并交付操作事件。文件选择、上传、重试和结果处理由应用负责。
 
 ## 链接点击、确认和反馈会执行什么？
 
@@ -29,4 +29,4 @@ Composer 是受控输入。发送事件交付当前原始文字，应用决定�
 
 Message 使用 react-native-marked 渲染 Markdown，图片通过 Design 组件展示。支持范围以当前消息实现和依赖为准，不把消息内容当作业务指令执行。
 
-[快速开始](./getting-started) · [组件索引](./components/chat)
+[快速开始](./getting-started) · [组件索引](./components/overview.mdx)

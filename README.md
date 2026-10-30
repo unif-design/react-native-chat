@@ -1,23 +1,26 @@
 # @unif/react-native-chat
 
-基于 `@unif/react-native-design` 的 TypeScript 聊天 UI 组件库，支持独立组件和完整聊天布局，可供其他 React Native 项目复用。
+React Native 聊天 UI 组件，提供消息列表、输入、附件和交互反馈，可独立使用或组合完整聊天页。组件负责展示与事件，会话、上传和业务请求由应用处理。
 
-[文档站](https://unif-design.github.io/react-native-chat/) · [组件源码](src/index.tsx) · [运行示例](example/README.md) · [常见问题](https://unif-design.github.io/react-native-chat/docs/faq) · [开发资料](docs/DEVELOPMENT.md)
+[文档站](https://unif-design.github.io/react-native-chat/) · [npm](https://www.npmjs.com/package/@unif/react-native-chat) · [运行示例](example/README.md)
 
-## 提供什么
+## 安装
 
-| 用途           | 组件                                                |
-| -------------- | --------------------------------------------------- |
-| 聊天布局与消息 | Chat、MessageList、Message                          |
-| 输入与附件     | Composer、Attachments、Suggestions                  |
-| 交互与反馈     | Confirmation、Process、ProcessingProgress、Feedback |
-| 来源与引用     | Sources、Citation                                   |
+| 依赖         | 支持要求           |
+| ------------ | ------------------ |
+| React Native | `>=0.86.0`         |
+| React        | `>=19.2.3 <20.0.0` |
+| Unif Design  | `^1.7.0`           |
 
-组件负责展示和事件；应用负责会话、草稿、文件上传、Agent 请求和业务处理。Markdown 使用 `react-native-marked`。
+```sh
+yarn add @unif/react-native-chat
+```
+
+继续按[安装与宿主](website/docs/getting-started.mdx)补齐 Icons、Liquid Glass、SVG 及 Design 所需依赖，并配置主题、手势和安全区。完整 peer 范围见 [package.json](package.json)。
 
 ## 最小用法
 
-在已配置 Design `ThemeProvider` 的应用中使用受控输入：
+在已配置 Design `ThemeProvider` 的应用中放入受控输入；`onSend` 由所属页面提供：
 
 ```tsx
 import { useState } from 'react';
@@ -36,22 +39,19 @@ export function ChatInput({ onSend }: { onSend: (text: string) => void }) {
 }
 ```
 
-发送事件交付原始文字；发送后是否清空输入由应用决定。键盘避让由页面负责，MessageList 的父容器需要有界高度。
+发送事件交付原始文字，是否提交或清空草稿由应用决定。页面负责键盘避让；使用消息列表时，还需给 MessageList 有界高度。
 
 ## 本地开始
 
-从仓库根目录执行，Node 版本见 [.nvmrc](.nvmrc)：
+运行原生示例或 Web 文档站见[示例说明](example/README.md)；源码维护、契约和检查入口见[开发资料](docs/DEVELOPMENT.md)。
 
-```sh
-yarn install --immutable --mode=skip-build
-yarn web
-```
+## 进一步使用
 
-仓库自带 Yarn；没有全局命令时可用 `node .yarn/releases/yarn-4.11.0.cjs` 代替 `yarn`。原生示例及检查入口见 [example](example/README.md)。
+| 需要做什么         | 文档                                                  |
+| ------------------ | ----------------------------------------------------- |
+| 选择组件、查询 API | [组件概览](website/docs/components/overview.mdx)      |
+| 组合完整聊天页     | [主聊天](website/docs/composition/main-chat.mdx)      |
+| 在抽屉中放置输入区 | [抽屉输入](website/docs/composition/drawer-input.mdx) |
+| 排查接入问题       | [常见问题](website/docs/faq.md)                       |
 
-## 文档
-
-- [LLM 文档索引](https://unif-design.github.io/react-native-chat/llms.txt)：按需查询组件与 FAQ。
-- [公共导出](src/index.tsx)与[组件类型](src/components/)：查询当前可用 API。
-- [开发资料](docs/DEVELOPMENT.md)：架构契约、依赖说明和验证入口。
-- [研发技能](https://github.com/unif-skill/unif-portal-dev-skills) · [贡献指南](CONTRIBUTING.md) · [MIT 许可](LICENSE)
+[库能力技能](website/docs/skills.md) · [AI 文档索引](https://unif-design.github.io/react-native-chat/llms.txt) · [贡献指南](CONTRIBUTING.md) · [MIT 许可](LICENSE)

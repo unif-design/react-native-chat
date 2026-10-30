@@ -4,14 +4,18 @@
 
 ## 运行
 
-以下命令在仓库根目录执行：
+按仓库的 [.nvmrc](../.nvmrc) 准备 Node，以下命令在仓库根目录执行：
 
 ```sh
 yarn install --immutable --mode=skip-build
 yarn web
 ```
 
-Web 文档站展示组件 API 与交互示例；原生示例启动 Metro 使用 `yarn example start`。iOS、Android 的构建与完整测试由 CI 执行；开展真机测试时使用对应的 `yarn example ios` 或 `yarn example android`。
+仓库自带 Yarn；没有全局命令时，可用 `node .yarn/releases/yarn-4.11.0.cjs` 代替 `yarn`。
+
+Web 文档站展示组件 API 与交互示例；原生示例启动 Metro 使用 `yarn example start`。iOS、Android 的构建与完整测试由 CI 执行；开展真机测试时使用对应的 `yarn example ios --device` 或 `yarn example android`。
+
+iOS 首次运行或原生依赖变化后，先在 `example/` 执行 `bundle install`，再执行 `bundle exec pod install --project-directory=ios`。环境与原生配置见[开发资料](../docs/DEVELOPMENT.md#原生宿主与构建工具)。
 
 ## 可以查看什么
 

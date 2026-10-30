@@ -1,8 +1,10 @@
-# Chat 组件开发交接
+# Chat 组件开发资料
 
 ## 库能力技能
 
-本库使用 unif-chat 定位当前版本的公开能力、接入与排障资料。修改源码时同时采用 code-development 的库开发规则；设计、测试、审查和交付按当前阶段取得依据。应用仅消费库时可直接查公开类型和文档，无需先取得维护工作区。
+使用 `unif-chat` 定位本库当前版本的公开能力、接入与排障资料。应用仅消费库时可直接查公开类型和文档。
+
+维护工程按职责采用独立的通用技能：`code-organization` 负责跨平台目录与文件组织，`react-native-development` 负责 React Native 实现，`react-native-library` 负责库工程和分发产物，`documentation` 负责文档与文档站。设计、测试、审查与交付继续从 [AGENTS.md](../AGENTS.md) 取得适用入口，本文只补充本库的契约和接线。
 
 ## 范围与依据
 
@@ -37,21 +39,21 @@
 
 按公开导出及其内部交互入口核查；共享控件的表面由 Design 维护，Chat 不重复包装，也不通过新增材质参数改变业务状态。
 
-| 公开组件           | 控制表面与内容边界                                                                                                                                                                                                |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Composer           | card 使用装饰 GlassLayer，plain 不绘制表面；浮菜单由 ActionMenuContent 提供。卡内 more／mic 保留透明操作，send／stop 保留主动作色，聆听区保留状态色。根容器允许浮菜单溢出。                                       |
-| Attachments        | 普通移除和中央进度／处理／重试使用暗色 GlassLayer，继续操作使用 secondary Button；失败红色移除和描边保留。图片、文件行、名称、占位及行内预览／移除保持内容层次。中央圆层不裁切大字号百分比，点击 owner 保持独立。 |
+| 公开组件           | 控制表面与内容边界                                                                                                                                                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Composer           | card 使用装饰 GlassLayer，plain 不绘制表面；浮菜单由 ActionMenuContent 提供。卡内 more／mic 保留透明操作，send／stop 保留主动作色，聆听区保留状态色。根容器允许浮菜单溢出。                                                 |
+| Attachments        | 普通移除和中央进度／处理／重试使用暗色 GlassLayer，继续操作使用 secondary Button；失败红色移除和描边保留。图片、文件行、名称、占位及行内预览／移除保持内容层次。中央圆层不裁切大字号百分比，点击 owner 保持独立。           |
 | Message            | bubble／outlined／plain 与失败语义保留；失败只淡化自有纯文字／Markdown／状态说明，外部内容的材质祖先保持不透明。正文下图标操作使用 glass IconButton，文字操作使用 text Button；错误入口使用 glass IconButton 并保留错误色。 |
-| MessageWaiting     | 三点和等待说明，无控制表面。                                                                                                                                                                                      |
-| MessageList        | 悬浮返回末尾按钮使用 glass IconButton，外层动画只缩放，不淡化材质祖先；列表内“查看更早消息”保留 text。                                                                                                            |
-| Chat               | 只组合布局，无独立表面。                                                                                                                                                                                          |
-| Suggestions        | 有 onSelect 时使用共享交互 Chip 的玻璃表面，无回调时保留静态标签。selected／loading／disabled 与原项事件保持受控。                                                                                                |
-| Confirmation       | 取消使用共享 secondary Button 玻璃表面，确认保留 primary；内联确认内容卡与四种状态保留。                                                                                                                          |
-| Process            | card／compact／timeline 的内容、展开入口、步骤动作和状态保持原契约。                                                                                                                                              |
-| ProcessingProgress | 只显示行内状态文字，无控制表面。                                                                                                                                                                                  |
-| Feedback           | tone 背景承载信息／成功／警告／错误语义，内容内操作保留 outline。                                                                                                                                                 |
-| Sources            | 来源行承载可读内容，保留内容表面和原项点击。                                                                                                                                                                      |
-| Citation           | 保持可嵌入正文的 Text 根节点和 link 语义。                                                                                                                                                                        |
+| MessageWaiting     | 三点和等待说明，无控制表面。                                                                                                                                                                                                |
+| MessageList        | 悬浮返回末尾按钮使用 glass IconButton，外层动画只缩放，不淡化材质祖先；列表内“查看更早消息”保留 text。                                                                                                                      |
+| Chat               | 只组合布局，无独立表面。                                                                                                                                                                                                    |
+| Suggestions        | 有 onSelect 时使用共享交互 Chip 的玻璃表面，无回调时保留静态标签。selected／loading／disabled 与原项事件保持受控。                                                                                                          |
+| Confirmation       | 取消使用共享 secondary Button 玻璃表面，确认保留 primary；内联确认内容卡与四种状态保留。                                                                                                                                    |
+| Process            | card／compact／timeline 的内容、展开入口、步骤动作和状态保持原契约。                                                                                                                                                        |
+| ProcessingProgress | 只显示行内状态文字，无控制表面。                                                                                                                                                                                            |
+| Feedback           | tone 背景承载信息／成功／警告／错误语义，内容内操作保留 outline。                                                                                                                                                           |
+| Sources            | 来源行承载可读内容，保留内容表面和原项点击。                                                                                                                                                                                |
+| Citation           | 保持可嵌入正文的 Text 根节点和 link 语义。                                                                                                                                                                                  |
 
 每个单元的 `__tests__` 验证自身事件和状态；example 与 Web demo 消费真实公开组件。共享控件的原生材质、减少透明度和不支持平台由 Design 独立验证，Chat 的 Jest 结果不代替设备视觉验收。
 
