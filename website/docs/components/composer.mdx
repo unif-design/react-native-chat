@@ -52,10 +52,6 @@ function InputDemo() {
 
 页面负责键盘避让与安全区。`header` 和 `footer` 是输入前后的内容位置；独立于卡片的常驻说明由外层组合。`onHeightChange` 交付整个 Composer 的实测高度，ref 仅提供 `focus()` 与 `blur()`。
 
-## API
-
-<ApiReference name="Composer" />
-
 聆听区保留五条装饰波形、转录文字及取消／停止图标。波形遵守减少动画设置，卸载停止本组件动画；它不读取音频、启动录音或改变外部语音状态。
 
 空输入的聚焦展开与收起沿用原生布局动画，减少动态效果时直接切换；两者均保留原 Textarea 实例。扩展操作禁用或忙碌只影响对应菜单项，加号仍可打开菜单查看状态并保持普通图标颜色；整个 Composer 禁用或进入语音活动状态时才禁用入口并收起菜单。
@@ -65,3 +61,7 @@ function InputDemo() {
 `surface="plain"` 的附件区采用8点上边距和左右内边距、4点下边距，不绘制分隔线，适合宿主的圆角或玻璃容器。输入区图片可组合 `Attachments layout="preview"`；组件仍只交付原附件的预览和移除事件。
 
 `surface="plain"` 的收起状态去掉额外上下留白，输入及操作仍保留至少44点触达高度。展开时保留输入区内边距。
+
+## API
+
+<ApiReference name="Composer" />
