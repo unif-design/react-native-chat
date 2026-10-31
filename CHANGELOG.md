@@ -1,5 +1,11 @@
 # Changelog
 
+# [4.6.0](https://github.com/unif-design/react-native-chat/compare/v4.5.9...v4.6.0) (2026-10-31)
+
+### Features
+
+* **chat:** 增加消息输入的受控继续操作 ([3c3ff25](https://github.com/unif-design/react-native-chat/commit/3c3ff25ef2929de4ee85141c423a153cbcc3f471))
+
 ## [4.5.9](https://github.com/unif-design/react-native-chat/compare/v4.5.8...v4.5.9) (2026-10-29)
 
 ### Bug Fixes

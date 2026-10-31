@@ -1,6 +1,6 @@
 {
   "name": "@unif/react-native-chat",
-  "version": "4.5.9",
+  "version": "4.6.0",
   "description": "Unif React Native 聊天组件：消息列表、输入、附件与交互反馈",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
