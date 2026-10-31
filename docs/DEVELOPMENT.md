@@ -67,7 +67,7 @@
 
 [CI 配置](../.github/workflows/ci.yml)维护完整验证入口；提交检查见 [lefthook.yml](../lefthook.yml)，发布命令见 package.json。
 
-LLM 索引、链接与产物提交采用组织共用生成器；本库保留由公开类型生成 API 文本的转换。网站 API 展示和 Markdown 使用同一个 md/api.json 来源，生成失败不交付半套资料。
+LLM 索引、链接与产物提交的共享实现由 `github-delivery` 的 `templates/llms` 维护，通过该技能提供的同步工具更新；本库保留由公开类型生成 API 文本的转换，并执行自己的 `node website/scripts/build-llms.js`。网站 API 展示和 Markdown 使用同一个 md/api.json 来源，生成失败不交付半套资料。
 
 ## 2026-09-30 MessageList 优化验证
 
@@ -108,3 +108,18 @@ iOS example 使用 Ruby 3.3+，`example/Gemfile.lock` 固定 CocoaPods 1.17.0、
 ## 共享主题与玻璃材质
 
 组件消费 Design 1.7 的行高和字体令牌；消息、附件、确认、过程、反馈、来源的材质按各组件页面描述执行。品牌主动作、媒体占位及正文代码块继续使用对应主题角色。
+
+## 交付配置与检查
+
+共享 CI、发布配置和检查工具由 `github-delivery` 的模板与工具维护。Unif 组织值由 `code-delivery` 的 `assets/organization.json` 维护，接入时落实为本库 `.github/organization.json`，记录组织、包名规则、Pages 地址、发布 App 身份及远端设置。工具运行时读取项目文件，不依赖其他技能的安装目录；适用技能按当前任务独立选择。
+
+在仓库根目录按阶段执行：
+
+| 命令 | 检查范围 |
+| --- | --- |
+| `node .github/scripts/check-delivery.cjs` | 离线检查受管文件、组织配置与 source 元数据。 |
+| `node .github/scripts/check-library.cjs pack` | 完成库构建后，检查当前 tarball 的导出、声明与文件清单。 |
+| `node .github/scripts/check-library.cjs release` | 发行前校验 README、许可和发布配置，不执行发布。 |
+| `node .github/scripts/check-library.cjs published` | 联网核验 npm 当前版本的元数据、下载完整性与实际 tarball。 |
+
+CI 与发布步骤见本库 `.github/workflows/`，组织配置调整以项目文件及当前授权为准。本地检查、远端 CI、npm 发布、文档部署和设备验收分别报告。
