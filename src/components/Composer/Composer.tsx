@@ -3,6 +3,7 @@ import {
   MicOutlined,
   PlusOutlined,
   SendOutlined,
+  PlayOutlined,
   StopFilled,
 } from '@unif/react-native-icons';
 import { isLiquidGlassSupported } from '@callstack/liquid-glass';
@@ -276,7 +277,11 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
                 {showPrimary ? (
                   <ComposerIconAction
                     icon={
-                      primaryAction.kind === 'send' ? SendOutlined : StopFilled
+                      primaryAction.kind === 'send'
+                        ? SendOutlined
+                        : primaryAction.kind === 'resume'
+                          ? PlayOutlined
+                          : StopFilled
                     }
                     label={primaryLabel}
                     visual="primary"

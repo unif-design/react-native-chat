@@ -1,6 +1,6 @@
 ---
 title: Composer 消息输入
-description: 受控草稿、发送和停止，适用于聊天页与独立输入区。
+description: 受控草稿、发送、停止和继续，适用于聊天页与独立输入区。
 api: Composer
 ---
 
@@ -8,7 +8,7 @@ import { LiveDemo } from '@site/src/components/LiveDemo';
 import { ApiReference } from '@site/src/components/ApiReference';
 import { ComposerDemo } from '@site/src/demos/ComposerDemo';
 
-受控草稿、发送和停止，适用于聊天页与独立输入区。
+受控草稿、发送、停止和继续，适用于聊天页与独立输入区。
 
 内部复用 Design 的 `Textarea surface="plain" contentAlignment="center"`，保留自然行高和至少 44 的输入触达区域。文字留白使用 `space[3]`；`header` 与输入共用同一个卡片表面，并以细分隔线衔接。场景提供底部提示和安全区，不在库内写入应用文案或重复键盘避让。
 
@@ -40,7 +40,7 @@ function InputDemo() {
 
 `value` 与 `onChangeText` 共同维护受控草稿。空值未聚焦时，文字与操作按钮在同一行；聚焦或有文字后，操作区移到文字下方。两种布局始终使用同一个 Textarea，切换不会重建输入或清空文字。更多入口容器的原生层级在展开和收起之间保持稳定，以保留输入焦点。
 
-发送使用图标按钮并交付原文，是否清空由调用方决定。仅有空白时默认隐藏发送，附件单独发送可设置 `allowEmpty`。`primaryAction.kind` 使用 `send`、`stop` 或 `busy`；`label` 是对应图标的可访问名称，`busy` 只展示等待状态。
+发送使用图标按钮并交付原文，是否清空由调用方决定。仅有空白时默认隐藏发送，附件单独发送可设置 `allowEmpty`。`primaryAction.kind` 使用 `send`、`stop`、`resume` 或 `busy`；`label` 是对应图标的可访问名称，`busy` 只展示等待状态。`resume` 使用继续图标并交付 onPress，任务状态与恢复逻辑仍由宿主管理；禁用或忙碌不触发恢复。
 
 扩展操作通过 `actions` 提供，点击加号先让当前输入失焦、收起键盘，再打开输入区上方的竖向菜单；受控草稿保留。菜单卡与菜单行复用 Design 的 `ActionMenuContent presentation="popover"`，Composer 管理定位、开关和外部点击区域。选择操作时先收起菜单，再调用原 `ChatAction.onPress`；禁用、忙碌或无名称操作不交付事件。再次点击加号、点击外部区域、触碰输入或聚焦时也收起菜单。
 

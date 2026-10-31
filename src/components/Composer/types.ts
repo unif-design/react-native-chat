@@ -21,13 +21,23 @@ export interface ComposerStopAction {
   label?: string;
 }
 
+export interface ComposerResumeAction {
+  kind: 'resume';
+  onPress(): void;
+  disabled?: boolean;
+  label?: string;
+}
+
 export interface ComposerBusyAction {
   kind: 'busy';
   label?: string;
 }
 
 export type ComposerPrimaryAction =
-  ComposerSendAction | ComposerStopAction | ComposerBusyAction;
+  | ComposerSendAction
+  | ComposerStopAction
+  | ComposerResumeAction
+  | ComposerBusyAction;
 export type ComposerVoiceStatus =
   'idle' | 'starting' | 'listening' | 'finishing';
 

@@ -22,6 +22,7 @@ export const COMPOSER_VOICE_WAVE_PATTERN = Array.from(
 export const PRIMARY_LABELS = {
   send: '发送',
   stop: '停止回复',
+  resume: '继续',
   busy: '正在处理…',
 } as const;
 export const VOICE_LABELS = {
