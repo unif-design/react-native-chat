@@ -6,6 +6,7 @@ export type {
   ComposerProps,
   ComposerSendAction,
   ComposerStopAction,
+  ComposerResumeAction,
   ComposerVoiceControl,
   ComposerVoiceStatus,
 } from './types';

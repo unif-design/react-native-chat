@@ -747,3 +747,31 @@ test.each([
     }
   }
 );
+
+test('继续使用独立图标并受控触发，禁用及忙碌不能恢复任务', () => {
+  const onResume = jest.fn();
+  const view = renderComposer({
+    value: '',
+    onChangeText: jest.fn(),
+    primaryAction: { kind: 'resume', onPress: onResume },
+  });
+  fireEvent.press(screen.getByRole('button', { name: '继续' }));
+  expect(onResume).toHaveBeenCalledTimes(1);
+  view.rerender(
+    <Composer
+      value=""
+      onChangeText={jest.fn()}
+      primaryAction={{ kind: 'resume', disabled: true, onPress: onResume }}
+    />
+  );
+  fireEvent.press(screen.getByRole('button', { name: '继续' }));
+  expect(onResume).toHaveBeenCalledTimes(1);
+  view.rerender(
+    <Composer
+      value=""
+      onChangeText={jest.fn()}
+      primaryAction={{ kind: 'busy', label: '正在继续' }}
+    />
+  );
+  expect(screen.queryByRole('button', { name: '继续' })).toBeNull();
+});
