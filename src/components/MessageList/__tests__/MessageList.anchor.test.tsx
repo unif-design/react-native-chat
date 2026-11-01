@@ -1,4 +1,4 @@
-import { createRef } from 'react';
+import { cloneElement, createRef } from 'react';
 import type { RefObject } from 'react';
 import { FlatList, StyleSheet, Text } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
@@ -174,14 +174,14 @@ test('视口及目标前方布局变化重申实际锚点，单纯流式增高�
   });
 });
 
-test('手动拖动取消顶锚和撑高，后续内容与视口变化不抢回位置', () => {
+test('手动拖动停止自动顶锚并保留撑高，后续变化不抢回位置', () => {
   const f = fixture();
   viewport();
   content(1000);
   cell('b', 200, 104, 24);
   f.anchor('b');
   fireEvent(screen.getByTestId('messages-list'), 'scrollBeginDrag');
-  expect(minimum()).toBeUndefined();
+  expect(minimum()).toBe(616);
   expect(
     screen.UNSAFE_getByType(FlatList).props.maintainVisibleContentPosition
   ).toEqual({ minIndexForVisible: 0 });
@@ -306,6 +306,73 @@ test('撤撑高同时末条变高抵消总高变化时，真实行布局也能�
   cell('b', 200, 404, 24);
   expect(f.scrolling).toHaveBeenLastCalledWith({
     offset: 216,
+    animated: false,
+  });
+});
+
+test('短内容顶锚后拖动保留滚动空间，视口变化不自动归底，正文填满后自然释放', () => {
+  const f = fixture();
+  viewport();
+  content(292);
+  cell('b', 200, 80);
+  f.anchor('b');
+  content(592);
+  f.scrolling.mockClear();
+  fireEvent(screen.getByTestId('messages-list'), 'scrollBeginDrag');
+  expect(minimum()).toBe(592);
+  fireEvent(screen.getByTestId('messages-list'), 'scrollEndDrag', {
+    nativeEvent: {
+      contentOffset: { y: 100 },
+      contentSize: { height: 592 },
+      layoutMeasurement: { height: 400, width: 320 },
+      velocity: { y: 0 },
+    },
+  });
+  viewport(600);
+  content(792);
+  expect(minimum()).toBe(792);
+  expect(f.scrolling).not.toHaveBeenCalled();
+  cell('b', 200, 700);
+  content(912);
+  expect(minimum()).toBeUndefined();
+  expect(f.scrolling).not.toHaveBeenCalled();
+});
+
+test('手动滚动后删除目标释放撑高，同键重现不重新定位', () => {
+  const f = fixture();
+  viewport();
+  content(292);
+  cell('b', 200, 80);
+  f.anchor('b');
+  content(592);
+  fireEvent(screen.getByTestId('messages-list'), 'scrollBeginDrag');
+  f.scrolling.mockClear();
+  f.page.rerender(f.element(['a']));
+  expect(minimum()).toBeUndefined();
+  f.page.rerender(f.element(['a', 'b']));
+  cell('b', 200, 80);
+  content(292);
+  expect(f.scrolling).not.toHaveBeenCalled();
+});
+
+test('手动滚动保留的撑高不进入新列表，重新打开历史仍从末尾开始', () => {
+  const f = fixture();
+  viewport();
+  content(292);
+  cell('b', 200, 80);
+  f.anchor('b');
+  content(592);
+  fireEvent(screen.getByTestId('messages-list'), 'scrollBeginDrag');
+  expect(minimum()).toBe(592);
+  f.scrolling.mockClear();
+  f.page.rerender(
+    cloneElement(f.element(), { key: 'reopened', initialPosition: 'end' })
+  );
+  viewport();
+  content(900);
+  expect(minimum()).toBeUndefined();
+  expect(f.scrolling).toHaveBeenLastCalledWith({
+    offset: 500,
     animated: false,
   });
 });

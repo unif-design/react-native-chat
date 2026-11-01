@@ -76,6 +76,7 @@ export interface MessageListItemLayout {
 }
 export interface MessageListAnchorRequest {
   key: string;
+  positioning: boolean;
   topOffset: number;
   animated: boolean;
   seen: boolean;

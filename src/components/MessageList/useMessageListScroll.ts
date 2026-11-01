@@ -77,6 +77,7 @@ export function useMessageListScroll<T>({
   const atEndRef = useRef<boolean | undefined>(undefined);
   const [atEnd, setAtEnd] = useState(true);
   const anchor = useRef<MessageListAnchorRequest | undefined>(undefined);
+  const [positioningAnchor, setPositioningAnchor] = useState(false);
   const layouts = useRef(new Map<string, MessageListItemLayout>());
   const layoutRevision = useRef(0);
   const footerHeight = useRef(0);
@@ -117,9 +118,22 @@ export function useMessageListScroll<T>({
 
   const cancelAnchor = useCallback(() => {
     anchor.current = undefined;
+    setPositioningAnchor(false);
     minimumRef.current = undefined;
     setAnchorMinimumHeight(undefined);
   }, []);
+
+  const stopAnchorPositioning = useCallback(() => {
+    const request = anchor.current;
+    if (!request || !minimumRef.current) {
+      cancelAnchor();
+      return;
+    }
+    // User scrolling owns the offset, but removing its layout space would
+    // clamp that offset and move the same messages back to the bottom.
+    request.positioning = false;
+    setPositioningAnchor(false);
+  }, [cancelAnchor]);
 
   const naturalContentHeight = useCallback(() => {
     const last = currentKeys.current.at(-1);
@@ -136,6 +150,76 @@ export function useMessageListScroll<T>({
     );
   }, []);
 
+  const scrollToEnd = useCallback(
+    (options: MessageListScrollOptions = {}) => {
+      cancelPrependPreservation();
+      const request: MessageListPendingScroll = {
+        animated: options.animated ?? true,
+      };
+      const natural = naturalContentHeight();
+      const minimum = minimumRef.current;
+      if (
+        minimum !== undefined &&
+        natural !== undefined &&
+        measurements.current.content <= minimum + 0.5 &&
+        natural + 0.5 < measurements.current.content
+      ) {
+        request.contentBeforeRelease = measurements.current.content;
+      }
+      cancelAnchor();
+      if (!ready() || request.contentBeforeRelease !== undefined) {
+        pendingScroll.current = request;
+        return;
+      }
+      pendingScroll.current = undefined;
+      listRef.current?.scrollToOffset({
+        offset: Math.max(
+          0,
+          measurements.current.content - measurements.current.viewport
+        ),
+        animated: request.animated,
+      });
+      if (measurements.current.content <= measurements.current.viewport)
+        publishPosition();
+    },
+    [
+      cancelAnchor,
+      cancelPrependPreservation,
+      listRef,
+      naturalContentHeight,
+      publishPosition,
+      ready,
+    ]
+  );
+
+  const reconcileRetainedSpace = useCallback(
+    (minimum: number) => {
+      const shouldFollow =
+        followOutput === 'whenAtEnd' &&
+        !userScrolling.current &&
+        !prependPending.current &&
+        !preservingPrependRef.current &&
+        atEndRef.current;
+      const natural = naturalContentHeight();
+      if (natural !== undefined && natural + 0.5 >= minimum) {
+        if (shouldFollow && measurements.current.content + 0.5 >= natural)
+          scrollToEnd({ animated: false });
+        else {
+          cancelAnchor();
+          publishPosition();
+        }
+      } else if (!shouldFollow) publishPosition();
+    },
+    [
+      cancelAnchor,
+      followOutput,
+      naturalContentHeight,
+      preservingPrependRef,
+      publishPosition,
+      scrollToEnd,
+    ]
+  );
+
   const applyAnchor = useCallback(() => {
     const request = anchor.current;
     if (!request || !ready()) return;
@@ -144,6 +228,10 @@ export function useMessageListScroll<T>({
     request.seen = true;
     const position = layouts.current.get(request.key);
     if (!position?.cell || position.itemY === undefined) {
+      if (!request.positioning) {
+        reconcileRetainedSpace(minimumRef.current!);
+        return;
+      }
       // An offscreen row first needs to enter FlatList's render window. This
       // estimate only reveals it; success still requires its actual layouts.
       if (request.locatedAt !== layoutRevision.current) {
@@ -167,6 +255,12 @@ export function useMessageListScroll<T>({
     );
     minimumRef.current = minimum;
     setAnchorMinimumHeight(minimum);
+    if (!request.positioning) {
+      // Once real content fills the reserved space, releasing the minimum
+      // no longer changes geometry. Normal end-following can then resume.
+      reconcileRetainedSpace(minimum);
+      return;
+    }
     // Yoga's requested minimum is not yet native scroll space. Wait for the
     // content-size event; otherwise native scrolling can clamp the target.
     if (content + 0.5 < minimum) {
@@ -182,7 +276,7 @@ export function useMessageListScroll<T>({
     listRef.current?.scrollToOffset({ offset, animated: request.animated });
     measurements.current.offset = offset;
     publishPosition();
-  }, [listRef, publishPosition, ready]);
+  }, [listRef, publishPosition, ready, reconcileRetainedSpace]);
 
   const layoutChanged = useRef(applyAnchor);
 
@@ -238,12 +332,14 @@ export function useMessageListScroll<T>({
       userScrolling.current = false;
       anchor.current = {
         key,
+        positioning: true,
         topOffset: Number.isFinite(options.topOffset)
           ? Math.max(0, options.topOffset!)
           : 0,
         animated: options.animated ?? true,
         seen: currentKeys.current.includes(key),
       };
+      setPositioningAnchor(true);
       minimumRef.current = 0;
       setAnchorMinimumHeight(0);
       applyAnchor();
@@ -286,52 +382,10 @@ export function useMessageListScroll<T>({
       }
       // Explicit positioning and native/Web prepend preservation must never
       // compensate the same layout twice.
-      cancelPrependPreservation();
+      if (request.positioning) cancelPrependPreservation();
       applyAnchor();
     }
   }, [applyAnchor, cancelAnchor, cancelPrependPreservation, keys]);
-
-  const scrollToEnd = useCallback(
-    (options: MessageListScrollOptions = {}) => {
-      cancelPrependPreservation();
-      const request: MessageListPendingScroll = {
-        animated: options.animated ?? true,
-      };
-      const natural = naturalContentHeight();
-      const minimum = minimumRef.current;
-      if (
-        minimum !== undefined &&
-        natural !== undefined &&
-        measurements.current.content <= minimum + 0.5 &&
-        natural + 0.5 < measurements.current.content
-      ) {
-        request.contentBeforeRelease = measurements.current.content;
-      }
-      cancelAnchor();
-      if (!ready() || request.contentBeforeRelease !== undefined) {
-        pendingScroll.current = request;
-        return;
-      }
-      pendingScroll.current = undefined;
-      listRef.current?.scrollToOffset({
-        offset: Math.max(
-          0,
-          measurements.current.content - measurements.current.viewport
-        ),
-        animated: request.animated,
-      });
-      if (measurements.current.content <= measurements.current.viewport)
-        publishPosition();
-    },
-    [
-      cancelAnchor,
-      cancelPrependPreservation,
-      listRef,
-      naturalContentHeight,
-      publishPosition,
-      ready,
-    ]
-  );
 
   const itemCount = keys.length;
   const reconcileLayout = useCallback(
@@ -410,15 +464,15 @@ export function useMessageListScroll<T>({
       )
         followingPaddingChange.current = false;
       const request = anchor.current;
-      if (request?.offset !== undefined) {
+      if (request?.positioning && request.offset !== undefined) {
         if (Math.abs(contentOffset.y - request.offset) <= 0.5)
           request.settled = true;
         // RN Web wheel scrolling need not dispatch scrollBeginDrag. Once a
         // requested scroll has settled, a user move at unchanged geometry wins.
-        else if (request.settled && !geometryChanged) cancelAnchor();
+        else if (request.settled && !geometryChanged) stopAnchorPositioning();
       }
       const resizingAtEnd =
-        !anchor.current &&
+        !anchor.current?.positioning &&
         atEndRef.current &&
         !movedUp &&
         !userScrolling.current &&
@@ -434,7 +488,7 @@ export function useMessageListScroll<T>({
       };
       if (!resizingAtEnd && !followingPaddingChange.current) publishPosition();
     },
-    [cancelAnchor, followOutput, publishPosition, threshold]
+    [followOutput, publishPosition, stopAnchorPositioning, threshold]
   );
 
   const onLayout = useCallback(
@@ -457,8 +511,8 @@ export function useMessageListScroll<T>({
     userScrolling.current = true;
     followingPaddingChange.current = false;
     pendingScroll.current = undefined;
-    cancelAnchor();
-  }, [cancelAnchor]);
+    stopAnchorPositioning();
+  }, [stopAnchorPositioning]);
   const onMomentumScrollBegin = useCallback(() => {
     userScrolling.current = true;
   }, []);
@@ -484,7 +538,7 @@ export function useMessageListScroll<T>({
     ) => {
       const request = anchor.current;
       if (
-        !request ||
+        !request?.positioning ||
         currentKeys.current.indexOf(request.key) !== failure.index ||
         !Number.isFinite(failure.averageItemLength) ||
         failure.averageItemLength <= 0
@@ -500,6 +554,7 @@ export function useMessageListScroll<T>({
 
   return {
     atEnd,
+    positioningAnchor,
     anchorMinimumHeight,
     anchorToItem,
     onCellLayout,
