@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.6.2](https://github.com/unif-design/react-native-chat/compare/v4.6.1...v4.6.2) (2026-11-01)
+
+### Bug Fixes
+
+* **message-list:** 手动滚动后保留发送消息的顶部布局 ([#57](https://github.com/unif-design/react-native-chat/issues/57)) ([0cda009](https://github.com/unif-design/react-native-chat/commit/0cda009b381bc2fcd10d2b4260de89f8a85f8939))
+
 ## [4.6.1](https://github.com/unif-design/react-native-chat/compare/v4.6.0...v4.6.1) (2026-11-01)
 
 ### Bug Fixes
