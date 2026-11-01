@@ -220,7 +220,7 @@ test('末尾请求释放临时撑高后等待自然布局，移除测量不会�
   expect(f.scrolling).toHaveBeenLastCalledWith({ offset: 0, animated: true });
 });
 
-test('锚点滚动到位后的普通滚轮移动解除锚点，几何变化期间继续保持', () => {
+test('锚点到位后的滚轮移动停止自动定位，保留原布局空间', () => {
   const f = fixture();
   f.ready();
   act(() => {
@@ -233,7 +233,7 @@ test('锚点滚动到位后的普通滚轮移动解除锚点，几何变化期�
   act(() => f.result.current.onScroll(scroll(210, 1100)));
   expect(f.result.current.anchorMinimumHeight).toBe(600);
   act(() => f.result.current.onScroll(scroll(220, 1100)));
-  expect(f.result.current.anchorMinimumHeight).toBeUndefined();
+  expect(f.result.current.anchorMinimumHeight).toBe(600);
 });
 
 test('集合变更清除移走的测量，保持同索引测量，并等待尚未出现的锚点', () => {
@@ -414,7 +414,7 @@ test.each(['layout-first', 'scroll-first'])(
   }
 );
 
-test('等待键盘收起后的底部撑高期间，真实拖动仍取消顶锚', () => {
+test('等待键盘收起后的底部撑高期间，真实拖动停止定位并保留空间', () => {
   const f = fixture({ followOutput: 'never' });
   f.ready();
   act(() => {
@@ -427,7 +427,113 @@ test('等待键盘收起后的底部撑高期间，真实拖动仍取消顶锚',
     f.result.current.onUserScrollBegin();
   });
   f.scrolling.mockClear();
-  expect(f.result.current.anchorMinimumHeight).toBeUndefined();
+  expect(f.result.current.anchorMinimumHeight).toBe(1500);
   act(() => f.result.current.onContentSizeChange(320, 1500));
   expect(f.scrolling).not.toHaveBeenCalled();
 });
+
+test.each([
+  ['cell-first', 200],
+  ['content-first', 200],
+  ['scroll-first', 200],
+  ['cell-first', 100],
+  ['content-first', 100],
+  ['scroll-first', 100],
+] as const)(
+  '真实正文填满保留空间后仍按末尾资格跟随：%s，位置 %i',
+  (order, offset) => {
+    const f = fixture();
+    act(() => {
+      f.result.current.onLayout(layout());
+      f.result.current.onContentSizeChange(320, 300);
+      f.result.current.onCellLayout('b', 1, cell(200));
+      f.result.current.onItemLayout('b', 1, 0);
+      f.result.current.anchorToItem('b', { animated: false });
+    });
+    act(() => {
+      f.result.current.onContentSizeChange(320, 600);
+      f.result.current.onScroll(scroll(200, 600));
+      f.result.current.onUserScrollBegin();
+      f.result.current.onScrollEndDrag(scroll(offset, 600, 400, 0));
+    });
+    f.scrolling.mockClear();
+    if (order === 'scroll-first')
+      act(() => f.result.current.onScroll(scroll(offset, 700)));
+    if (order !== 'cell-first')
+      act(() => f.result.current.onContentSizeChange(320, 700));
+    act(() => f.result.current.onCellLayout('b', 1, cell(200, 500)));
+    if (order === 'cell-first')
+      act(() => f.result.current.onContentSizeChange(320, 700));
+    expect(f.result.current.anchorMinimumHeight).toBeUndefined();
+    if (offset === 200)
+      expect(f.scrolling).toHaveBeenLastCalledWith({
+        offset: 300,
+        animated: false,
+      });
+    else expect(f.scrolling).not.toHaveBeenCalled();
+    act(() => f.result.current.onContentSizeChange(320, 800));
+    if (offset === 200)
+      expect(f.scrolling).toHaveBeenLastCalledWith({
+        offset: 400,
+        animated: false,
+      });
+    else expect(f.scrolling).not.toHaveBeenCalled();
+  }
+);
+
+test('原锚点被虚拟化回收后，真实尾部填满空间仍释放撑高且不重新寻找旧行', () => {
+  const f = fixture({ followOutput: 'never', keys: ['a', 'b', 'c'] });
+  act(() => {
+    f.result.current.onLayout(layout());
+    f.result.current.onContentSizeChange(320, 350);
+    f.result.current.onCellLayout('b', 1, cell(200));
+    f.result.current.onItemLayout('b', 1, 0);
+    f.result.current.onCellLayout('c', 2, cell(300, 50));
+    f.result.current.anchorToItem('b', { animated: false });
+    f.result.current.onContentSizeChange(320, 600);
+    f.result.current.onUserScrollBegin();
+    f.result.current.onCellUnmount('b', 1);
+  });
+  f.scrolling.mockClear();
+  act(() => f.result.current.onCellLayout('c', 2, cell(300, 500)));
+  expect(f.result.current.anchorMinimumHeight).toBeUndefined();
+  expect(f.locating).not.toHaveBeenCalled();
+  expect(f.scrolling).not.toHaveBeenCalled();
+});
+
+test.each(['prepend', 'web-preservation'])(
+  '保留空间结束时继续让历史前插保持用户位置：%s',
+  (mode) => {
+    const preserving = { current: false };
+    const f = fixture({
+      keys: ['a', 'b', 'c'],
+      preservingPrependRef: preserving,
+    });
+    f.ready();
+    act(() => {
+      f.result.current.onCellLayout('b', 1, cell(200));
+      f.result.current.onItemLayout('b', 1, 0);
+      f.result.current.onCellLayout('c', 2, cell(900));
+      f.result.current.anchorToItem('b', { animated: false });
+      f.result.current.onUserScrollBegin();
+      f.result.current.onScrollEndDrag(scroll(580, 1000, 400, 0));
+    });
+    f.scrolling.mockClear();
+    jest.mocked(f.options.cancelPrependPreservation).mockClear();
+    if (mode === 'prepend')
+      f.rerender({ ...f.options, keys: ['older', 'a', 'b', 'c'] });
+    else preserving.current = true;
+    act(() => f.result.current.onScroll(scroll(880, 1300)));
+    act(() => {
+      f.result.current.onCellLayout('b', mode === 'prepend' ? 2 : 1, cell(500));
+      f.result.current.onCellLayout(
+        'c',
+        mode === 'prepend' ? 3 : 2,
+        cell(1200)
+      );
+    });
+    expect(f.result.current.anchorMinimumHeight).toBeUndefined();
+    expect(f.scrolling).not.toHaveBeenCalled();
+    expect(f.options.cancelPrependPreservation).not.toHaveBeenCalled();
+  }
+);

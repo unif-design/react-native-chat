@@ -59,6 +59,7 @@ export function MessageList<T>({
     useWebPrependAnchor({ listRef, itemsIdentity: items, keys });
   const {
     atEnd,
+    positioningAnchor,
     anchorMinimumHeight,
     anchorToItem,
     onCellLayout,
@@ -202,7 +203,7 @@ export function MessageList<T>({
         ListFooterComponent={listFooter}
         ListEmptyComponent={listEmpty}
         maintainVisibleContentPosition={
-          items.length > 0 && anchorMinimumHeight === undefined
+          items.length > 0 && !positioningAnchor
             ? MAINTAIN_VISIBLE_POSITION
             : undefined
         }
