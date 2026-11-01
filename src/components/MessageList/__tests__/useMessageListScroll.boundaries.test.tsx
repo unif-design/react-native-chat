@@ -382,3 +382,52 @@ test.each(['onMomentumScrollEnd', 'onScrollEndDrag'] as const)(
     expect(f.result.current.atEnd).toBe(true);
   }
 );
+
+test.each(['layout-first', 'scroll-first'])(
+  '键盘收起等待底部撑高时，原生偏移限位不能取消顶锚：%s',
+  (order) => {
+    const f = fixture({ followOutput: 'never' });
+    f.ready();
+    act(() => {
+      f.result.current.onCellLayout('b', 1, cell(900));
+      f.result.current.onItemLayout('b', 1, 0);
+      f.result.current.anchorToItem('b', { animated: false });
+      f.result.current.onContentSizeChange(320, 1300);
+      f.result.current.onScroll(scroll(900, 1300));
+    });
+    f.scrolling.mockClear();
+    if (order === 'scroll-first')
+      act(() => f.result.current.onScroll(scroll(700, 1300, 600)));
+    act(() => f.result.current.onLayout(layout(600)));
+    act(() => f.result.current.onScroll(scroll(700, 1300, 600)));
+    expect(f.result.current.anchorMinimumHeight).toBe(1500);
+    expect(f.scrolling).not.toHaveBeenCalled();
+    act(() => f.result.current.onContentSizeChange(320, 1500));
+    expect(f.scrolling).toHaveBeenLastCalledWith({
+      offset: 900,
+      animated: false,
+    });
+    act(() => f.result.current.onScroll(scroll(900, 1500, 600)));
+    f.scrolling.mockClear();
+    act(() => f.result.current.onContentSizeChange(320, 1800));
+    expect(f.scrolling).not.toHaveBeenCalled();
+  }
+);
+
+test('等待键盘收起后的底部撑高期间，真实拖动仍取消顶锚', () => {
+  const f = fixture({ followOutput: 'never' });
+  f.ready();
+  act(() => {
+    f.result.current.onCellLayout('b', 1, cell(900));
+    f.result.current.onItemLayout('b', 1, 0);
+    f.result.current.anchorToItem('b', { animated: false });
+    f.result.current.onContentSizeChange(320, 1300);
+    f.result.current.onScroll(scroll(900, 1300));
+    f.result.current.onLayout(layout(600));
+    f.result.current.onUserScrollBegin();
+  });
+  f.scrolling.mockClear();
+  expect(f.result.current.anchorMinimumHeight).toBeUndefined();
+  act(() => f.result.current.onContentSizeChange(320, 1500));
+  expect(f.scrolling).not.toHaveBeenCalled();
+});
