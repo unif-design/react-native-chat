@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.6.1](https://github.com/unif-design/react-native-chat/compare/v4.6.0...v4.6.1) (2026-11-01)
+
+### Bug Fixes
+
+* **chat:** 修复键盘收起时新消息顶部定位失效 ([#56](https://github.com/unif-design/react-native-chat/issues/56)) ([ee3b219](https://github.com/unif-design/react-native-chat/commit/ee3b21981d0dd64b2b506746540f752cdcfc9f6f))
+
 # [4.6.0](https://github.com/unif-design/react-native-chat/compare/v4.5.9...v4.6.0) (2026-10-31)
 
 ### Features
