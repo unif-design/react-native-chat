@@ -169,7 +169,11 @@ export function useMessageListScroll<T>({
     setAnchorMinimumHeight(minimum);
     // Yoga's requested minimum is not yet native scroll space. Wait for the
     // content-size event; otherwise native scrolling can clamp the target.
-    if (content + 0.5 < minimum) return;
+    if (content + 0.5 < minimum) {
+      // Resizing can clamp the old offset before the extra space is applied.
+      request.settled = false;
+      return;
+    }
     if (request.offset === offset && request.viewport === viewport) return;
     request.offset = offset;
     request.viewport = viewport;
