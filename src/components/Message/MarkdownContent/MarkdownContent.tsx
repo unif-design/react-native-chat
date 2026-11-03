@@ -24,6 +24,25 @@ export function MarkdownContent({
   );
   const markdown = useMemo(() => {
     const instance = new Renderer();
+    const renderList = instance.list.bind(instance);
+    instance.list = (ordered, items, listStyle, textStyle, startIndex = 1) => {
+      if (!ordered)
+        return renderList(ordered, items, listStyle, textStyle, startIndex);
+      // 每行独立保留编号宽度，追加两位数编号不再挤压已有正文。
+      return items.map((item, index) => {
+        const content = isValidElement(item)
+          ? cloneElement(item, { key: index })
+          : item;
+        const row = renderList(
+          true,
+          [content],
+          listStyle,
+          textStyle,
+          startIndex + index
+        );
+        return isValidElement(row) ? cloneElement(row, { key: index }) : row;
+      });
+    };
     const renderCode = instance.code.bind(instance);
     instance.code = (value, language, containerStyle, textStyle) =>
       renderCode(value, language, containerStyle, {

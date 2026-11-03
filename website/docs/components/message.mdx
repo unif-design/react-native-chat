@@ -34,6 +34,8 @@ import { MessageDemo } from '@site/src/demos/MessageDemo';
 
 Markdown 的顶层块放在同一个正文区域中，段落、列表等内部留白沿用渲染器；消息头部、正文和附加内容之间的间距不会叠加到各个 Markdown 块之间。正文容器使用普通布局，不增加纵向滚动容器。
 
+有序列表按各项编号分别分配宽度。流式追加第 10、100 等项时，已有正文的缩进与换行保持不变；新增项按完整编号所需的宽度缩进，保留自定义起始编号和嵌套列表。
+
 Markdown 图片使用原始资源地址，位图保持比例，SVG 沿 `react-native-marked` 的矢量图片能力加载。当前渲染器按完整地址的 `.svg` 后缀识别 SVG，带查询参数或片段的 SVG 地址尚不自动识别。图片链接也只通过 `onLinkPress` 交付，未提供回调时保持静态。
 
 默认 `placement="start"`、`surface="bubble"`、`status="idle"`，`fullWidth` 默认关闭。身份、消息状态和附加区域只展示调用方提供的信息。
