@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.6.3](https://github.com/unif-design/react-native-chat/compare/v4.6.2...v4.6.3) (2026-11-03)
+
+### Bug Fixes
+
+* **message:** 稳定流式有序列表的正文布局 ([21797d9](https://github.com/unif-design/react-native-chat/commit/21797d9b984b325e53a1cdd27a25ef6e480547b2))
+
 ## [4.6.2](https://github.com/unif-design/react-native-chat/compare/v4.6.1...v4.6.2) (2026-11-01)
 
 ### Bug Fixes
