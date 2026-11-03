@@ -135,7 +135,7 @@
   },
   "release-it": {
     "git": {
-      "commitMessage": "chore: release ${version} [skip ci]",
+      "commitMessage": "chore: release ${version} 发布版本 [skip ci]",
       "tagName": "v${version}",
       "requireCommits": true
     },
