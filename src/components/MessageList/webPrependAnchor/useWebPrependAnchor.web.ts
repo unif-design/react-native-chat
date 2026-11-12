@@ -63,6 +63,7 @@ function disconnectConnection(
 
 export function useWebPrependAnchor({
   listRef,
+  onWheelRef,
   itemsIdentity,
   keys,
 }: UseWebPrependAnchorOptions): WebPrependAnchorHandle {
@@ -232,10 +233,13 @@ export function useWebPrependAnchor({
     disconnect();
     stopPreserving();
 
-    const userInteraction = () => {
+    const userInteraction = (event: { type: string }) => {
       stopPreserving();
       const currentConnection = connectionRef.current;
-      if (currentConnection) captureAnchor(currentConnection);
+      if (currentConnection) {
+        if (event.type === 'wheel') onWheelRef?.current?.();
+        captureAnchor(currentConnection);
+      }
       scheduleFrame();
     };
     const scroll = () => scheduleFrame();
@@ -273,6 +277,7 @@ export function useWebPrependAnchor({
     disconnect,
     globals,
     listRef,
+    onWheelRef,
     refreshResizeTargets,
     scheduleFrame,
     stopPreserving,

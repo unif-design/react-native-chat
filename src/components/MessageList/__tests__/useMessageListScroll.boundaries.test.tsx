@@ -537,3 +537,155 @@ test.each(['prepend', 'web-preservation'])(
     expect(f.options.cancelPrependPreservation).not.toHaveBeenCalled();
   }
 );
+
+test('快速离开时保留未恢复偏移；历史加载与列表分批测量后只恢复到原偏移', () => {
+  const f = fixture({ keys: [], initialPosition: 850 });
+  expect(f.result.current.getScrollPosition()).toBe(850);
+  f.ready();
+  expect(f.scrolling).not.toHaveBeenCalled();
+  expect(f.result.current.getScrollPosition()).toBe(850);
+  f.rerender({ ...f.options, keys: ['a', 'b'] });
+  act(() => f.result.current.onContentSizeChange(320, 1050));
+  expect(f.scrolling).toHaveBeenLastCalledWith({
+    offset: 650,
+    animated: false,
+  });
+  expect(f.result.current.getScrollPosition()).toBe(850);
+  act(() => f.result.current.onContentSizeChange(320, 1600));
+  expect(f.scrolling).toHaveBeenLastCalledWith({
+    offset: 850,
+    animated: false,
+  });
+  expect(f.result.current.getScrollPosition()).toBe(850);
+  f.scrolling.mockClear();
+  act(() => {
+    f.result.current.onScroll(scroll(850, 1600));
+    f.result.current.onScroll(scroll(430, 1600));
+    f.result.current.onContentSizeChange(320, 1650);
+  });
+  expect(f.result.current.getScrollPosition()).toBe(430);
+  expect(f.scrolling).not.toHaveBeenCalled();
+  act(() => f.result.current.onScroll(scroll(1230, 1650)));
+  expect(f.result.current.getScrollPosition()).toBe('end');
+});
+
+test('实际末行已布局且原偏移已越界，恢复到真实末尾后保持原跟随', () => {
+  const f = fixture({ initialPosition: 850 });
+  f.ready();
+  expect(f.result.current.getScrollPosition()).toBe(850);
+  act(() => {
+    f.result.current.onScroll(scroll(600));
+    f.result.current.onCellLayout('b', 1, cell(900));
+  });
+  expect(f.result.current.getScrollPosition()).toBe('end');
+  act(() => f.result.current.onContentSizeChange(320, 1100));
+  expect(f.scrolling).toHaveBeenLastCalledWith({
+    offset: 700,
+    animated: false,
+  });
+});
+
+test.each(['drag', 'wheel', 'end', 'anchor'])(
+  '分批恢复时 %s 接手，后续布局不抢回旧偏移',
+  (owner) => {
+    const f = fixture({ initialPosition: 850 });
+    f.ready();
+    act(() => {
+      if (owner === 'wheel') f.result.current.onScroll(scroll(600));
+      if (owner === 'drag') f.result.current.onUserScrollBegin();
+      if (owner === 'end') f.result.current.scrollToEnd();
+      if (owner === 'anchor') f.result.current.anchorToItem('b');
+      if (owner === 'drag' || owner === 'wheel')
+        f.result.current.onScroll(scroll(200));
+    });
+    f.scrolling.mockClear();
+    act(() => f.result.current.onContentSizeChange(320, 1600));
+    expect(f.scrolling).not.toHaveBeenCalledWith({
+      offset: 850,
+      animated: false,
+    });
+    if (owner === 'drag' || owner === 'wheel')
+      expect(f.result.current.getScrollPosition()).toBe(200);
+  }
+);
+
+test.each([NaN, -1, Infinity, 'end' as const])(
+  '无可用偏移 %s 按首次非空末尾定位',
+  (initialPosition) => {
+    const f = fixture({ initialPosition });
+    expect(f.result.current.getScrollPosition()).toBeUndefined();
+    f.ready();
+    expect(f.scrolling).toHaveBeenLastCalledWith({
+      offset: 600,
+      animated: false,
+    });
+    expect(f.result.current.getScrollPosition()).toBe('end');
+    f.rerender({ ...f.options, keys: [] });
+    expect(f.result.current.getScrollPosition()).toBeUndefined();
+  }
+);
+
+test('程序滚动的旧帧与过渡帧早于位置回执，分批及最终恢复均保留目标', () => {
+  const f = fixture({ initialPosition: 850 });
+  f.ready();
+  act(() => {
+    f.result.current.onScroll(scroll(0));
+    f.result.current.onScroll(scroll(280));
+    f.result.current.onScroll(scroll(300, 1090));
+  });
+  expect(f.result.current.getScrollPosition()).toBe(850);
+  act(() => {
+    f.result.current.onScroll(scroll(600, 1050));
+    f.result.current.onCellLayout('a', 0, cell(0));
+    f.result.current.onContentSizeChange(320, 1600);
+    f.result.current.onScroll(scroll(500, 1000));
+    f.result.current.onCellLayout('a', 0, cell(0));
+    f.result.current.onScroll(scroll(600, 1600));
+  });
+  expect(f.scrolling).toHaveBeenCalledTimes(2);
+  expect(f.scrolling).toHaveBeenLastCalledWith({
+    offset: 850,
+    animated: false,
+  });
+  expect(f.result.current.getScrollPosition()).toBe(850);
+  act(() => {
+    f.result.current.onScroll(scroll(850, 1600));
+    f.result.current.onScroll(scroll(480, 1600));
+  });
+  expect(f.result.current.getScrollPosition()).toBe(480);
+});
+
+test('末尾初值等待静态历史的最后一批，never 保留之后真实追加前的阅读位置', () => {
+  const keys = Array.from({ length: 12 }, (_, index) => String(index));
+  const f = fixture({ keys, initialPosition: 'end', followOutput: 'never' });
+  act(() => {
+    f.result.current.onLayout(layout(200));
+    f.result.current.onContentSizeChange(320, 1000);
+    f.result.current.onScroll(scroll(800, 1000, 200));
+    f.result.current.onCellLayout('11', 11, cell(1100));
+    f.result.current.onContentSizeChange(320, 1200);
+  });
+  expect(f.scrolling.mock.calls.map(([opts]) => opts)).toEqual([
+    { offset: 800, animated: false },
+    { offset: 1000, animated: false },
+  ]);
+  act(() => f.result.current.onScroll(scroll(1000, 1200, 200)));
+  expect(f.result.current.getScrollPosition()).toBe('end');
+  f.scrolling.mockClear();
+  f.rerender({ ...f.options, keys: [...keys, 'new'] });
+  act(() => f.result.current.onContentSizeChange(320, 1300));
+  expect(f.scrolling).not.toHaveBeenCalled();
+  expect(f.result.current.getScrollPosition()).toBe(1000);
+});
+
+test('初始末行尚在分批测量时有新消息加入，never 不追新消息', () => {
+  const keys = Array.from({ length: 12 }, (_, index) => String(index));
+  const f = fixture({ keys, initialPosition: 'end', followOutput: 'never' });
+  f.ready();
+  act(() => f.result.current.onScroll(scroll(600)));
+  f.scrolling.mockClear();
+  f.rerender({ ...f.options, keys: [...keys, 'new'] });
+  act(() => f.result.current.onContentSizeChange(320, 1500));
+  expect(f.scrolling).not.toHaveBeenCalled();
+  expect(f.result.current.getScrollPosition()).toBe(600);
+});

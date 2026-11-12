@@ -21,12 +21,12 @@ export interface WebElementLike {
   contains(candidate: unknown): boolean;
   addEventListener(
     type: string,
-    listener: () => void,
+    listener: (event: { type: string }) => void,
     options?: WebEventListenerOptions
   ): void;
   removeEventListener(
     type: string,
-    listener: () => void,
+    listener: (event: { type: string }) => void,
     options?: WebEventListenerOptions
   ): void;
 }
@@ -76,11 +76,12 @@ export interface WebPrependAnchorConnection {
   mutationObserver?: WebObserverLike;
   resizeObserver?: WebObserverLike;
   resizeTargets: Set<WebElementLike>;
-  userInteraction(): void;
+  userInteraction(event: { type: string }): void;
   scroll(): void;
 }
 
 export interface UseWebPrependAnchorOptions {
+  onWheelRef?: RefObject<(() => void) | null>;
   listRef: RefObject<WebPrependAnchorListHandle | null>;
   itemsIdentity: unknown;
   keys: readonly string[];

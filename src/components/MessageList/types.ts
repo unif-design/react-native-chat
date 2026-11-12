@@ -15,6 +15,8 @@ export interface MessageListAnchorOptions extends MessageListScrollOptions {
   topOffset?: number;
 }
 export interface MessageListHandle {
+  /** 近末尾返回 end，阅读历史时返回列表纵向偏移，位置尚不可用时返回 undefined。 */
+  getScrollPosition(): 'end' | number | undefined;
   scrollToEnd(options?: MessageListScrollOptions): void;
   /** 按稳定 key 等待真实布局并顶锚；用户拖动、回到末尾或目标删除时结束。 */
   anchorToItem(key: string, options?: MessageListAnchorOptions): void;
@@ -28,7 +30,8 @@ export interface MessageListProps<T> {
   footer?: ReactNode;
   empty?: ReactNode;
   renderSeparator?(previous: T, next: T): ReactNode;
-  initialPosition?: 'start' | 'end';
+  /** 初次进入可传已记录的非负有限偏移，无效数值按 end 处理。 */
+  initialPosition?: 'start' | 'end' | number;
   /** 控制内容更新跟尾；视口变化仍保持原先的末尾或阅读位置。 */
   followOutput?: 'whenAtEnd' | 'never';
   endThreshold?: number;
@@ -84,6 +87,13 @@ export interface MessageListAnchorRequest {
   offset?: number;
   viewport?: number;
   settled?: boolean;
+}
+export interface MessageListRestoreRequest {
+  target: number | 'end';
+  endKey?: string;
+  offset?: number;
+  settled: boolean;
+  complete: boolean;
 }
 export interface MessageListPendingScroll extends MessageListScrollOptions {
   contentBeforeRelease?: number;
