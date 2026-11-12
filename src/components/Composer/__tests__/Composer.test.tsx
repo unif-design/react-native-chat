@@ -10,9 +10,9 @@ import {
   GlassLayer,
   Textarea,
   ThemeProvider,
+  useColors,
   space,
   lightColors,
-  darkColors,
   lightShadow,
   darkShadow,
   type as typography,
@@ -698,8 +698,14 @@ test.each([
         primaryAction: { kind: 'busy' },
         testID: 'composer',
       };
+      let colors: ReturnType<typeof useColors> = lightColors;
+      function ThemeProbe() {
+        colors = useColors();
+        return null;
+      }
       const view = render(
         <ThemeProvider forceScheme="light">
+          <ThemeProbe />
           <Composer {...props} />
         </ThemeProvider>
       );
@@ -707,11 +713,11 @@ test.each([
       for (const scheme of ['light', 'dark'] as const) {
         view.rerender(
           <ThemeProvider forceScheme={scheme}>
+            <ThemeProbe />
             <Composer {...props} />
           </ThemeProvider>
         );
         await act(async () => {});
-        const colors = scheme === 'light' ? lightColors : darkColors;
         const shadow = scheme === 'light' ? lightShadow : darkShadow;
         const card = StyleSheet.flatten(
           screen.getByTestId('composer').props.style
@@ -730,6 +736,7 @@ test.each([
       }
       view.rerender(
         <ThemeProvider forceScheme="dark">
+          <ThemeProbe />
           <Composer {...props} surface="plain" />
         </ThemeProvider>
       );

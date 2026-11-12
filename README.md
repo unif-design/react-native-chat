@@ -10,7 +10,7 @@ React Native 聊天 UI 组件，提供消息列表、输入、附件和交互反
 | ------------ | ------------------ |
 | React Native | `>=0.86.0`         |
 | React        | `>=19.2.3 <20.0.0` |
-| Unif Design  | `^1.7.0`           |
+| Unif Design  | `^1.18.0`           |
 
 ```sh
 yarn add @unif/react-native-chat

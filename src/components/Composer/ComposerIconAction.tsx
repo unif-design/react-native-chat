@@ -1,5 +1,9 @@
 import { ActivityIndicator, Pressable, View } from 'react-native';
-import { useColors, useThemedStyles } from '@unif/react-native-design';
+import {
+  useColors,
+  useMotionActive,
+  useThemedStyles,
+} from '@unif/react-native-design';
 import {
   COMPOSER_ACTION_ICON_SIZE,
   COMPOSER_PRIMARY_ICON_SIZE,
@@ -19,6 +23,7 @@ export function ComposerIconAction({
   visual = 'icon',
 }: ComposerIconActionProps) {
   const colors = useColors();
+  const motionActive = useMotionActive();
   const styles = useThemedStyles(createStyles);
   const unavailable = disabled || busy;
   const { mousePressed, ...mouseHandlers } = useMousePress(unavailable);
@@ -55,7 +60,12 @@ export function ComposerIconAction({
           ]}
         >
           {busy ? (
-            <ActivityIndicator size="small" color={color} />
+            <ActivityIndicator
+              size="small"
+              color={color}
+              animating={motionActive}
+              hidesWhenStopped={false}
+            />
           ) : (
             <Glyph
               size={

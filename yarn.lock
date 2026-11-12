@@ -6576,8 +6576,9 @@ __metadata:
     "@react-native/typescript-config": "npm:0.88.0"
     "@types/react": "npm:^19.2.0"
     "@unif/react-native-chat": "workspace:*"
-    "@unif/react-native-design": "npm:^1.7.0"
+    "@unif/react-native-design": "npm:^1.18.0"
     "@unif/react-native-icons": "npm:^0.5.0"
+    "@unif/react-native-logger": "npm:^0.2.2"
     react: "npm:19.3.0"
     react-dom: "npm:19.3.0"
     react-native: "npm:0.88.0"
@@ -6615,8 +6616,9 @@ __metadata:
     "@react-native/metro-config": "npm:0.88.0"
     "@types/react": "npm:^19.2.0"
     "@unif/react-native-chat": "workspace:*"
-    "@unif/react-native-design": "npm:^1.7.0"
+    "@unif/react-native-design": "npm:^1.18.0"
     "@unif/react-native-icons": "npm:^0.5.0"
+    "@unif/react-native-logger": "npm:^0.2.2"
     babel-loader: "npm:^9.2.1"
     gray-matter: "npm:^4.0.3"
     prism-react-renderer: "npm:^2.3.0"
@@ -6657,8 +6659,9 @@ __metadata:
     "@release-it/conventional-changelog": "npm:^12.0.0"
     "@testing-library/react-native": "npm:13.3.3"
     "@types/react": "npm:^19.2.0"
-    "@unif/react-native-design": "npm:^1.7.0"
+    "@unif/react-native-design": "npm:^1.18.0"
     "@unif/react-native-icons": "npm:^0.5.0"
+    "@unif/react-native-logger": "npm:^0.2.2"
     commitlint: "npm:^21.2.1"
     del-cli: "npm:^7.0.0"
     eslint: "npm:^9.39.5"
@@ -6687,7 +6690,7 @@ __metadata:
     typescript: "npm:^6.0.3"
   peerDependencies:
     "@callstack/liquid-glass": ">=0.8.2 <0.9.0"
-    "@unif/react-native-design": ^1.7.0
+    "@unif/react-native-design": ^1.18.0
     "@unif/react-native-icons": ">=0.3.0 <1.0.0"
     react: ">=19.2.3 <20.0.0"
     react-native: ">=0.86.0"
@@ -6695,14 +6698,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@unif/react-native-design@npm:^1.7.0":
-  version: 1.7.0
-  resolution: "@unif/react-native-design@npm:1.7.0"
+"@unif/react-native-design@npm:^1.18.0":
+  version: 1.18.0
+  resolution: "@unif/react-native-design@npm:1.18.0"
   dependencies:
     react-is: "npm:^19.2.8"
   peerDependencies:
     "@callstack/liquid-glass": ">=0.8.2 <0.9.0"
     "@unif/react-native-icons": ">=0.1.0"
+    "@unif/react-native-logger": ^0.2.0
     react: ">=19.2.3 <20.0.0"
     react-native: ">=0.86.0"
     react-native-gesture-handler: ">=3.0.0 <4.0.0"
@@ -6711,7 +6715,7 @@ __metadata:
     react-native-safe-area-context: ">=5"
     react-native-svg: ">=15"
     react-native-worklets: ">=0.11.0 <0.14.0"
-  checksum: 10c0/ba27a2a545f5c10f32375af34f9dad673006f363de63c52e6a37f6316dd868ee4c9da04f3d2a49151ed96a184ed5b9fa484acd234453a9f2197bd3d8ce7a455b
+  checksum: 10c0/3d80be6dd883084fc263c72e80838e62e9f854f16e3bda742f38067884405d1247b2c0ca2da83f8d63a12c49e34edcc39cb41256fefcb68174f7cb2426aabd87
   languageName: node
   linkType: hard
 
@@ -6723,6 +6727,24 @@ __metadata:
     react-native: ">=0.86.3 <0.89"
     react-native-svg: ">=15.15.5 <16"
   checksum: 10c0/392d63c77e8293bd27c0ed778ccaf7cf0b57488108cf09a5db6e52dad950d573ad5dc27ea88fe26bf2dfb9637554d5b5351bac10c2b70283a59974469c9725bd
+  languageName: node
+  linkType: hard
+
+"@unif/react-native-logger@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@unif/react-native-logger@npm:0.2.2"
+  dependencies:
+    crypto-js: "npm:^4.2.0"
+    lodash: "npm:^4.18.1"
+  peerDependencies:
+    react-native: ">=0.86.0"
+    react-native-blob-util: 1.1.1
+  peerDependenciesMeta:
+    react-native:
+      optional: true
+    react-native-blob-util:
+      optional: true
+  checksum: 10c0/abcc21fff2c1766c2cae0740f374ecc2e8d236d17bf90e199f30d199777d2dcb887449041f25c70ad4d482b0195469b0a320c6aaf78a318b37ab7f12a470a891
   languageName: node
   linkType: hard
 
@@ -9069,6 +9091,13 @@ __metadata:
     shebang-command: "npm:^2.0.0"
     which: "npm:^2.0.1"
   checksum: 10c0/053ea8b2135caff68a9e81470e845613e374e7309a47731e81639de3eaeb90c3d01af0e0b44d2ab9d50b43467223b88567dfeb3262db942dc063b9976718ffc1
+  languageName: node
+  linkType: hard
+
+"crypto-js@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "crypto-js@npm:4.2.0"
+  checksum: 10c0/8fbdf9d56f47aea0794ab87b0eb9833baf80b01a7c5c1b0edc7faf25f662fb69ab18dc2199e2afcac54670ff0cd9607a9045a3f7a80336cccd18d77a55b9fdf0
   languageName: node
   linkType: hard
 
@@ -14144,7 +14173,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.20, lodash@npm:^4.17.21":
+"lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.18.1":
   version: 4.18.1
   resolution: "lodash@npm:4.18.1"
   checksum: 10c0/757228fc68805c59789e82185135cf85f05d0b2d3d54631d680ca79ec21944ec8314d4533639a14b8bcfbd97a517e78960933041a5af17ecb693ec6eecb99a27

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Animated, Easing, Platform, View } from 'react-native';
 import {
   usePrefersReducedMotion,
+  useMotionActive,
   useThemedStyles,
 } from '@unif/react-native-design';
 import {
@@ -13,12 +14,14 @@ import { createStyles } from './styles';
 export function ComposerVoiceWave() {
   const styles = useThemedStyles(createStyles);
   const reducedMotion = usePrefersReducedMotion();
+  const active = useMotionActive();
   const [values] = useState(() =>
     COMPOSER_VOICE_WAVE_PATTERN.map(
       (group) => new Animated.Value(group.from / Math.max(group.from, group.to))
     )
   );
   useEffect(() => {
+    if (!active) return;
     const animations = COMPOSER_VOICE_WAVE_PATTERN.map((group, index) => {
       const value = values[index]!;
       const maximum = Math.max(group.from, group.to);
@@ -42,7 +45,7 @@ export function ComposerVoiceWave() {
     if (!reducedMotion) animations.forEach((animation) => animation.start());
     return () => animations.forEach((animation) => animation.stop());
     // 波形规格固定，输入文字更新不重启装饰动画。
-  }, [reducedMotion, values]);
+  }, [active, reducedMotion, values]);
   return (
     <View
       style={styles.wave}
