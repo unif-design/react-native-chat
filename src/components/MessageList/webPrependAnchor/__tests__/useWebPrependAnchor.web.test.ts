@@ -1,5 +1,13 @@
 import { createRef } from 'react';
 import { Platform } from 'react-native';
+import type {
+  FlatList,
+  LayoutChangeEvent,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from 'react-native';
+import type { RefObject } from 'react';
+import { useMessageListScroll } from '../../useMessageListScroll';
 import { act, renderHook } from '@testing-library/react-native';
 import { afterEach, beforeEach, expect, jest, test } from '@jest/globals';
 import { useWebPrependAnchor } from '../useWebPrependAnchor.web';
@@ -22,7 +30,7 @@ class FakeElement {
   children: FakeElement[] = [];
   rows: FakeElement[] = [];
   innerView: FakeElement | undefined;
-  listeners = new Map<string, Set<() => void>>();
+  listeners = new Map<string, Set<(event: { type: string }) => void>>();
 
   getInnerViewNode() {
     return this.innerView;
@@ -40,18 +48,22 @@ class FakeElement {
     return this === candidate || this.rows.includes(candidate as FakeElement);
   }
 
-  addEventListener(type: string, listener: () => void) {
-    const listeners = this.listeners.get(type) ?? new Set<() => void>();
+  addEventListener(type: string, listener: (event: { type: string }) => void) {
+    const listeners =
+      this.listeners.get(type) ?? new Set<(event: { type: string }) => void>();
     listeners.add(listener);
     this.listeners.set(type, listeners);
   }
 
-  removeEventListener(type: string, listener: () => void) {
+  removeEventListener(
+    type: string,
+    listener: (event: { type: string }) => void
+  ) {
     this.listeners.get(type)?.delete(listener);
   }
 
   dispatch(type: string) {
-    this.listeners.get(type)?.forEach((listener) => listener());
+    this.listeners.get(type)?.forEach((listener) => listener({ type }));
   }
 }
 
@@ -575,7 +587,7 @@ test('节点替换取消旧帧，卸载后的迟到帧和交互不滚动新节�
   unmount();
   act(() => {
     lateFrame();
-    lateInteraction();
+    lateInteraction({ type: 'wheel' });
     flushFrames();
   });
   expect(scrollToOffset).not.toHaveBeenCalled();
@@ -682,3 +694,95 @@ test('锚点位置没有变化或仅有亚像素差异时不重复滚动', () =>
   expect(scrollToOffset).not.toHaveBeenCalled();
   expect(result.current.preservingPrependRef.current).toBe(true);
 });
+
+test.each(['wheel', 'prepend'])(
+  '数值恢复期间 %s 与程序定位有唯一滚动来源',
+  (scenario) => {
+    const scroller = new FakeElement();
+    const elements = new Map<string, FakeElement>();
+    installWebGlobals(elements);
+    const command =
+      jest.fn<(options: WebPrependScrollToOffsetOptions) => void>();
+    const listRef = {
+      current: { getScrollableNode: () => scroller, scrollToOffset: command },
+    };
+    const wheel = { current: null } as RefObject<(() => void) | null>;
+    const keys = ['a', 'b', 'c'];
+    const { result, rerender } = renderHook(
+      (items: string[]) => {
+        const web = useWebPrependAnchor({
+          listRef,
+          keys: items,
+          itemsIdentity: items,
+          onWheelRef: wheel,
+        });
+        const scrolling = useMessageListScroll<string>({
+          listRef: listRef as unknown as RefObject<FlatList<string> | null>,
+          keys: items,
+          initialPosition: 850,
+          followOutput: 'whenAtEnd',
+          ...web,
+        });
+        wheel.current = scrolling.cancelRestore;
+        return { ...web, ...scrolling };
+      },
+      { initialProps: keys }
+    );
+    const row = createRow(result.current.getRowNativeID('b'), 150);
+    scroller.rows = [row];
+    elements.set(row.id, row);
+    const report = (y: number) => {
+      scroller.scrollTop = y;
+      result.current.onScroll({
+        nativeEvent: {
+          contentOffset: { x: 0, y },
+          contentSize: { width: 320, height: scroller.scrollHeight },
+          layoutMeasurement: { width: 320, height: 400 },
+        },
+      } as NativeSyntheticEvent<NativeScrollEvent>);
+    };
+    act(() => {
+      result.current.onLayout({
+        nativeEvent: { layout: { width: 320, height: 400, x: 0, y: 0 } },
+      } as LayoutChangeEvent);
+      result.current.onContentSizeChange(320, 1000);
+      scroller.scrollTop = 600;
+      flushFrames();
+    });
+    expect(command).toHaveBeenLastCalledWith({ offset: 600, animated: false });
+    act(() => scroller.dispatch('pointerdown'));
+    expect(result.current.getScrollPosition()).toBe(850);
+    if (scenario === 'wheel') {
+      act(() => {
+        scroller.dispatch('wheel');
+        report(480);
+      });
+      expect(result.current.getScrollPosition()).toBe(480);
+      act(() => scroller.dispatch('wheel'));
+      expect(result.current.getScrollPosition()).toBe(480);
+    } else {
+      act(() => report(600));
+    }
+    rerender(['older', ...keys]);
+    act(() => {
+      scroller.scrollHeight = 1500;
+      row.rect = { top: 650, bottom: 690 };
+      result.current.onContentSizeChange(320, 1500);
+    });
+    if (scenario === 'prepend') {
+      act(() => {
+        report(850);
+        flushFrames();
+      });
+      expect(command.mock.calls.map(([opts]) => opts.offset)).toEqual([
+        600, 850,
+      ]);
+      expect(result.current.getScrollPosition()).toBe(850);
+    } else {
+      expect(command).not.toHaveBeenCalledWith({
+        offset: 850,
+        animated: false,
+      });
+    }
+  }
+);

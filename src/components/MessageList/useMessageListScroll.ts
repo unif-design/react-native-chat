@@ -9,7 +9,7 @@ import type {
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
-import { DEFAULT_END_THRESHOLD } from './constants';
+import { DEFAULT_END_THRESHOLD, INITIAL_NUM_TO_RENDER } from './constants';
 import type {
   ListMeasurements,
   MessageListAnchorOptions,
@@ -17,6 +17,7 @@ import type {
   MessageListItemLayout,
   MessageListPendingScroll,
   MessageListProps,
+  MessageListRestoreRequest,
   MessageListScrollOptions,
 } from './types';
 
@@ -64,7 +65,16 @@ export function useMessageListScroll<T>({
     offset: 0,
     hasContentSize: false,
   });
-  const initial = useRef(initialPosition);
+  const restore = useRef<MessageListRestoreRequest | undefined>(
+    typeof initialPosition === 'number' &&
+      Number.isFinite(initialPosition) &&
+      initialPosition >= 0
+      ? { target: initialPosition, settled: false, complete: false }
+      : undefined
+  );
+  const startAtEnd = useRef(
+    initialPosition !== 'start' && restore.current === undefined
+  );
   const initialized = useRef(false);
   const previousKeys = useRef<readonly string[]>([]);
   const currentKeys = useRef(keys);
@@ -77,7 +87,7 @@ export function useMessageListScroll<T>({
   const atEndRef = useRef<boolean | undefined>(undefined);
   const [atEnd, setAtEnd] = useState(true);
   const anchor = useRef<MessageListAnchorRequest | undefined>(undefined);
-  const [positioningAnchor, setPositioningAnchor] = useState(false);
+  const [positioning, setPositioning] = useState(!!restore.current);
   const layouts = useRef(new Map<string, MessageListItemLayout>());
   const layoutRevision = useRef(0);
   const footerHeight = useRef(0);
@@ -105,6 +115,15 @@ export function useMessageListScroll<T>({
     return current.viewport > 0 && current.hasContentSize;
   }, []);
 
+  const getScrollPosition = useCallback(() => {
+    if (restore.current) return restore.current.target;
+    if (!initialized.current || !currentKeys.current.length || !ready())
+      return undefined;
+    return atEndRef.current === false
+      ? Math.max(0, measurements.current.offset)
+      : 'end';
+  }, [ready]);
+
   const publishPosition = useCallback(() => {
     if (!ready()) return;
     const { viewport, content, offset } = measurements.current;
@@ -116,9 +135,16 @@ export function useMessageListScroll<T>({
     }
   }, [onAtEndChange, ready, threshold]);
 
+  const cancelRestore = useCallback(() => {
+    if (restore.current) {
+      restore.current = undefined;
+      setPositioning(false);
+    }
+  }, []);
+
   const cancelAnchor = useCallback(() => {
     anchor.current = undefined;
-    setPositioningAnchor(false);
+    setPositioning(false);
     minimumRef.current = undefined;
     setAnchorMinimumHeight(undefined);
   }, []);
@@ -132,7 +158,7 @@ export function useMessageListScroll<T>({
     // User scrolling owns the offset, but removing its layout space would
     // clamp that offset and move the same messages back to the bottom.
     request.positioning = false;
-    setPositioningAnchor(false);
+    setPositioning(false);
   }, [cancelAnchor]);
 
   const naturalContentHeight = useCallback(() => {
@@ -152,6 +178,7 @@ export function useMessageListScroll<T>({
 
   const scrollToEnd = useCallback(
     (options: MessageListScrollOptions = {}) => {
+      restore.current = undefined;
       cancelPrependPreservation();
       const request: MessageListPendingScroll = {
         animated: options.animated ?? true,
@@ -326,6 +353,7 @@ export function useMessageListScroll<T>({
 
   const anchorToItem = useCallback(
     (key: string, options: MessageListAnchorOptions = {}) => {
+      restore.current = undefined;
       pendingScroll.current = undefined;
       followingPaddingChange.current = false;
       cancelPrependPreservation();
@@ -339,7 +367,7 @@ export function useMessageListScroll<T>({
         animated: options.animated ?? true,
         seen: currentKeys.current.includes(key),
       };
-      setPositioningAnchor(true);
+      setPositioning(true);
       minimumRef.current = 0;
       setAnchorMinimumHeight(0);
       applyAnchor();
@@ -360,7 +388,13 @@ export function useMessageListScroll<T>({
     if (changed) {
       followingPaddingChange.current = false;
       layoutRevision.current++;
-      prependPending.current = onlyPrepended;
+      if (
+        restore.current?.target === 'end' &&
+        restore.current.endKey !== keys.at(-1)
+      )
+        cancelRestore();
+      prependPending.current = onlyPrepended && !restore.current;
+      if (onlyPrepended && restore.current) cancelPrependPreservation();
       const indices = new Map(keys.map((key, index) => [key, index]));
       for (const [key, layout] of layouts.current) {
         const index = indices.get(key);
@@ -385,7 +419,13 @@ export function useMessageListScroll<T>({
       if (request.positioning) cancelPrependPreservation();
       applyAnchor();
     }
-  }, [applyAnchor, cancelAnchor, cancelPrependPreservation, keys]);
+  }, [
+    applyAnchor,
+    cancelAnchor,
+    cancelPrependPreservation,
+    cancelRestore,
+    keys,
+  ]);
 
   const itemCount = keys.length;
   const reconcileLayout = useCallback(
@@ -402,9 +442,48 @@ export function useMessageListScroll<T>({
         (naturalContentHeight() ?? 0) < request.contentBeforeRelease
       )
         return;
+      if (
+        !initialized.current &&
+        startAtEnd.current &&
+        itemCount > INITIAL_NUM_TO_RENDER &&
+        !request
+      ) {
+        restore.current = {
+          target: 'end',
+          endKey: currentKeys.current.at(-1),
+          settled: false,
+          complete: false,
+        };
+        setPositioning(true);
+      }
+      const restoring = restore.current;
+      if (itemCount > 0 && restoring) {
+        const geometry = measurements.current;
+        const limit = Math.max(0, geometry.content - geometry.viewport);
+        const offset =
+          restoring.target === 'end'
+            ? limit
+            : Math.min(restoring.target, limit);
+        const natural = naturalContentHeight();
+        // Advancing to the measured limit reveals the next virtualized batch.
+        restoring.complete =
+          offset === restoring.target ||
+          (natural !== undefined && geometry.content + 0.5 >= natural);
+        if (restoring.offset !== offset) {
+          restoring.offset = offset;
+          restoring.settled = Math.abs(geometry.offset - offset) <= 0.5;
+          if (!restoring.settled)
+            listRef.current?.scrollToOffset({ offset, animated: false });
+        }
+        if (restoring.complete && restoring.settled) cancelRestore();
+        geometry.offset = offset;
+        initialized.current = true;
+        publishPosition();
+        return;
+      }
       if (itemCount > 0 && !initialized.current) {
         initialized.current = true;
-        if (request || initial.current === 'end') {
+        if (request || startAtEnd.current) {
           scrollToEnd(request ?? { animated: false });
           return;
         }
@@ -431,8 +510,10 @@ export function useMessageListScroll<T>({
     },
     [
       applyAnchor,
+      cancelRestore,
       followOutput,
       itemCount,
+      listRef,
       naturalContentHeight,
       preservingPrependRef,
       publishPosition,
@@ -443,7 +524,7 @@ export function useMessageListScroll<T>({
 
   layoutChanged.current = () => {
     if (anchor.current) applyAnchor();
-    else if (pendingScroll.current) reconcileLayout(false);
+    else if (pendingScroll.current || restore.current) reconcileLayout(false);
   };
 
   const onScroll = useCallback(
@@ -454,6 +535,20 @@ export function useMessageListScroll<T>({
       const geometryChanged =
         measurements.current.content !== contentSize.height ||
         measurements.current.viewport !== layoutMeasurement.height;
+      const restoring = restore.current;
+      if (restoring?.offset !== undefined) {
+        if (Math.abs(contentOffset.y - restoring.offset) <= 0.5) {
+          restoring.settled = true;
+          if (restoring.complete) cancelRestore();
+        } else {
+          // Until the command settles, scroll may still report the old offset.
+          if (!restoring.settled || geometryChanged) return;
+          cancelRestore();
+        }
+        // Layout and content-size events drive restoration. A delayed scroll
+        // can carry obsolete geometry even when it acknowledges the offset.
+        if (geometryChanged) return;
+      }
       if (
         followingPaddingChange.current &&
         ((movedUp && !geometryChanged) ||
@@ -488,7 +583,13 @@ export function useMessageListScroll<T>({
       };
       if (!resizingAtEnd && !followingPaddingChange.current) publishPosition();
     },
-    [followOutput, publishPosition, stopAnchorPositioning, threshold]
+    [
+      cancelRestore,
+      followOutput,
+      publishPosition,
+      stopAnchorPositioning,
+      threshold,
+    ]
   );
 
   const onLayout = useCallback(
@@ -508,6 +609,7 @@ export function useMessageListScroll<T>({
     [reconcileLayout]
   );
   const onUserScrollBegin = useCallback(() => {
+    restore.current = undefined;
     userScrolling.current = true;
     followingPaddingChange.current = false;
     pendingScroll.current = undefined;
@@ -554,7 +656,8 @@ export function useMessageListScroll<T>({
 
   return {
     atEnd,
-    positioningAnchor,
+    positioning,
+    cancelRestore,
     anchorMinimumHeight,
     anchorToItem,
     onCellLayout,
@@ -563,6 +666,7 @@ export function useMessageListScroll<T>({
     onFooterLayout,
     onScrollToIndexFailed,
     scrollToEnd,
+    getScrollPosition,
     onLayout,
     onContentSizeChange,
     onScroll,

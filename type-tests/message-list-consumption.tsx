@@ -8,9 +8,11 @@ import { Text } from 'react-native';
 
 const ref = createRef<MessageListHandle>();
 const options: MessageListAnchorOptions = { topOffset: 8, animated: false };
+const position: 'end' | number | undefined = ref.current?.getScrollPosition();
 export const anchoredList = (
   <MessageList
     ref={ref}
+    initialPosition={position}
     items={[{ id: 'stable-id', text: '外部消息' }]}
     keyExtractor={(item) => item.id}
     renderItem={(item) => <Text>{item.text}</Text>}

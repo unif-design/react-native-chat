@@ -413,3 +413,35 @@ test('never 模式仍在拖动时不因键盘缩小视口抢回末尾', () => {
   });
   expect(scrolling).not.toHaveBeenCalled();
 });
+
+test('公开 ref 可在快速重挂前交回待恢复位置，保留历史顶部零偏移', () => {
+  const command = jest
+    .spyOn(FlatList.prototype, 'scrollToOffset')
+    .mockImplementation(() => {});
+  const ref = createRef<MessageListHandle>();
+  const list = (
+    key: string,
+    position: MessageListProps<string>['initialPosition']
+  ) => (
+    <MessageList key={key} {...props} ref={ref} initialPosition={position} />
+  );
+  const page = render(list('first', 380), { wrapper: ThemeProvider });
+  const remembered = ref.current!.getScrollPosition();
+  expect(remembered).toBe(380);
+  const maintainPosition = () =>
+    screen.UNSAFE_getByType(FlatList).props.maintainVisibleContentPosition;
+  expect(maintainPosition()).toBeUndefined();
+  page.rerender(list('reopened', remembered));
+  measure();
+  expect(command).toHaveBeenLastCalledWith({ offset: 380, animated: false });
+  scroll(380);
+  expect(maintainPosition()).toEqual({ minIndexForVisible: 0 });
+  scroll(0);
+  const top = ref.current!.getScrollPosition();
+  expect(top).toBe(0);
+  command.mockClear();
+  page.rerender(list('top', top));
+  measure();
+  expect(ref.current!.getScrollPosition()).toBe(0);
+  expect(command).not.toHaveBeenCalled();
+});

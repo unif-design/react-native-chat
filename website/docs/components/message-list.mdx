@@ -42,7 +42,9 @@ import { MessageListDemo } from '@site/src/demos/MessageListDemo';
 
 空列表中的动态 header 和 empty 不参与消息锚点保持，避免加载占位切换时产生原生滚动偏移；消息到达后恢复位置保持。
 
-历史入口需要同时提供 `hasEarlier` 与 `onRequestEarlier`；加载状态由 `loadingEarlier` 控制。滚动不会自动发起历史请求。ref 的 `scrollToEnd()` 可显式回到末尾。切换会话时用 React `key` 重建实例。
+历史入口需要同时提供 `hasEarlier` 与 `onRequestEarlier`；加载状态由 `loadingEarlier` 控制。滚动不会自动发起历史请求。ref 的 `scrollToEnd()` 可显式回到末尾。切换会话时用 React `key` 重建实例。离开前可用 `ref.getScrollPosition()` 读取位置，再将结果作为下次的 `initialPosition`。近末尾返回 `'end'`，阅读历史时返回列表纵向布局偏移。尚无可用位置时返回 `undefined`，仍在恢复的数值偏移会原样返回。
+
+非负有限偏移在首次非空布局后恢复。虚拟列表分批测量时会继续向目标移动。首次非空数据保持不变时，`end` 初值定位到这批历史的最后一行。若初始化期间追加了新消息，则按 `followOutput` 处理，`never` 保留当时位置。内容变短时停在实际末尾。手动滚动、显式回到末尾或顶锚操作会接手当前位置。负数及非有限值按默认末尾处理。
 
 ## 发送后的顶锚
 

@@ -4,12 +4,19 @@ import {
   useLayoutEffect,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 import type { RefAttributes } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
-import type { ListRenderItemInfo } from 'react-native';
-import { Button, useThemedStyles } from '@unif/react-native-design';
-import { DEFAULT_END_THRESHOLD } from './constants';
+import type { FlatListProps, ListRenderItemInfo } from 'react-native';
+import {
+  Button,
+  MotionScope,
+  useThemedStyles,
+} from '@unif/react-native-design';
+import { useStore } from 'zustand';
+import { createStore } from 'zustand/vanilla';
+import { DEFAULT_END_THRESHOLD, INITIAL_NUM_TO_RENDER } from './constants';
 import { createStyles } from './styles';
 import { useWebPrependAnchor } from './webPrependAnchor';
 import { useMessageListScroll } from './useMessageListScroll';
@@ -21,6 +28,7 @@ import type {
   MessageListProps,
 } from './types';
 
+const VIEWABILITY_CONFIG = { itemVisiblePercentThreshold: 0 };
 const MAINTAIN_VISIBLE_POSITION = { minIndexForVisible: 0 };
 
 export function MessageList<T>({
@@ -50,16 +58,27 @@ export function MessageList<T>({
   ref,
 }: MessageListProps<T> & RefAttributes<MessageListHandle>) {
   const styles = useThemedStyles(createStyles);
+  const [visibleKeys] = useState(() => createStore(() => new Set<string>()));
+  const onViewableItemsChanged = useCallback<
+    NonNullable<FlatListProps<T>['onViewableItemsChanged']>
+  >(
+    ({ viewableItems }) => {
+      visibleKeys.setState(new Set(viewableItems.map(({ key }) => key)), true);
+    },
+    [visibleKeys]
+  );
   const listRef = useRef<FlatList<T>>(null);
   const listTestID = useRef(testID);
   listTestID.current = testID;
   const contentStyle = StyleSheet.flatten(contentContainerStyle);
   const keys = useMemo(() => items.map(keyExtractor), [items, keyExtractor]);
+  const onWheelRef = useRef<(() => void) | null>(null);
   const { getRowNativeID, preservingPrependRef, cancelPrependPreservation } =
-    useWebPrependAnchor({ listRef, itemsIdentity: items, keys });
+    useWebPrependAnchor({ listRef, itemsIdentity: items, keys, onWheelRef });
   const {
     atEnd,
-    positioningAnchor,
+    positioning,
+    cancelRestore,
     anchorMinimumHeight,
     anchorToItem,
     onCellLayout,
@@ -68,6 +87,7 @@ export function MessageList<T>({
     onFooterLayout,
     onScrollToIndexFailed,
     scrollToEnd,
+    getScrollPosition,
     onLayout,
     onContentSizeChange,
     onScroll,
@@ -91,10 +111,12 @@ export function MessageList<T>({
     preservingPrependRef,
     cancelPrependPreservation,
   });
-  useImperativeHandle(ref, () => ({ scrollToEnd, anchorToItem }), [
-    scrollToEnd,
-    anchorToItem,
-  ]);
+  onWheelRef.current = cancelRestore;
+  useImperativeHandle(
+    ref,
+    () => ({ scrollToEnd, anchorToItem, getScrollPosition }),
+    [scrollToEnd, anchorToItem, getScrollPosition]
+  );
 
   const CellRenderer = useCallback(
     function MessageListCell({
@@ -105,6 +127,9 @@ export function MessageList<T>({
       onLayout: reportLayout,
       onFocusCapture,
     }: MessageListCellProps<T>) {
+      const visible = useStore(visibleKeys, (keysInView) =>
+        keysInView.has(cellKey)
+      );
       const currentIndex = useRef(index);
       currentIndex.current = index;
       useLayoutEffect(
@@ -125,11 +150,11 @@ export function MessageList<T>({
             onCellLayout(cellKey, index, event.nativeEvent.layout);
           }}
         >
-          {children}
+          <MotionScope active={visible}>{children}</MotionScope>
         </View>
       );
     },
-    [onCellLayout, onCellUnmount]
+    [onCellLayout, onCellUnmount, visibleKeys]
   );
 
   const renderRow = useCallback(
@@ -195,15 +220,18 @@ export function MessageList<T>({
         testID={testID ? `${testID}-list` : undefined}
         style={styles.list}
         data={items}
+        initialNumToRender={INITIAL_NUM_TO_RENDER}
         keyExtractor={keyExtractor}
         extraData={extraData}
         renderItem={renderRow}
+        viewabilityConfig={VIEWABILITY_CONFIG}
+        onViewableItemsChanged={onViewableItemsChanged}
         CellRendererComponent={CellRenderer}
         ListHeaderComponent={listHeader}
         ListFooterComponent={listFooter}
         ListEmptyComponent={listEmpty}
         maintainVisibleContentPosition={
-          items.length > 0 && !positioningAnchor
+          items.length > 0 && !positioning
             ? MAINTAIN_VISIBLE_POSITION
             : undefined
         }
