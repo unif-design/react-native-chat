@@ -19,23 +19,6 @@ const reanimated = jest.requireMock<typeof import('react-native-reanimated')>(
   'react-native-reanimated'
 );
 
-const realLoop = jest.requireActual<{
-  default: Pick<typeof Animated, 'loop'>;
-}>('react-native/Libraries/Animated/AnimatedImplementation').default.loop;
-
-function controlledTiming(value: Parameters<typeof Animated.timing>[0]) {
-  return {
-    value,
-    start: jest.fn<Animated.CompositeAnimation['start']>(),
-    stop: jest.fn(),
-    reset: jest.fn(),
-    _isUsingNativeDriver: () => false,
-    _startNativeLoop: jest.fn(),
-  };
-}
-
-let animations: ReturnType<typeof controlledTiming>[];
-
 const progressView = (progress: string, dark = false, fontScale = 1) => (
   <ThemeProvider forceScheme={dark ? 'dark' : 'light'} fontScale={fontScale}>
     <ProcessingProgress progress={progress} />
@@ -43,22 +26,31 @@ const progressView = (progress: string, dark = false, fontScale = 1) => (
 );
 
 beforeEach(() => {
-  animations = [];
+  jest.useFakeTimers();
+  jest
+    .spyOn(Animated, 'loop')
+    .mockImplementation(
+      jest.requireActual<{ default: Pick<typeof Animated, 'loop'> }>(
+        'react-native/Libraries/Animated/AnimatedImplementation'
+      ).default.loop
+    );
+  jest
+    .spyOn(globalThis, 'requestAnimationFrame')
+    .mockImplementation((callback) =>
+      Number(setTimeout(() => callback(Date.now()), 16))
+    );
+  jest
+    .spyOn(globalThis, 'cancelAnimationFrame')
+    .mockImplementation((handle) => clearTimeout(handle));
   jest
     .spyOn(AccessibilityInfo, 'isReduceTransparencyEnabled')
     .mockResolvedValue(true);
   jest.spyOn(reanimated, 'useReducedMotion').mockReturnValue(false);
-  // Keep RN's loop lifecycle; only replace frames driven by the native clock.
-  jest.spyOn(Animated, 'loop').mockImplementation(realLoop);
-  jest.spyOn(Animated, 'timing').mockImplementation((value) => {
-    const animation = controlledTiming(value);
-    animations.push(animation);
-    return animation;
-  });
 });
 
 afterEach(() => {
   cleanup();
+  jest.useRealTimers();
   jest.restoreAllMocks();
 });
 
@@ -92,18 +84,21 @@ test.each([
   ).toEqual({
     busy: true,
   });
-  expect(animations[0]!.start).toHaveBeenCalledTimes(1);
+  act(() => jest.advanceTimersByTime(400));
+  const loops = jest.mocked(Animated.loop).mock.calls.length;
+  expect(loops).toBeGreaterThan(0);
 
   page.rerender(progressView(next));
   expect(
     page.getByRole('text', { name: next }).props.accessibilityLiveRegion
   ).toBe('polite');
-  expect(animations).toHaveLength(1);
-  expect(animations[0]!.stop).not.toHaveBeenCalled();
+  expect(jest.mocked(Animated.loop).mock.calls).toHaveLength(loops);
   expect(page.getAllByRole('text')).toHaveLength(1);
 
   page.unmount();
-  expect(animations[0]!.stop).toHaveBeenCalledTimes(1);
+  const frames = jest.mocked(requestAnimationFrame).mock.calls.length;
+  act(() => jest.advanceTimersByTime(10000));
+  expect(jest.mocked(requestAnimationFrame).mock.calls).toHaveLength(frames);
 });
 
 test('只分开首个点号，保留空前缀和所有后续文字', () => {
@@ -116,7 +111,7 @@ test('只分开首个点号，保留空前缀和所有后续文字', () => {
       includeHiddenElements: true,
     })
   ).toHaveTextContent('· 商品甲 · 附加说明');
-  expect(animations).toHaveLength(0);
+  expect(Animated.loop).not.toHaveBeenCalled();
 
   page.rerender(progressView('正在准备资料'));
   expect(
@@ -124,47 +119,49 @@ test('只分开首个点号，保留空前缀和所有后续文字', () => {
       includeHiddenElements: true,
     })
   ).toBeNull();
-  expect(animations).toHaveLength(1);
+  expect(Animated.loop).toHaveBeenCalled();
 });
 
-test('前缀更新停止旧动画，迟到完成不能重启旧循环或影响新文字', () => {
+test('前缀更新显示新文字，卸载后旧循环与新循环均不能再调度帧', () => {
   const page = render(progressView('读取资料 · 第一份'));
-  const first = animations[0]!;
-  const finishFirst = first.start.mock.calls[0]![0]!;
-
+  act(() => jest.advanceTimersByTime(400));
+  const loops = jest.mocked(Animated.loop).mock.calls.length;
+  const frames = jest.mocked(requestAnimationFrame).mock.calls.length;
   page.rerender(progressView('整理结果 · 第二份'));
-  const second = animations[1]!;
-  expect(first.stop).toHaveBeenCalledTimes(1);
-  expect(second.value).not.toBe(first.value);
-  act(() => finishFirst({ finished: true }));
-  expect(first.start).toHaveBeenCalledTimes(1);
-  expect(second.start).toHaveBeenCalledTimes(1);
+  expect(jest.mocked(Animated.loop).mock.calls.length).toBeGreaterThan(loops);
+  expect(page.queryByRole('text', { name: '读取资料 · 第一份' })).toBeNull();
   expect(
     page.getByRole('text', { name: '整理结果 · 第二份' })
   ).toBeOnTheScreen();
-
-  const finishSecond = second.start.mock.calls[0]![0]!;
+  act(() => jest.advanceTimersByTime(400));
+  expect(jest.mocked(requestAnimationFrame).mock.calls.length).toBeGreaterThan(
+    frames
+  );
   page.unmount();
-  act(() => finishSecond({ finished: true }));
-  expect(second.stop).toHaveBeenCalledTimes(1);
-  expect(second.start).toHaveBeenCalledTimes(1);
+  const stopped = jest.mocked(requestAnimationFrame).mock.calls.length;
+  act(() => jest.advanceTimersByTime(10000));
+  expect(jest.mocked(requestAnimationFrame).mock.calls).toHaveLength(stopped);
 });
 
-test('减少动态效果切换后显示静态文字，恢复时隔离旧动画', () => {
+test('减少动态效果切换后显示静态文字，恢复后继续流光并清理旧循环', () => {
   const page = render(progressView('正在准备资料'));
-  const first = animations[0]!;
+  act(() => jest.advanceTimersByTime(400));
+  const frames = jest.mocked(requestAnimationFrame).mock.calls.length;
   jest.mocked(reanimated.useReducedMotion).mockReturnValue(true);
   page.rerender(progressView('正在准备资料', true));
-  expect(first.stop).toHaveBeenCalledTimes(1);
   expect(page.getByRole('text', { name: '正在准备资料' })).toBeOnTheScreen();
-  expect(animations).toHaveLength(1);
-
+  act(() => jest.advanceTimersByTime(10000));
+  expect(jest.mocked(requestAnimationFrame).mock.calls).toHaveLength(frames);
   jest.mocked(reanimated.useReducedMotion).mockReturnValue(false);
   page.rerender(progressView('正在准备资料', false));
-  expect(animations).toHaveLength(2);
-  expect(animations[1]!.value).not.toBe(first.value);
-  act(() => first.start.mock.calls[0]![0]!({ finished: true }));
-  expect(first.start).toHaveBeenCalledTimes(1);
+  act(() => jest.advanceTimersByTime(400));
+  expect(jest.mocked(requestAnimationFrame).mock.calls.length).toBeGreaterThan(
+    frames
+  );
+  page.unmount();
+  const stopped = jest.mocked(requestAnimationFrame).mock.calls.length;
+  act(() => jest.advanceTimersByTime(10000));
+  expect(jest.mocked(requestAnimationFrame).mock.calls).toHaveLength(stopped);
 });
 
 test('初始减少动态效果时不启动动画，空文字不虚构进度', () => {

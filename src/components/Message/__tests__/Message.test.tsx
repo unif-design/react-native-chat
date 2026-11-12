@@ -2,8 +2,8 @@ import { CopyOutlined } from '@unif/react-native-icons';
 import { Image, Linking, Text } from 'react-native';
 import {
   ThemeProvider,
+  useColors,
   lightColors,
-  darkColors,
   Button,
   type as typography,
 } from '@unif/react-native-design';
@@ -155,9 +155,14 @@ test('图标消息操作只显示图标，保留中文名称、禁用与原操�
 test.each(['light', 'dark'] as const)(
   '外发 Markdown 在 %s 品牌气泡中保留可见文字与链接，中性代码仍可读',
   (scheme) => {
-    const colors = scheme === 'light' ? lightColors : darkColors;
+    let colors: ReturnType<typeof useColors> = lightColors;
+    function ThemeProbe() {
+      colors = useColors();
+      return null;
+    }
     render(
       <ThemeProvider forceScheme={scheme}>
+        <ThemeProbe />
         <Message format="markdown" text="传入正文" />
         <Message
           placement="end"

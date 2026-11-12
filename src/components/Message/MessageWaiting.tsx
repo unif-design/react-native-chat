@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Animated, Easing, Platform, Text, View } from 'react-native';
 import {
   usePrefersReducedMotion,
+  useMotionActive,
   useThemedStyles,
 } from '@unif/react-native-design';
 import {
@@ -15,10 +16,12 @@ import type { MessageWaitingProps } from './types';
 export function MessageWaiting({ label }: MessageWaitingProps) {
   const styles = useThemedStyles(createStyles);
   const reducedMotion = usePrefersReducedMotion();
+  const active = useMotionActive();
   const [values] = useState(() =>
     MESSAGE_WAITING_DOT_DELAYS.map(() => new Animated.Value(1))
   );
   useEffect(() => {
+    if (!active) return;
     const animations = MESSAGE_WAITING_DOT_DELAYS.map((delay, index) => {
       const value = values[index]!;
       value.setValue(reducedMotion ? 1 : MESSAGE_WAITING_DOT_MIN_OPACITY);
@@ -40,7 +43,7 @@ export function MessageWaiting({ label }: MessageWaitingProps) {
     });
     if (!reducedMotion) animations.forEach((animation) => animation.start());
     return () => animations.forEach((animation) => animation.stop());
-  }, [reducedMotion, values]);
+  }, [active, reducedMotion, values]);
   return (
     <View
       style={styles.waitingRow}
