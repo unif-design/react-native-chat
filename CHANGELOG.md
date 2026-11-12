@@ -1,5 +1,11 @@
 # Changelog
 
+# [4.7.0](https://github.com/unif-design/react-native-chat/compare/v4.6.4...v4.7.0) (2026-11-12)
+
+### Features
+
+* **chat:** 暂停离屏行装饰动画并恢复阅读位置 ([6661e92](https://github.com/unif-design/react-native-chat/commit/6661e92be2d5e30f99cb0d17629eeb7a4c5678f0))
+
 ## [4.6.4](https://github.com/unif-design/react-native-chat/compare/v4.6.3...v4.6.4) (2026-11-12)
 
 ### Performance Improvements
