@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.6.4](https://github.com/unif-design/react-native-chat/compare/v4.6.3...v4.6.4) (2026-11-12)
+
+### Performance Improvements
+
+* **motion:** 暂停不可见范围的聊天装饰动画 ([#59](https://github.com/unif-design/react-native-chat/issues/59)) ([08578f3](https://github.com/unif-design/react-native-chat/commit/08578f34d028a8c1f9531798a14800ccd4082225))
+
 ## [4.6.3](https://github.com/unif-design/react-native-chat/compare/v4.6.2...v4.6.3) (2026-11-03)
 
 ### Bug Fixes
