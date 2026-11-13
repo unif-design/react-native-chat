@@ -28,6 +28,7 @@ import {
   fixed,
   Textarea,
   useTheme,
+  useNativeSurfaceStyles,
   useThemedStyles,
   usePrefersReducedMotion,
 } from '@unif/react-native-design';
@@ -70,7 +71,10 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
   ) {
     const styles = useThemedStyles(createStyles);
     const nativeFallback = Platform.OS !== 'web' && !isLiquidGlassSupported;
-    const { fontScale } = useTheme();
+    const { fontScale, scheme } = useTheme();
+    const nativeSurfaceStyles = useNativeSurfaceStyles();
+    const lightCardFallback =
+      surface === 'card' && nativeFallback && scheme === 'light';
     const reducedMotion = usePrefersReducedMotion();
     const { height: windowHeight } = useWindowDimensions();
     const inputRef = useRef<TextFieldHandle>(null);
@@ -147,6 +151,8 @@ export const Composer = forwardRef<ComposerHandle, ComposerProps>(
           styles.root,
           surface === 'card' && styles.card,
           surface === 'card' && nativeFallback && styles.cardFallback,
+          lightCardFallback && nativeSurfaceStyles.input,
+          lightCardFallback && nativeSurfaceStyles.inputBorder,
           style,
         ]}
         onLayout={({ nativeEvent: { layout } }) => {

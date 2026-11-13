@@ -683,7 +683,7 @@ test.each([
   ['ios', true, false],
   ['web', false, false],
 ] as const)(
-  '%s 原生玻璃=%s 时卡片仅在原生降级绘制中性边界，plain 不叠加表面',
+  '%s 原生玻璃=%s 时仅浅色原生降级增强输入表面，plain 不叠加表面',
   async (platform, supported, fallback) => {
     const platformProperty = jest.replaceProperty(Platform, 'OS', platform);
     const supportProperty = jest.replaceProperty(
@@ -719,13 +719,28 @@ test.each([
         );
         await act(async () => {});
         const shadow = scheme === 'light' ? lightShadow : darkShadow;
+        const lightFallback = fallback && scheme === 'light';
         const card = StyleSheet.flatten(
           screen.getByTestId('composer').props.style
         );
         expect(card).toMatchObject({
           borderWidth: 0.5,
-          borderColor: fallback ? colors.outlineVariant : colors.glassBorder,
-          ...(fallback ? shadow.subtle : shadow.card),
+          borderColor: lightFallback
+            ? 'rgba(0,0,0,0.08)'
+            : fallback
+              ? colors.outlineVariant
+              : colors.glassBorder,
+          ...(lightFallback
+            ? {
+                shadowColor: '#000000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.08,
+                shadowRadius: 8,
+                elevation: 4,
+              }
+            : fallback
+              ? shadow.subtle
+              : shadow.card),
         });
         expect(card.backgroundColor).toBe(
           fallback ? colors.surface : undefined
@@ -734,20 +749,33 @@ test.each([
         expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
         expect(screen.getByDisplayValue('保留的订单原稿')).toBeOnTheScreen();
       }
+      for (const scheme of ['light', 'dark'] as const) {
+        view.rerender(
+          <ThemeProvider forceScheme={scheme}>
+            <ThemeProbe />
+            <Composer {...props} surface="plain" />
+          </ThemeProvider>
+        );
+        const plain = StyleSheet.flatten(
+          screen.getByTestId('composer').props.style
+        );
+        expect(plain.borderWidth).toBeUndefined();
+        expect(plain.backgroundColor).toBeUndefined();
+        expect(plain.shadowOpacity).toBeUndefined();
+        expect(screen.UNSAFE_queryAllByType(GlassLayer)).toHaveLength(0);
+        expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
+      }
       view.rerender(
-        <ThemeProvider forceScheme="dark">
-          <ThemeProbe />
-          <Composer {...props} surface="plain" />
+        <ThemeProvider forceScheme="light">
+          <Composer
+            {...props}
+            style={{ backgroundColor: '#123456', shadowRadius: 3 }}
+          />
         </ThemeProvider>
       );
-      const plain = StyleSheet.flatten(
-        screen.getByTestId('composer').props.style
-      );
-      expect(plain.borderWidth).toBeUndefined();
-      expect(plain.backgroundColor).toBeUndefined();
-      expect(plain.shadowOpacity).toBeUndefined();
-      expect(screen.UNSAFE_queryAllByType(GlassLayer)).toHaveLength(0);
-      expect(screen.UNSAFE_getByType(TextInput).instance).toBe(input);
+      expect(
+        StyleSheet.flatten(screen.getByTestId('composer').props.style)
+      ).toMatchObject({ backgroundColor: '#123456', shadowRadius: 3 });
     } finally {
       platformProperty.restore();
       supportProperty.restore();
