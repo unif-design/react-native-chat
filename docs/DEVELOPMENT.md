@@ -4,7 +4,7 @@
 
 使用 `unif-chat` 定位本库当前版本的公开能力、接入与排障资料。应用仅消费库时可直接查公开类型和文档。
 
-维护工程按职责采用独立的通用技能：`code-organization` 负责跨平台目录与文件组织，`react-native-development` 负责 React Native 实现，`react-native-library` 负责库工程和分发产物，`documentation` 负责文档与文档站。设计、测试、审查与交付继续从 [AGENTS.md](../AGENTS.md) 取得适用入口，本文只补充本库的契约和接线。
+维护工程按职责采用独立的通用技能：`uni-code-organization` 负责跨平台目录与文件组织，`uni-rn-dev` 负责 React Native 实现，`uni-rn-library` 负责库工程和分发产物，`uni-documentation` 负责文档与文档站。设计、测试、审查与交付继续从 [AGENTS.md](../AGENTS.md) 取得适用入口，本文只补充本库的契约和接线。
 
 ## 范围与依据
 
@@ -68,7 +68,7 @@
 
 [CI 配置](../.github/workflows/ci.yml)维护完整验证入口；提交检查见 [lefthook.yml](../lefthook.yml)，发布命令见 package.json。
 
-LLM 索引、链接与产物提交的共享实现由 `github-delivery` 的 `templates/llms` 维护，通过该技能提供的同步工具更新；本库保留由公开类型生成 API 文本的转换，并执行自己的 `node website/scripts/build-llms.js`。网站 API 展示和 Markdown 使用同一个 md/api.json 来源，生成失败不交付半套资料。
+LLM 索引、链接与产物提交的共享实现由 `uni-github-delivery` 的 `templates/llms` 维护，通过该技能提供的同步工具更新；本库保留由公开类型生成 API 文本的转换，并执行自己的 `node website/scripts/build-llms.js`。网站 API 展示和 Markdown 使用同一个 md/api.json 来源，生成失败不交付半套资料。
 
 ## 2026-09-30 MessageList 优化验证
 
@@ -112,7 +112,7 @@ iOS example 使用 Ruby 3.3+，`example/Gemfile.lock` 固定 CocoaPods 1.17.0、
 
 ## 交付配置与检查
 
-共享 CI、发布配置和检查工具由 `github-delivery` 的模板与工具维护。Unif 组织值由 `code-delivery` 的 `assets/organization.json` 维护，接入时落实为本库 `.github/organization.json`，记录组织、包名规则、Pages 地址、发布 App 身份及远端设置。工具运行时读取项目文件，不依赖其他技能的安装目录；适用技能按当前任务独立选择。
+共享 CI、发布配置和检查工具由 `uni-github-delivery` 的模板与工具维护。Unif 组织值由 `unif-code-delivery` 的 `assets/organization.json` 维护，接入时落实为本库 `.github/organization.json`，记录组织、包名规则、Pages 地址、发布 App 身份及远端设置。工具运行时读取项目文件，不依赖其他技能的安装目录；适用技能按当前任务独立选择。
 
 在仓库根目录按阶段执行：
 
