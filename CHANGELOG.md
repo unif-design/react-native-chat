@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.7.1](https://github.com/unif-design/react-native-chat/compare/v4.7.0...v4.7.1) (2026-11-13)
+
+### Bug Fixes
+
+* **composer:** 统一浅色原生降级输入表面 ([029defe](https://github.com/unif-design/react-native-chat/commit/029defeac399c9ea4144e7f05d6ff04fadfb3349))
+
 # [4.7.0](https://github.com/unif-design/react-native-chat/compare/v4.6.4...v4.7.0) (2026-11-12)
 
 ### Features
