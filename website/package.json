@@ -16,7 +16,7 @@
     "@mdx-js/react": "^3.0.0",
     "@react-native/assets-registry": "0.88.0",
     "@unif/react-native-chat": "workspace:*",
-    "@unif/react-native-design": "^1.19.0",
+    "@unif/react-native-design": "^1.19.1",
     "@unif/react-native-icons": "^0.5.0",
     "@unif/react-native-logger": "^0.2.2",
     "prism-react-renderer": "^2.3.0",
