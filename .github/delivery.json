@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "standard": "github-delivery/react-native",
-  "sourceDigest": "12992cab1cc8924d5ec940bfaef5e273f1f31ae5c71730b0316e7e06aa0a4726",
+  "sourceDigest": "b341d384ef57bd67a0b585f2380c5368d42cbce5fb9dc4190072617eda8d8c56",
   "repository": "unif-design/react-native-chat",
   "organization": true,
   "prAgent": true,
@@ -49,6 +49,6 @@
     "website/scripts/llms/routes.js": "beed5a039402f99bbea8475d12d390e6bc5b2b36180297eb42a99d18ec4d390a"
   },
   "blocks": {
-    "AGENTS.md": "f37d4fd621ab4f9c90c6f96d3799bc71cf4868947227b8d3be978b9ea17246e8"
+    "AGENTS.md": "2424533a9899b229c0933255a951c89aa1c3a883710623c2f81e2ba20b4e07f3"
   }
 }
