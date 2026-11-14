@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.7.2](https://github.com/unif-design/react-native-chat/compare/v4.7.1...v4.7.2) (2026-11-14)
+
+### Bug Fixes
+
+* **composer:** 避免原生降级输入叠加卡片阴影 ([5582f46](https://github.com/unif-design/react-native-chat/commit/5582f46ff4943024462d40cab0871b78b7f41e71))
+
 ## [4.7.1](https://github.com/unif-design/react-native-chat/compare/v4.7.0...v4.7.1) (2026-11-13)
 
 ### Bug Fixes
