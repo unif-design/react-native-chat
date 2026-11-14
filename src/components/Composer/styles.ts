@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { fixed, r, radius, space, type } from '@unif/react-native-design';
 import type { ColorTokens, ShadowTokens } from '@unif/react-native-design';
 import { COMPOSER_ACTION_VISUAL_SIZE } from './constants';
@@ -13,6 +13,8 @@ export const createStyles = (colors: ColorTokens, shadows: ShadowTokens) =>
       ...shadows.card,
     },
     cardFallback: {
+      // 实体输入覆盖 card 阴影时清空 iOS boxShadow，避免双影。
+      ...(Platform.OS === 'ios' ? { boxShadow: [] } : {}),
       backgroundColor: colors.surface,
       borderColor: colors.outlineVariant,
       ...shadows.subtle,

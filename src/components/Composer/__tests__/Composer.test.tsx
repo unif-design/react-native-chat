@@ -1,7 +1,14 @@
 import { FileOutlined, ImageOutlined } from '@unif/react-native-icons';
 import { createRef } from 'react';
 import type { ReactNode } from 'react';
-import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import * as LiquidGlass from '@callstack/liquid-glass';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { describe, expect, jest, test } from '@jest/globals';
@@ -742,6 +749,12 @@ test.each([
               ? shadow.subtle
               : shadow.card),
         });
+        // 实体回退覆盖 card 时只保留原来的输入阴影，不能叠加 boxShadow。
+        expect(card.boxShadow ?? []).toEqual(
+          fallback
+            ? []
+            : (StyleSheet.flatten<ViewStyle>(shadow.card)?.boxShadow ?? [])
+        );
         expect(card.backgroundColor).toBe(
           fallback ? colors.surface : undefined
         );
