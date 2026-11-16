@@ -17,6 +17,7 @@ export const anchoredList = (
     keyExtractor={(item) => item.id}
     renderItem={(item) => <Text>{item.text}</Text>}
     followOutput="never"
+    onScroll={(event) => event.nativeEvent.contentOffset.y.toFixed(0)}
   />
 );
 ref.current?.anchorToItem('stable-id', options);

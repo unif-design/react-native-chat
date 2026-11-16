@@ -37,6 +37,71 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 describe('MessageList', () => {
+  test('公开滚动回调接收同一原生事件，读取到已更新的位置与末尾状态', async () => {
+    const ref = createRef<MessageListHandle>();
+    const observations: Array<'end' | number | undefined> = [];
+    const onScroll = jest.fn<NonNullable<MessageListProps<string>['onScroll']>>(
+      () => observations.push(ref.current?.getScrollPosition())
+    );
+    const onAtEndChange = jest.fn();
+    render(
+      <MessageList
+        {...props}
+        ref={ref}
+        initialPosition="start"
+        onAtEndChange={onAtEndChange}
+        onScroll={onScroll}
+      />,
+      { wrapper: ThemeProvider }
+    );
+    await act(async () => {});
+    measure();
+    const event = {
+      nativeEvent: {
+        contentOffset: { x: 0, y: 120 },
+        contentSize: { width: 320, height: 1000 },
+        layoutMeasurement: { width: 320, height: 400 },
+      },
+    };
+    fireEvent.scroll(screen.getByTestId('messages-list'), event);
+    expect(onScroll.mock.calls[0]?.[0]).toBe(event);
+    expect(observations).toEqual([120]);
+    expect(onAtEndChange).toHaveBeenLastCalledWith(false);
+
+    scroll(600);
+    expect(observations).toEqual([120, 'end']);
+    expect(onAtEndChange).toHaveBeenLastCalledWith(true);
+  });
+
+  test('滚动回调更新或移除后使用当前回调，仍保留列表位置维护', async () => {
+    const ref = createRef<MessageListHandle>();
+    const first = jest.fn();
+    const second = jest.fn();
+    const view = render(
+      <MessageList
+        {...props}
+        ref={ref}
+        initialPosition="start"
+        onScroll={first}
+      />,
+      { wrapper: ThemeProvider }
+    );
+    await act(async () => {});
+    measure();
+    scroll(100);
+    view.rerender(<MessageList {...props} ref={ref} onScroll={second} />);
+    scroll(200);
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).toHaveBeenCalledTimes(1);
+    expect(ref.current?.getScrollPosition()).toBe(200);
+
+    view.rerender(<MessageList {...props} ref={ref} />);
+    scroll(300);
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).toHaveBeenCalledTimes(1);
+    expect(ref.current?.getScrollPosition()).toBe(300);
+  });
+
   test.each([0, 112, -1, Number.NaN])(
     '返回按钮避让输入区 %s，仍使用真实滚动入口',
     (inset) => {
