@@ -1,5 +1,11 @@
 # Changelog
 
+# [4.8.0](https://github.com/unif-design/react-native-chat/compare/v4.7.2...v4.8.0) (2026-11-16)
+
+### Features
+
+* **message-list:** 提供原生滚动事件回调 ([ea94952](https://github.com/unif-design/react-native-chat/commit/ea94952a23f95121a26e66ce39b9c021f2ccb7a8))
+
 ## [4.7.2](https://github.com/unif-design/react-native-chat/compare/v4.7.1...v4.7.2) (2026-11-14)
 
 ### Bug Fixes
