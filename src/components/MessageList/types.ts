@@ -41,6 +41,8 @@ export interface MessageListProps<T> {
   /** 悬浮输入区占据的高度；仅调整返回入口位置，正文留白由 contentContainerStyle 提供。 */
   scrollToEndBottomInset?: number;
   onAtEndChange?(atEnd: boolean): void;
+  /** 内部滚动位置维护完成后交付同一原生事件，不改变跟随或定位策略。 */
+  onScroll?: ScrollViewProps['onScroll'];
   hasEarlier?: boolean;
   loadingEarlier?: boolean;
   onRequestEarlier?(): void;

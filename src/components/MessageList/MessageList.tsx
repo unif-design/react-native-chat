@@ -47,6 +47,7 @@ export function MessageList<T>({
   scrollToEndBusy = false,
   scrollToEndBottomInset = 0,
   onAtEndChange,
+  onScroll: onScrollCallback,
   hasEarlier = false,
   loadingEarlier = false,
   onRequestEarlier,
@@ -112,6 +113,15 @@ export function MessageList<T>({
     cancelPrependPreservation,
   });
   onWheelRef.current = cancelRestore;
+  const handleScroll = useCallback<
+    NonNullable<MessageListProps<T>['onScroll']>
+  >(
+    (event) => {
+      onScroll(event);
+      onScrollCallback?.(event);
+    },
+    [onScroll, onScrollCallback]
+  );
   useImperativeHandle(
     ref,
     () => ({ scrollToEnd, anchorToItem, getScrollPosition }),
@@ -246,7 +256,7 @@ export function MessageList<T>({
         scrollEventThrottle={16}
         onLayout={onLayout}
         onContentSizeChange={onContentSizeChange}
-        onScroll={onScroll}
+        onScroll={handleScroll}
         onScrollBeginDrag={onUserScrollBegin}
         onMomentumScrollBegin={onMomentumScrollBegin}
         onScrollEndDrag={onScrollEndDrag}
