@@ -17,7 +17,7 @@
 
 本库实现独立聊天 UI，职责与公共接口由下面的 Chat 契约维护。
 
-规范仓默认与本库并列。先读[Chat 架构与组件索引](../../unif-platform-architecture/libraries/react-native-chat.md)和[共同契约](../../unif-platform-architecture/libraries/react-native-chat/contracts.md)，再读取当前单元；详细 props 不在本库复制成第二套定义。
+先读[Chat 架构与组件索引](https://github.com/unif-design/unif-platform-architecture/blob/main/libraries/react-native-chat.md)和[共同契约](https://github.com/unif-design/unif-platform-architecture/blob/main/libraries/react-native-chat/contracts.md)，再读取当前单元；组件参数以本库公开类型为准。本地也可在同级的 `unif-platform-architecture` 仓库查阅上述文档。
 
 目标设计见上述契约；当前可用组件与类型以 [src/index.tsx](../src/index.tsx) 的实际导出为准。
 
@@ -25,7 +25,7 @@
 
 - create-react-native-library 0.63.1，library/js 模板；库源码 TS/TSX，Bob 生成 ESM 和声明。Community CLI 原生 example 与 Docusaurus Web 文档站分别验证原生和浏览器消费。
 - 库名 @unif/react-native-chat，示例工作区 @unif/react-native-chat-example；React 19.3.0、RN 0.88.0、Design 1.19.1、Icons 0.5.0、Yarn 4.11.0。
-- Design 从包根消费，Thumbnail 尺寸对象/fallback、Textarea（含 plain 表面）/TextFieldHandle、CircularProgress（formatLabel 仅改变视觉文字，读屏保留百分比）、ActionMenuContent（含 popover 展示）、ShimmerText 按当前已采用版本的实际接口使用。Composer 的菜单开关与定位留在 Chat，菜单卡和菜单行由 Design 提供。处理中的文字扫光复用 ShimmerText，状态、文案和图标归 Chat。详细接线见[组合验证](../../unif-platform-architecture/libraries/react-native-chat/composition.md#6-design-依赖与接入验证)。
+- Design 从包根消费，Thumbnail 尺寸对象/fallback、Textarea（含 plain 表面）/TextFieldHandle、CircularProgress（formatLabel 仅改变视觉文字，读屏保留百分比）、ActionMenuContent（含 popover 展示）、ShimmerText 按当前已采用版本的实际接口使用。Composer 的菜单开关与定位留在 Chat，菜单卡和菜单行由 Design 提供。处理中的文字扫光复用 ShimmerText，状态、文案和图标归 Chat。详细接线见[组合验证](https://github.com/unif-design/unif-platform-architecture/blob/main/libraries/react-native-chat/composition.md#6-design-依赖与接入验证)。
 - Composer card、图片普通移除圆圈和中央状态／重试圆层复用 GlassLayer；Composer 浅色原生降级通过 Design 的 useNativeSurfaceStyles 消费共享输入表面，plain 继续由外层提供表面；返回末尾操作复用 IconButton 的 glass 变体。交互 Suggestions、附件继续操作和 Confirmation 取消分别消费 Chip／secondary Button 的共享默认玻璃表面。材质、减少透明度和平台降级由 Design 处理，Chat 保留输入层级、浮菜单定位、附件独立触达区及滚动行为。失败附件仍使用错误色，消息正文与内容内轻量操作保留原层次。
 - 等待圆点、语音波形与忙碌指示读取 Design 的 MotionScope 可见性，隐藏时暂停装饰，输入、内容与业务操作不变。
 - 本版本的 Design peer 为 `^1.19.1`；根库、example 与 Website 使用 `@callstack/liquid-glass` 0.8.2 满足 Design 的玻璃材质依赖，并安装其 Logger peer `@unif/react-native-logger` 0.2.2。Jest 继续复用 Design preset，Web 通过 Design 的 Web 入口消费。
